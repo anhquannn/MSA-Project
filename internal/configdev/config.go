@@ -31,6 +31,7 @@ func UserRoutes(router *gin.Engine, userHandler http.UserHandler) {
 	{
 		users.POST("/register", userHandler.RegisterUser)
 		users.POST("/login", userHandler.Login)
+		users.POST("/verify", userHandler.VerifyOTP)
 		users.POST("/login/google", userHandler.LoginWithGoogle)
 		users.POST("/getpass", userHandler.GenerateAndSetRandomPassword)
 

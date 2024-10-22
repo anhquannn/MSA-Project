@@ -22,6 +22,7 @@ type UserHandler interface {
 	GetUserById(c *gin.Context)
 	GenerateAndSetRandomPassword(c *gin.Context)
 
+	VerifyOTP(c *gin.Context)
 	UpdateUserInf(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
@@ -72,13 +73,32 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userUsecase.Login(request.Email, request.Password)
+	_, err := h.userUsecase.Login(request.Email, request.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	token, err := utils.GenerateJWT(user.FullName)
+	c.JSON(http.StatusOK, gin.H{"message": "OTP sent to your email"})
+}
+
+func (h *userHandler) VerifyOTP(c *gin.Context) {
+	var rq struct {
+		Otp string `json:"otp"`
+	}
+
+	if err := c.ShouldBindJSON(&rq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OTP"})
+		return
+	}
+
+	user, err := h.userUsecase.VerifyOTP(rq.Otp)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := utils.GenerateJWT(user.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return

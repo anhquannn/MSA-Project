@@ -15,7 +15,8 @@ import (
 type UserUsecase interface {
 	CreateUser(user *models.User) error
 	RegisterUser(users *models.User) (string, error)
-	Login(email, password string) (*models.User, error)
+	Login(email, password string) (string, error)
+	VerifyOTP(otp string) (*models.User, error)
 	LoginWithGoogle(accessToken string) (string, *models.User, error)
 	DeleteUser(users *models.User) error
 	UpdateUser(users *models.User, currentPassword string) error
@@ -74,17 +75,37 @@ func (u *userUsecase) RegisterUser(users *models.User) (string, error) {
 	return users.Email, nil
 }
 
-func (u *userUsecase) Login(email, password string) (*models.User, error) {
+func (u *userUsecase) Login(email, password string) (string, error) {
+	user, err := u.userRepo.GetUserByEmail(email)
+	if err != nil {
+		return "", err
+	}
+
+	if !utils.CheckPasswordHash(password, user.Password) {
+		return "", errors.New("invalid credentials")
+	}
+
+	otp, err := u.emailService.GenerateAndSendOTP(email)
+
+	if err != nil {
+		return "", err
+	}
+
+	return otp, nil
+}
+
+func (u *userUsecase) VerifyOTP(otp string) (*models.User, error) {
+	email, err := u.emailService.ValidateOTP(otp)
+	if err != nil {
+		return nil, err
+	}
+
 	user, err := u.userRepo.GetUserByEmail(email)
 	if err != nil {
 		return nil, err
 	}
 
-	if !utils.CheckPasswordHash(password, user.Password) {
-		return nil, errors.New("invalid credentials")
-	}
-
-	return user, nil
+	return user, err
 }
 
 func (u *userUsecase) LoginWithGoogle(accessToken string) (string, *models.User, error) {
