@@ -64,7 +64,7 @@ func (s *emailService) GenerateAndSendOTP(email string) (string, error) {
 	}
 
 	s.mu.Lock()
-	s.passwordStore[email] = otp
+	s.otpStore[otp] = email
 	s.mu.Unlock()
 
 	return otp, nil
@@ -105,7 +105,7 @@ func (s *emailService) GenerateAndSendPassword(email string) (string, error) {
 }
 
 func (s *emailService) VerifyEmail(email string) (bool, error) {
-	apiKey := "8d2dd0a2e19e41579ebc705b960d3d43"
+	apiKey := "5497d5ce12ee486da7951f94d381b2c4"
 	url := fmt.Sprintf("https://api.zerobounce.net/v2/validate?api_key=%s&email=%s", apiKey, email)
 
 	resp, err := http.Get(url)

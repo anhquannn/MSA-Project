@@ -22,9 +22,11 @@ type UserHandler interface {
 	GetUserById(c *gin.Context)
 	GenerateAndSetRandomPassword(c *gin.Context)
 
+	VerifyOTP(c *gin.Context)
 	UpdateUserInf(c *gin.Context)
 	UpdateUser(c *gin.Context)
 	DeleteUser(c *gin.Context)
+	GetNewPassword(c *gin.Context)
 	LoginWithGoogle(c *gin.Context)
 	Login(c *gin.Context)
 	RegisterUser(c *gin.Context)
@@ -50,9 +52,13 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 	}
 
 	user := models.User{
-		FullName: reqUser.FullName,
-		Email:    reqUser.Email,
-		Password: reqUser.Password,
+		FullName:    reqUser.FullName,
+		Email:       reqUser.Email,
+		Password:    reqUser.Password,
+		Role:        reqUser.Role,
+		PhoneNumber: reqUser.PhoneNumber,
+		Birthday:    reqUser.Birthday,
+		Address:     reqUser.Address,
 	}
 
 	email, err := h.userUsecase.RegisterUser(&user)
@@ -72,19 +78,55 @@ func (h *userHandler) Login(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userUsecase.Login(request.Email, request.Password)
+	_, err := h.userUsecase.Login(request.Email, request.Password)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	token, err := utils.GenerateJWT(user.FullName)
+	c.JSON(http.StatusOK, gin.H{"message": "OTP sent to your email"})
+}
+
+func (h *userHandler) VerifyOTP(c *gin.Context) {
+	var rq struct {
+		Otp string `json:"otp"`
+	}
+
+	if err := c.ShouldBindJSON(&rq); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid OTP"})
+		return
+	}
+
+	user, err := h.userUsecase.VerifyOTP(rq.Otp)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := utils.GenerateJWT(user.Email)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"token": token, "userID": user.ID})
+}
+
+func (h *userHandler) GetNewPassword(c *gin.Context) {
+	var request requests.User
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	_, err := h.userUsecase.GetNewPassword(request.Email)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "OTP sent to your email"})
 }
 
 func (h *userHandler) LoginWithGoogle(c *gin.Context) {
@@ -183,6 +225,7 @@ func (h *userHandler) UpdateUserInf(c *gin.Context) {
 	user.FullName = rq.FullName
 	user.PhoneNumber = rq.PhoneNumber
 	user.Email = rq.Email
+	user.Password = rq.Password
 
 	if err := h.userUsecase.UpdateUserInf(user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -191,7 +234,6 @@ func (h *userHandler) UpdateUserInf(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User information updated successfully",
-		"user":    user,
 	})
 }
 
