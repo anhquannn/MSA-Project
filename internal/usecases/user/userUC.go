@@ -17,6 +17,7 @@ type UserUsecase interface {
 	RegisterUser(users *models.User) (string, error)
 	Login(email, password string) (string, error)
 	VerifyOTP(otp string) (*models.User, error)
+	GetNewPassword(email string) (string, error)
 	LoginWithGoogle(accessToken string) (string, *models.User, error)
 	DeleteUser(users *models.User) error
 	UpdateUser(users *models.User, currentPassword string) error
@@ -65,7 +66,10 @@ func (u *userUsecase) RegisterUser(users *models.User) (string, error) {
 	}
 
 	users.Password = hashedPassword
-	users.Role = "customer"
+
+	if users.Role == "" {
+		users.Role = "customer"
+	}
 
 	err = u.userRepo.CreateUser(users)
 	if err != nil {
@@ -85,6 +89,16 @@ func (u *userUsecase) Login(email, password string) (string, error) {
 		return "", errors.New("invalid credentials")
 	}
 
+	otp, err := u.emailService.GenerateAndSendOTP(email)
+
+	if err != nil {
+		return "", err
+	}
+
+	return otp, nil
+}
+
+func (u *userUsecase) GetNewPassword(email string) (string, error) {
 	otp, err := u.emailService.GenerateAndSendOTP(email)
 
 	if err != nil {
@@ -222,6 +236,14 @@ func (u *userUsecase) UpdateUserInf(users *models.User) error {
 			return errors.New("email already exists")
 		}
 		currentUser.Email = users.Email
+	}
+
+	if users.Password != "" && users.Password != currentUser.Password {
+		hashedPassword, err := utils.HashPassword(users.Password)
+		if err != nil {
+			return err
+		}
+		currentUser.Password = hashedPassword
 	}
 
 	return u.userRepo.UpdateUser(currentUser)

@@ -33,7 +33,7 @@ func UserRoutes(router *gin.Engine, userHandler http.UserHandler) {
 		users.POST("/login", userHandler.Login)
 		users.POST("/verify", userHandler.VerifyOTP)
 		users.POST("/login/google", userHandler.LoginWithGoogle)
-		users.POST("/getpass", userHandler.GenerateAndSetRandomPassword)
+		users.POST("/resetpass", userHandler.GetNewPassword)
 
 		secured := users.Group("/")
 		secured.Use(utils.AuthRequired())
