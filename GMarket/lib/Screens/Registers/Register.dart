@@ -1,14 +1,14 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:gmarket/Screens/ForgotPassword/ForgotPassword.dart';
 import 'package:gmarket/Screens/Registers/Information.dart';
-
+import 'package:gmarket/Http/User.dart';
 void main() {
   runApp( const MaterialApp(
     debugShowCheckedModeBanner: false,
     home:
     Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Register(),
     ),
   ));
@@ -23,9 +23,14 @@ class Register extends StatefulWidget{
   }
 }
 class RegisterState extends State<Register>{
-  bool _isObscure= true;
+  bool _isObscure1= true;
+  bool _isObscure2=true;
   late var isChecked=false;
 
+  UserHTTP user=UserHTTP();
+  late String _email;
+  late String _password;
+  late String _verifyPassword;
 
 
 
@@ -53,20 +58,19 @@ class RegisterState extends State<Register>{
                         Column(
                           children: [
                             Container(
-                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(30)),
                               child: Image.asset('assets/image/QMarket-White.jpg',
-                                height: height*0.4,
-                                width: width*0.5,),
+                                height: height*0.3,
+                                width: width*0.3,),
                             ),
                             const Text("Đăng Ký",
                               style: TextStyle(
                                   fontFamily: 'Coiny-Regular-font',
                                   fontSize: 30,
-                                  color: Colors.white
+                                  color: Colors.black
                               ),
-                              textAlign: TextAlign.center,
+                              // textAlign: TextAlign.center,
                             ),
-                            const SizedBox(height: 10,),
+                            SizedBox(height: height*0.05,),
                             TextField(
                               style: const TextStyle(
                                 color: Colors.black,
@@ -92,10 +96,13 @@ class RegisterState extends State<Register>{
                                           width: 3.0,
                                           color: Color.fromRGBO(94, 200, 248, 1)))
                               ),
+                              onChanged: (value) {
+                                _email=value;
+                              },
                             ),
                             const SizedBox(height: 10),
                             TextField(
-                              obscureText: _isObscure,
+                              obscureText: _isObscure1,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontFamily: 'Coiny-Regular-font',
@@ -110,9 +117,11 @@ class RegisterState extends State<Register>{
                                 ),
                                 suffixIcon: IconButton(
                                     icon: Icon(
-                                        _isObscure ? Icons.visibility_off : Icons.visibility
+                                        _isObscure1 ? Icons.visibility_off : Icons.visibility
                                     ),
-                                    onPressed: showPassWord
+                                    onPressed: () {
+                                      showPassWord1();
+                                    },
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -128,10 +137,13 @@ class RegisterState extends State<Register>{
                                     )
                                 ),
                               ),
+                              onChanged: (value) {
+                                _password=value;
+                              },
                             ),
                             const SizedBox(height: 10,),
                             TextField(
-                              obscureText: _isObscure,
+                              obscureText: _isObscure2,
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontFamily: 'Coiny-Regular-font',
@@ -146,9 +158,11 @@ class RegisterState extends State<Register>{
                                 ),
                                 suffixIcon: IconButton(
                                     icon: Icon(
-                                        _isObscure ? Icons.visibility_off : Icons.visibility
+                                        _isObscure2 ? Icons.visibility_off : Icons.visibility
                                     ),
-                                    onPressed: showPassWord
+                                    onPressed: () {
+                                      showPassWord2();
+                                    },
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10),
@@ -165,15 +179,16 @@ class RegisterState extends State<Register>{
                                     )
                                 ),
                               ),
+                              onChanged: (value) {
+                                _verifyPassword=value;
+                              },
                             ),
                             const SizedBox(height: 10,),
                             const SizedBox(height: 20,),
                             ElevatedButton(
                                 onPressed:() {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const Information() )
-                                  );
+                                  PressNextButton();
+
                                 },
                                 style: ElevatedButton.styleFrom(
                                     backgroundColor:const Color.fromRGBO(94, 200, 248, 1)
@@ -199,13 +214,55 @@ class RegisterState extends State<Register>{
     );
 
   }
-  void showPassWord(){
+  void showPassWord1(){
     setState(() {
-      if(_isObscure) {
-        _isObscure=false;
+      if(_isObscure1) {
+        _isObscure1=false;
       } else {
-        _isObscure=true;
+        _isObscure1=true;
       }
     });
+  }
+  void showPassWord2(){
+    setState(() {
+      if(_isObscure2) {
+        _isObscure2=false;
+      } else {
+        _isObscure2=true;
+      }
+    });
+  }
+  void PressNextButton(){
+    if(_password==_verifyPassword){
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) =>Information(email: _email, password:_password) )
+      );
+    }
+    else{
+      ShowLoginDialog(context);
+    }
+  }
+
+  void ShowLoginDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+            title:
+            const Text('Lỗi đăng ký'),
+        content: const Text('Vui lòng thử lại.'),
+        actions: [
+        TextButton(
+        onPressed: () {
+        Navigator.pop(context);
+        },
+        child:
+        const Text('Đóng'),
+        ),
+        ],
+        );
+      },
+    );
   }
 }
