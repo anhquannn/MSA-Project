@@ -13,7 +13,7 @@ type ProductUsecase interface {
 	GetProductByID(id uint) (*models.Product, error)
 	GetAllProducts() ([]models.Product, error)
 	SearchProductsByName(name string) ([]models.Product, error)
-	FilterAndSortProducts(size string, minPrice, maxPrice float64, color string, categoryID uint) ([]models.Product, error)
+	FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint) ([]models.Product, error)
 }
 
 type productUsecase struct {
@@ -48,6 +48,6 @@ func (u *productUsecase) SearchProductsByName(name string) ([]models.Product, er
 	return u.productRepo.SearchProductsByName(name)
 }
 
-func (u *productUsecase) FilterAndSortProducts(size string, minPrice, maxPrice float64, color string, categoryID uint) ([]models.Product, error) {
+func (u *productUsecase) FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint) ([]models.Product, error) {
 	return u.productRepo.FilterAndSortProducts(size, minPrice, maxPrice, color, categoryID)
 }

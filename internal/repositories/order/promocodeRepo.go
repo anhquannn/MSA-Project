@@ -1,0 +1,40 @@
+package order
+
+import (
+	"MSA-Project/internal/domain/models"
+
+	"gorm.io/gorm"
+)
+
+type PromoCodeRepository interface {
+	CreatePromoCode(promoCode *models.PromoCode) error
+	DeletePromoCode(promoCode *models.PromoCode) error
+	UpdatePromoCode(promoCode *models.PromoCode) error
+	GetPromoCodeByID(id uint) (*models.PromoCode, error)
+}
+
+type promoCodeRepository struct {
+	db *gorm.DB
+}
+
+func NewPromoCodeRepository(db *gorm.DB) PromoCodeRepository {
+	return &promoCodeRepository{db}
+}
+
+func (r *promoCodeRepository) CreatePromoCode(promoCode *models.PromoCode) error {
+	return r.db.Create(promoCode).Error
+}
+
+func (r *promoCodeRepository) DeletePromoCode(promoCode *models.PromoCode) error {
+	return r.db.Model(&models.PromoCode{}).Where("id = ?", promoCode.ID).Delete(promoCode).Error
+}
+
+func (r *promoCodeRepository) UpdatePromoCode(promoCode *models.PromoCode) error {
+	return r.db.Save(promoCode).Error
+}
+
+func (r *promoCodeRepository) GetPromoCodeByID(id uint) (*models.PromoCode, error) {
+	var promoCode models.PromoCode
+	err := r.db.First(&promoCode, id).Error
+	return &promoCode, err
+}

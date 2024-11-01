@@ -39,9 +39,16 @@ func (h *productHandler) CreateProduct(c *gin.Context) {
 	}
 
 	product := models.Product{
-		Name:  reqProduct.Name,
-		Image: reqProduct.Image,
-		Price: reqProduct.Price,
+		Name:          reqProduct.Name,
+		Price:         reqProduct.Price,
+		Image:         reqProduct.Image,
+		Size:          reqProduct.Size,
+		Color:         reqProduct.Color,
+		Specification: reqProduct.Specification,
+		Description:   reqProduct.Description,
+		Expiry:        reqProduct.Expiry,
+		StockNumber:   reqProduct.StockNumber,
+		StockLevel:    reqProduct.StockLevel,
 
 		CategoryID:     reqProduct.CategoryID,
 		ManufacturerID: reqProduct.ManufacturerID,
@@ -76,8 +83,17 @@ func (h *productHandler) UpdateProduct(c *gin.Context) {
 	}
 
 	product.Name = reqProduct.Name
-	product.Image = reqProduct.Image
 	product.Price = reqProduct.Price
+	product.Image = reqProduct.Image
+	product.Size = reqProduct.Size
+	product.Color = reqProduct.Color
+	product.Specification = reqProduct.Specification
+	product.Description = reqProduct.Description
+	product.Expiry = reqProduct.Expiry
+	product.StockNumber = reqProduct.StockNumber
+	product.StockLevel = reqProduct.StockLevel
+	product.CategoryID = reqProduct.CategoryID
+	product.ManufacturerID = reqProduct.ManufacturerID
 
 	product.CategoryID = reqProduct.CategoryID
 	product.ManufacturerID = reqProduct.ManufacturerID
@@ -149,13 +165,13 @@ func (h *productHandler) SearchProducts(c *gin.Context) {
 }
 
 func (h *productHandler) FilterAndSortProducts(c *gin.Context) {
-	size := c.Query("size")
+	size, _ := strconv.ParseUint(c.Query("size"), 10, 32)
 	minPrice, _ := strconv.ParseFloat(c.Query("min_price"), 64)
 	maxPrice, _ := strconv.ParseFloat(c.Query("max_price"), 64)
 	color := c.Query("color")
 	categoryID, _ := strconv.ParseUint(c.Query("category_id"), 10, 32)
 
-	products, err := h.productUsecase.FilterAndSortProducts(size, minPrice, maxPrice, color, uint(categoryID))
+	products, err := h.productUsecase.FilterAndSortProducts(int(size), minPrice, maxPrice, color, uint(categoryID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

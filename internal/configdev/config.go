@@ -21,7 +21,9 @@ func ConnectDatabase() {
 		os.Exit(1)
 	}
 
-	database.AutoMigrate(&models.User{}, &models.Product{}, &models.Manufacturer{}, &models.ProductDetail{}, &models.Category{})
+	database.AutoMigrate(&models.User{}, &models.Product{}, &models.Manufacturer{}, &models.Category{}, &models.Cart{},
+		&models.CartItem{}, &models.Delivery{}, &models.DeliveryDetails{}, &models.Feedback{}, &models.Payment{},
+		&models.Order{}, &models.OrderDetail{}, &models.OrderPromoCode{}, &models.PromoCode{}, &models.ReturnOrder{})
 
 	DB = database
 }
@@ -58,9 +60,9 @@ func ProductRoutes(router *gin.Engine, productHandler http.ProductHandler) {
 		secured := products.Group("/")
 		secured.Use(utils.AuthRequired())
 		{
-			products.POST("/", productHandler.CreateProduct)
-			products.PUT("/:id", productHandler.UpdateProduct)
-			products.DELETE("/:id", productHandler.DeleteProduct)
+			secured.POST("/", productHandler.CreateProduct)
+			secured.PUT("/:id", productHandler.UpdateProduct)
+			secured.DELETE("/:id", productHandler.DeleteProduct)
 		}
 	}
 }
@@ -74,9 +76,9 @@ func CategoryRoutes(router *gin.Engine, categoryHandler http.CategoryHandler) {
 		secured := categories.Group("/")
 		secured.Use(utils.AuthRequired())
 		{
-			categories.POST("/", categoryHandler.CreateCategory)
-			categories.PUT("/:id", categoryHandler.UpdateCategory)
-			categories.DELETE("/:id", categoryHandler.DeleteCategory)
+			secured.POST("/", categoryHandler.CreateCategory)
+			secured.PUT("/:id", categoryHandler.UpdateCategory)
+			secured.DELETE("/:id", categoryHandler.DeleteCategory)
 		}
 	}
 }
@@ -90,24 +92,40 @@ func ManufacturerRoutes(router *gin.Engine, manufacturerHandler http.Manufacture
 		secured := manufacturers.Group("/")
 		secured.Use(utils.AuthRequired())
 		{
-			manufacturers.PUT("/:id", manufacturerHandler.UpdateManufacturer)
-			manufacturers.DELETE("/:id", manufacturerHandler.DeleteManufacturer)
-			manufacturers.POST("/", manufacturerHandler.CreateManufacturer)
+			secured.PUT("/:id", manufacturerHandler.UpdateManufacturer)
+			secured.DELETE("/:id", manufacturerHandler.DeleteManufacturer)
+			secured.POST("/", manufacturerHandler.CreateManufacturer)
 		}
 	}
 }
 
-func ProductDetailRoutes(router *gin.Engine, productDetailHandler http.ProductDetailHandler) {
-	productDetails := router.Group("/product-details")
+func FeedbackRoutes(router *gin.Engine, feedbackHandler http.FeedbackHandler) {
+	feedbacks := router.Group("/feedback")
 	{
-		productDetails.GET("/:id", productDetailHandler.GetProductDetailByID)
+		feedbacks.GET("/:id", feedbackHandler.GetFeedbackByID)
 
-		secured := productDetails.Group("/")
+		secured := feedbacks.Group("/")
 		secured.Use(utils.AuthRequired())
 		{
-			productDetails.POST("/", productDetailHandler.CreateProductDetail)
-			productDetails.PUT("/:id", productDetailHandler.UpdateProductDetail)
-			productDetails.DELETE("/:id", productDetailHandler.DeleteProductDetail)
+			secured.POST("/", feedbackHandler.CreateFeedback)
+			secured.PUT("/:id", feedbackHandler.UpdateFeedback)
+			secured.DELETE("/:id", feedbackHandler.DeleteFeedback)
+			secured.GET("/product/:id", feedbackHandler.GetAllFeedbacksByProductID)
+		}
+	}
+}
+
+func PromoCodeRoutes(router *gin.Engine, promoCodeHandler http.PromoCodeHandler) {
+	promocodes := router.Group("/promocode")
+	{
+		promocodes.GET("/:id", promoCodeHandler.GetPromoCodeByID)
+
+		secured := promocodes.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/", promoCodeHandler.CreatePromoCode)
+			secured.PUT("/:id", promoCodeHandler.UpdatePromoCode)
+			secured.DELETE("/:id", promoCodeHandler.DeletePromoCode)
 		}
 	}
 }
