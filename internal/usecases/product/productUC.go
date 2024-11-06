@@ -3,6 +3,7 @@ package product
 import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/repositories/product"
+	"errors"
 )
 
 type ProductUsecase interface {
@@ -14,6 +15,7 @@ type ProductUsecase interface {
 	GetAllProducts() ([]models.Product, error)
 	SearchProductsByName(name string) ([]models.Product, error)
 	FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint) ([]models.Product, error)
+	UpdateStockNumber(productID uint, quantity int) error
 }
 
 type productUsecase struct {
@@ -50,4 +52,27 @@ func (u *productUsecase) SearchProductsByName(name string) ([]models.Product, er
 
 func (u *productUsecase) FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint) ([]models.Product, error) {
 	return u.productRepo.FilterAndSortProducts(size, minPrice, maxPrice, color, categoryID)
+}
+
+func (u *productUsecase) UpdateStockNumber(productID uint, quantity int) error {
+	product, err := u.productRepo.GetProductByID(productID)
+	if err != nil {
+		return err
+	}
+
+	product.StockNumber -= quantity
+	if product.StockNumber < 0 {
+		return errors.New("insufficient stock")
+	}
+
+	switch {
+	case product.StockNumber > 300:
+		product.StockLevel = "high"
+	case product.StockNumber > 50:
+		product.StockLevel = "medium"
+	default:
+		product.StockLevel = "low"
+	}
+
+	return u.productRepo.UpdateProduct(product)
 }

@@ -6,12 +6,13 @@ import (
 
 type Cart struct {
 	gorm.Model
+	Status string `json:"status"`
 
 	UserID uint `json:"user_id"`
 	User   User `gorm:"foreignKey:UserID"`
 
-	Items  []CartItem `gorm:"foreignKey:CartID" json:"items"`
-	Orders []Order    `gorm:"foreignKey:CartID" json:"orders"`
+	CartItems []CartItem `gorm:"foreignKey:CartID" json:"items"`
+	Orders    []Order    `gorm:"foreignKey:CartID" json:"orders"`
 }
 
 type CartItem struct {

@@ -99,18 +99,64 @@ func ManufacturerRoutes(router *gin.Engine, manufacturerHandler http.Manufacture
 	}
 }
 
-func FeedbackRoutes(router *gin.Engine, feedbackHandler http.FeedbackHandler) {
-	feedbacks := router.Group("/feedback")
+func CartRoutes(router *gin.Engine, cartHandler http.CartHandler) {
+	carts := router.Group("/cart")
 	{
-		feedbacks.GET("/:id", feedbackHandler.GetFeedbackByID)
 
-		secured := feedbacks.Group("/")
+		secured := carts.Group("/")
 		secured.Use(utils.AuthRequired())
 		{
-			secured.POST("/", feedbackHandler.CreateFeedback)
-			secured.PUT("/:id", feedbackHandler.UpdateFeedback)
-			secured.DELETE("/:id", feedbackHandler.DeleteFeedback)
-			secured.GET("/product/:id", feedbackHandler.GetAllFeedbacksByProductID)
+			secured.POST("/", cartHandler.CreateCart)
+			secured.POST("/:userID", cartHandler.GetOrCreateCartForUser)
+			secured.PUT("/:id", cartHandler.UpdateCart)
+			secured.DELETE("/:id", cartHandler.DeleteCart)
+			secured.GET("/:id", cartHandler.GetCartByID)
+		}
+	}
+}
+
+func CartItemRoutes(router *gin.Engine, cartitemHandler http.CartItemHandler) {
+	cartitems := router.Group("/cartitem")
+	{
+		secured := cartitems.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/addproduct", cartitemHandler.AddProductToCart)
+			secured.POST("/clearcart", cartitemHandler.ClearCart)
+			secured.PUT("/:id", cartitemHandler.UpdateCartItem)
+			secured.DELETE("/:id", cartitemHandler.DeleteCartItem)
+			secured.GET("/:id", cartitemHandler.GetCartItemByID)
+			secured.GET("/carts/:id", cartitemHandler.GetCartItemsByCartID)
+		}
+	}
+}
+
+func OrderDetailRoutes(router *gin.Engine, orderdetailHandler http.OrderDetailHandler) {
+	orderdetails := router.Group("/oderdetail")
+	{
+		secured := orderdetails.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/", orderdetailHandler.CreateOrderDetail)
+			secured.PUT("/:id", orderdetailHandler.UpdateOrderDetail)
+			secured.DELETE("/:id", orderdetailHandler.DeleteOrderDetail)
+			secured.GET("/:id", orderdetailHandler.GetOrderDetailByID)
+		}
+	}
+}
+
+func OrderRoutes(router *gin.Engine, orderHandler http.OrderHandler) {
+	orders := router.Group("/order")
+	{
+		secured := orders.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/", orderHandler.CreateOrder)
+			secured.PUT("/:id", orderHandler.UpdateOrder)
+			secured.DELETE("/:id", orderHandler.DeleteOrder)
+			secured.GET("/:id", orderHandler.GetOrderByID)
+			secured.GET("/", orderHandler.GetAllOrders)
+			secured.GET("/search", orderHandler.SearchOrderByPhoneNumber)
 		}
 	}
 }
@@ -126,6 +172,22 @@ func PromoCodeRoutes(router *gin.Engine, promoCodeHandler http.PromoCodeHandler)
 			secured.POST("/", promoCodeHandler.CreatePromoCode)
 			secured.PUT("/:id", promoCodeHandler.UpdatePromoCode)
 			secured.DELETE("/:id", promoCodeHandler.DeletePromoCode)
+		}
+	}
+}
+
+func FeedbackRoutes(router *gin.Engine, feedbackHandler http.FeedbackHandler) {
+	feedbacks := router.Group("/feedback")
+	{
+		feedbacks.GET("/:id", feedbackHandler.GetFeedbackByID)
+
+		secured := feedbacks.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/", feedbackHandler.CreateFeedback)
+			secured.PUT("/:id", feedbackHandler.UpdateFeedback)
+			secured.DELETE("/:id", feedbackHandler.DeleteFeedback)
+			secured.GET("/product/:id", feedbackHandler.GetAllFeedbacksByProductID)
 		}
 	}
 }

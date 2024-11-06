@@ -11,6 +11,7 @@ type PromoCodeUsecase interface {
 	DeletePromoCode(promoCode *models.PromoCode) error
 
 	GetPromoCodeByID(id uint) (*models.PromoCode, error)
+	GetPromoCodeByCode(code string) (*models.PromoCode, error)
 }
 
 type promoCodeUsecase struct {
@@ -35,4 +36,8 @@ func (u *promoCodeUsecase) DeletePromoCode(promoCode *models.PromoCode) error {
 
 func (u *promoCodeUsecase) GetPromoCodeByID(id uint) (*models.PromoCode, error) {
 	return u.promoCodeRepo.GetPromoCodeByID(id)
+}
+
+func (u *promoCodeUsecase) GetPromoCodeByCode(code string) (*models.PromoCode, error) {
+	return u.promoCodeRepo.GetPromoCodeByCode(code)
 }

@@ -3,13 +3,19 @@ package main
 import (
 	config "MSA-Project/internal/configdev"
 	interfaces "MSA-Project/internal/interfaces/http"
+
+	repoCart "MSA-Project/internal/repositories/cart"
 	repoOrder "MSA-Project/internal/repositories/order"
 	repoProduct "MSA-Project/internal/repositories/product"
 	repoUser "MSA-Project/internal/repositories/user"
+
 	svs "MSA-Project/internal/services"
+
+	ucCart "MSA-Project/internal/usecases/cart"
 	ucOrder "MSA-Project/internal/usecases/order"
 	ucProduct "MSA-Project/internal/usecases/product"
 	ucUser "MSA-Project/internal/usecases/user"
+
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -39,6 +45,16 @@ func main() {
 	categoryUsecase := ucProduct.NewCategoryUsecase(categoryRepo)
 	categoryHandler := interfaces.NewCategoryHandler(categoryUsecase)
 
+	//Cart
+	cartRepo := repoCart.NewCartRepository(config.DB)
+	cartUsecase := ucCart.NewCartUsecase(cartRepo)
+	cartHandler := interfaces.NewCartHandler(cartUsecase)
+
+	//CartItem
+	cartItemRepo := repoCart.NewCartItemRepository(config.DB)
+	cartItemUsecase := ucCart.NewCartItemUsecase(cartItemRepo)
+	cartItemHandler := interfaces.NewCartItemHandler(cartItemUsecase)
+
 	//Promocode
 	promoCodeRepo := repoOrder.NewPromoCodeRepository(config.DB)
 	promoCodeUsecase := ucOrder.NewPromoCodeUsecase(promoCodeRepo)
@@ -49,12 +65,26 @@ func main() {
 	feedbackUsecase := ucOrder.NewFeedbackUsecase(feedbackRepo)
 	feedbackHandler := interfaces.NewFeedbackHandler(feedbackUsecase)
 
+	//OrderDetail
+	orderDetailRepo := repoOrder.NewOrderDetailRepository(config.DB)
+	orderDetailUsecase := ucOrder.NewOrderDetailUsecase(orderDetailRepo)
+	orderDetailHandler := interfaces.NewOrderDetailHandler(orderDetailUsecase)
+
+	//Order
+	orderRepo := repoOrder.NewOrderRepository(config.DB)
+	orderUsecase := ucOrder.NewOrderUsecase(orderRepo, cartUsecase, cartItemUsecase, promoCodeUsecase, orderDetailUsecase, productUsecase)
+	orderHandler := interfaces.NewOrderHandler(orderUsecase)
+
 	router := gin.Default()
 
 	config.UserRoutes(router, userHandler)
 	config.ProductRoutes(router, productHandler)
 	config.ManufacturerRoutes(router, manufacturerHandler)
 	config.CategoryRoutes(router, categoryHandler)
+	config.CartRoutes(router, cartHandler)
+	config.CartItemRoutes(router, cartItemHandler)
+	config.OrderRoutes(router, orderHandler)
+	config.OrderDetailRoutes(router, orderDetailHandler)
 	config.PromoCodeRoutes(router, promoCodeHandler)
 	config.FeedbackRoutes(router, feedbackHandler)
 

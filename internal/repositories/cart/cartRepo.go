@@ -10,6 +10,7 @@ type CartRepository interface {
 	CreateCart(cart *models.Cart) error
 	DeleteCart(cart *models.Cart) error
 	UpdateCart(cart *models.Cart) error
+	GetCartByUserID(userID uint) (*models.Cart, error)
 
 	GetCartByID(id uint) (*models.Cart, error)
 }
@@ -38,4 +39,15 @@ func (r *cartRepository) GetCartByID(id uint) (*models.Cart, error) {
 	var cart models.Cart
 	err := r.db.First(&cart, id).Error
 	return &cart, err
+}
+
+func (r *cartRepository) GetCartByUserID(userID uint) (*models.Cart, error) {
+	var cart models.Cart
+	err := r.db.Where("user_id = ?", userID).First(&cart).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &cart, nil
 }

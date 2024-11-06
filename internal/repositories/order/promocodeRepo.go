@@ -10,7 +10,9 @@ type PromoCodeRepository interface {
 	CreatePromoCode(promoCode *models.PromoCode) error
 	DeletePromoCode(promoCode *models.PromoCode) error
 	UpdatePromoCode(promoCode *models.PromoCode) error
+
 	GetPromoCodeByID(id uint) (*models.PromoCode, error)
+	GetPromoCodeByCode(code string) (*models.PromoCode, error)
 }
 
 type promoCodeRepository struct {
@@ -37,4 +39,12 @@ func (r *promoCodeRepository) GetPromoCodeByID(id uint) (*models.PromoCode, erro
 	var promoCode models.PromoCode
 	err := r.db.First(&promoCode, id).Error
 	return &promoCode, err
+}
+
+func (r *promoCodeRepository) GetPromoCodeByCode(code string) (*models.PromoCode, error) {
+	var promocode models.PromoCode
+	if err := r.db.Where("code = ?", code).First(&promocode).Error; err != nil {
+		return nil, err
+	}
+	return &promocode, nil
 }

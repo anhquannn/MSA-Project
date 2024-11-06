@@ -18,6 +18,8 @@ type Order struct {
 	Cart     Cart     `gorm:"foreignKey:CartID"`
 	Delivery Delivery `gorm:"foreignKey:DeliveryID"`
 
+	Status string `json:"status"`
+
 	OrderPromoCodes []OrderPromoCode `gorm:"foreignKey:OrderID" json:"order_promo_codes"`
 	OrderDetails    []OrderDetail    `gorm:"foreignKey:OrderID" json:"order_details"`
 	Payments        []Payment        `gorm:"foreignKey:OrderID" json:"payments"`
@@ -62,15 +64,15 @@ type OrderPromoCode struct {
 
 type PromoCode struct {
 	gorm.Model
-	Name              string    `json:"name"`
-	Code              string    `json:"code"`
-	Description       string    `json:"description"`
-	StartDate         time.Time `json:"startdate"`
-	EndDate           time.Time `json:"enddate"`
-	Status            string    `json:"status"`
-	DiscountType      string    `json:"discounttype"`
-	DiscountValue     float64   `json:"discountvalue"`
-	MinimumOrderValue string    `json:"minimumordervalue"`
+	Name               string    `json:"name"`
+	Code               string    `json:"code"`
+	Description        string    `json:"description"`
+	StartDate          time.Time `json:"startdate"`
+	EndDate            time.Time `json:"enddate"`
+	Status             string    `json:"status"`
+	DiscountType       string    `json:"discounttype"`
+	DiscountPercentage float64   `json:"discountpercentage"`
+	MinimumOrderValue  float64   `json:"minimumordervalue"`
 
 	OrderPromoCodes []OrderPromoCode `gorm:"foreignKey:PromoCodeID" json:"order_promo_codes"`
 }

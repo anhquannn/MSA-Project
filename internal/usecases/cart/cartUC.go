@@ -11,6 +11,7 @@ type CartUsecase interface {
 	DeleteCart(cart *models.Cart) error
 
 	GetCartByID(id uint) (*models.Cart, error)
+	GetOrCreateCartForUser(userID uint) (*models.Cart, error)
 }
 
 type cartUsecase struct {
@@ -35,4 +36,21 @@ func (u *cartUsecase) DeleteCart(cart *models.Cart) error {
 
 func (u *cartUsecase) GetCartByID(id uint) (*models.Cart, error) {
 	return u.cartRepo.GetCartByID(id)
+}
+
+func (u *cartUsecase) GetOrCreateCartForUser(userID uint) (*models.Cart, error) {
+	cart, err := u.cartRepo.GetCartByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if cart == nil {
+		newCart := &models.Cart{UserID: userID, Status: "active"}
+		if err := u.cartRepo.CreateCart(newCart); err != nil {
+			return nil, err
+		}
+		return newCart, nil
+	}
+
+	return cart, nil
 }

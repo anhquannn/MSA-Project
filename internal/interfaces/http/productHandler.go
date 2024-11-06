@@ -42,6 +42,7 @@ func (h *productHandler) CreateProduct(c *gin.Context) {
 		Name:          reqProduct.Name,
 		Price:         reqProduct.Price,
 		Image:         reqProduct.Image,
+		Sales:         reqProduct.Sales,
 		Size:          reqProduct.Size,
 		Color:         reqProduct.Color,
 		Specification: reqProduct.Specification,
@@ -85,6 +86,7 @@ func (h *productHandler) UpdateProduct(c *gin.Context) {
 	product.Name = reqProduct.Name
 	product.Price = reqProduct.Price
 	product.Image = reqProduct.Image
+	product.Sales = reqProduct.Sales
 	product.Size = reqProduct.Size
 	product.Color = reqProduct.Color
 	product.Specification = reqProduct.Specification

@@ -35,15 +35,15 @@ func (h *promoCodeHandler) CreatePromoCode(c *gin.Context) {
 	}
 
 	promoCode := models.PromoCode{
-		Name:              reqPromoCode.Name,
-		Code:              reqPromoCode.Code,
-		Description:       reqPromoCode.Description,
-		StartDate:         reqPromoCode.StartDate,
-		EndDate:           reqPromoCode.EndDate,
-		Status:            reqPromoCode.Status,
-		DiscountType:      reqPromoCode.DiscountType,
-		DiscountValue:     reqPromoCode.DiscountValue,
-		MinimumOrderValue: reqPromoCode.MinimumOrderValue,
+		Name:               reqPromoCode.Name,
+		Code:               reqPromoCode.Code,
+		Description:        reqPromoCode.Description,
+		StartDate:          reqPromoCode.StartDate,
+		EndDate:            reqPromoCode.EndDate,
+		Status:             reqPromoCode.Status,
+		DiscountType:       reqPromoCode.DiscountType,
+		DiscountPercentage: reqPromoCode.DiscountPercentage,
+		MinimumOrderValue:  reqPromoCode.MinimumOrderValue,
 	}
 
 	if err := h.promoCodeUsecase.CreatePromoCode(&promoCode); err != nil {
@@ -81,7 +81,7 @@ func (h *promoCodeHandler) UpdatePromoCode(c *gin.Context) {
 	promoCode.EndDate = reqPromoCode.EndDate
 	promoCode.Status = reqPromoCode.Status
 	promoCode.DiscountType = reqPromoCode.DiscountType
-	promoCode.DiscountValue = reqPromoCode.DiscountValue
+	promoCode.DiscountPercentage = reqPromoCode.DiscountPercentage
 	promoCode.MinimumOrderValue = reqPromoCode.MinimumOrderValue
 
 	if err := h.promoCodeUsecase.UpdatePromoCode(promoCode); err != nil {

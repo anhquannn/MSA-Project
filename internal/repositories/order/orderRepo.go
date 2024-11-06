@@ -10,6 +10,9 @@ type OrderRepository interface {
 	CreateOrder(order *models.Order) error
 	DeleteOrder(order *models.Order) error
 	UpdateOrder(order *models.Order) error
+
+	GetAllOrders() ([]models.Order, error)
+	SearchOrderByPhoneNumber(phoneNumber string) ([]models.Order, error)
 	GetOrderByID(id uint) (*models.Order, error)
 }
 
@@ -31,6 +34,18 @@ func (r *orderRepository) DeleteOrder(order *models.Order) error {
 
 func (r *orderRepository) UpdateOrder(order *models.Order) error {
 	return r.db.Save(order).Error
+}
+
+func (r *orderRepository) GetAllOrders() ([]models.Order, error) {
+	var orders []models.Order
+	err := r.db.Find(&orders).Error
+	return orders, err
+}
+
+func (r *orderRepository) SearchOrderByPhoneNumber(phoneNumber string) ([]models.Order, error) {
+	var orders []models.Order
+	err := r.db.Joins("User").Where("users.phone_number = ?", phoneNumber).Find(&orders).Error
+	return orders, err
 }
 
 func (r *orderRepository) GetOrderByID(id uint) (*models.Order, error) {

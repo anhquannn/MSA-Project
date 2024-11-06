@@ -81,12 +81,7 @@ func (r *productRepository) FilterAndSortProducts(size int, minPrice, maxPrice f
 		query = query.Where("category_id = ?", categoryID)
 	}
 
-	// Ordering by popularity (based on number of associated order details)
-	query = query.Order(`(
-		SELECT COUNT(*)
-		FROM order_details
-		WHERE order_details.product_id = products.id
-	) DESC`)
+	query = query.Order("sales DESC")
 
 	if err := query.Find(&products).Error; err != nil {
 		return nil, err
