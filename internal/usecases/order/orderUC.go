@@ -6,6 +6,7 @@ import (
 	"MSA-Project/internal/usecases/cart"
 	"MSA-Project/internal/usecases/product"
 	"errors"
+	"time"
 )
 
 type OrderUsecase interface {
@@ -59,8 +60,15 @@ func (u *orderUsecase) CreateOrder(userID uint, cartID uint, promoCode string) (
 	if promoCode != "" {
 		promo, err := u.promoCodeUsecase.GetPromoCodeByCode(promoCode)
 		if err == nil && totalCost >= promo.MinimumOrderValue {
-			discountAmount := totalCost * (promo.DiscountPercentage / 100)
-			totalCost -= discountAmount
+			currentTime := time.Now()
+			if currentTime.After(promo.StartDate) && currentTime.Before(promo.EndDate) {
+				discountAmount := totalCost * (promo.DiscountPercentage / 100)
+				totalCost -= discountAmount
+			} else {
+				return nil, errors.New("promo code has expired or is not yet valid")
+			}
+		} else if err != nil {
+			return nil, errors.New("promo code not found or does not meet minimum order value requirements")
 		}
 	}
 
@@ -72,6 +80,11 @@ func (u *orderUsecase) CreateOrder(userID uint, cartID uint, promoCode string) (
 	}
 
 	if err := u.orderRepo.CreateOrder(order); err != nil {
+		return nil, err
+	}
+
+	fullOrder, err := u.orderRepo.GetOrderWithDetails(order.ID)
+	if err != nil {
 		return nil, err
 	}
 
@@ -101,7 +114,7 @@ func (u *orderUsecase) CreateOrder(userID uint, cartID uint, promoCode string) (
 		return nil, err
 	}
 
-	return order, nil
+	return fullOrder, nil
 }
 
 func (u *orderUsecase) UpdateOrder(order *models.Order) error {

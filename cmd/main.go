@@ -52,7 +52,7 @@ func main() {
 
 	//CartItem
 	cartItemRepo := repoCart.NewCartItemRepository(config.DB)
-	cartItemUsecase := ucCart.NewCartItemUsecase(cartItemRepo)
+	cartItemUsecase := ucCart.NewCartItemUsecase(cartItemRepo, productUsecase)
 	cartItemHandler := interfaces.NewCartItemHandler(cartItemUsecase)
 
 	//Promocode

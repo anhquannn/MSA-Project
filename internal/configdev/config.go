@@ -107,7 +107,7 @@ func CartRoutes(router *gin.Engine, cartHandler http.CartHandler) {
 		secured.Use(utils.AuthRequired())
 		{
 			secured.POST("/", cartHandler.CreateCart)
-			secured.POST("/:userID", cartHandler.GetOrCreateCartForUser)
+			secured.POST("/:user_id", cartHandler.GetOrCreateCartForUser)
 			secured.PUT("/:id", cartHandler.UpdateCart)
 			secured.DELETE("/:id", cartHandler.DeleteCart)
 			secured.GET("/:id", cartHandler.GetCartByID)
@@ -121,12 +121,12 @@ func CartItemRoutes(router *gin.Engine, cartitemHandler http.CartItemHandler) {
 		secured := cartitems.Group("/")
 		secured.Use(utils.AuthRequired())
 		{
-			secured.POST("/addproduct", cartitemHandler.AddProductToCart)
+			secured.POST("/addproduct/:cartID", cartitemHandler.AddProductToCart)
 			secured.POST("/clearcart", cartitemHandler.ClearCart)
 			secured.PUT("/:id", cartitemHandler.UpdateCartItem)
 			secured.DELETE("/:id", cartitemHandler.DeleteCartItem)
 			secured.GET("/:id", cartitemHandler.GetCartItemByID)
-			secured.GET("/carts/:id", cartitemHandler.GetCartItemsByCartID)
+			secured.GET("/carts/:cartID", cartitemHandler.GetCartItemsByCartID)
 		}
 	}
 }
@@ -151,7 +151,7 @@ func OrderRoutes(router *gin.Engine, orderHandler http.OrderHandler) {
 		secured := orders.Group("/")
 		secured.Use(utils.AuthRequired())
 		{
-			secured.POST("/", orderHandler.CreateOrder)
+			secured.POST("/", orderHandler.CreateOrder) //http://localhost:8080/order?user_id=1&cart_id=1&promo_code=BLACKFRIDAY
 			secured.PUT("/:id", orderHandler.UpdateOrder)
 			secured.DELETE("/:id", orderHandler.DeleteOrder)
 			secured.GET("/:id", orderHandler.GetOrderByID)
@@ -187,7 +187,7 @@ func FeedbackRoutes(router *gin.Engine, feedbackHandler http.FeedbackHandler) {
 			secured.POST("/", feedbackHandler.CreateFeedback)
 			secured.PUT("/:id", feedbackHandler.UpdateFeedback)
 			secured.DELETE("/:id", feedbackHandler.DeleteFeedback)
-			secured.GET("/product/:id", feedbackHandler.GetAllFeedbacksByProductID)
+			secured.GET("/product/:product_id", feedbackHandler.GetAllFeedbacksByProductID)
 		}
 	}
 }

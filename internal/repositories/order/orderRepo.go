@@ -14,6 +14,7 @@ type OrderRepository interface {
 	GetAllOrders() ([]models.Order, error)
 	SearchOrderByPhoneNumber(phoneNumber string) ([]models.Order, error)
 	GetOrderByID(id uint) (*models.Order, error)
+	GetOrderWithDetails(orderID uint) (*models.Order, error)
 }
 
 type orderRepository struct {
@@ -52,4 +53,22 @@ func (r *orderRepository) GetOrderByID(id uint) (*models.Order, error) {
 	var order models.Order
 	err := r.db.First(&order, id).Error
 	return &order, err
+}
+
+func (r *orderRepository) GetOrderWithDetails(orderID uint) (*models.Order, error) {
+	var order models.Order
+	if err := r.db.Preload("User").
+		Preload("Cart").
+		Preload("Cart.User").
+		Preload("Delivery").
+		Preload("Delivery.User").
+		Preload("OrderPromoCodes").
+		Preload("OrderDetails").
+		Preload("Payments").
+		Preload("ReturnOrders").
+		Preload("Feedbacks").
+		First(&order, orderID).Error; err != nil {
+		return nil, err
+	}
+	return &order, nil
 }

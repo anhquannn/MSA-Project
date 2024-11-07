@@ -3,6 +3,7 @@ package cart
 import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/repositories/cart"
+	"MSA-Project/internal/usecases/product"
 )
 
 type CartItemUsecase interface {
@@ -19,11 +20,12 @@ type CartItemUsecase interface {
 }
 
 type cartItemUsecase struct {
-	cartItemRepo cart.CartItemRepository
+	cartItemRepo   cart.CartItemRepository
+	productUsecase product.ProductUsecase
 }
 
-func NewCartItemUsecase(cartItemRepo cart.CartItemRepository) CartItemUsecase {
-	return &cartItemUsecase{cartItemRepo}
+func NewCartItemUsecase(cartItemRepo cart.CartItemRepository, productUsecase product.ProductUsecase) CartItemUsecase {
+	return &cartItemUsecase{cartItemRepo, productUsecase}
 }
 
 func (u *cartItemUsecase) CreateCartItem(item *models.CartItem) error {
@@ -65,11 +67,17 @@ func (u *cartItemUsecase) AddProductToCart(cartID, productID uint, quantity int)
 		return err
 	}
 
+	products, err := u.productUsecase.GetProductByID(productID)
+	if err != nil {
+		return err
+	}
+
 	if cartItem == nil {
 		newCartItem := &models.CartItem{
 			CartID:    cartID,
 			ProductID: productID,
 			Quantity:  quantity,
+			Price:     products.Price,
 		}
 		return u.cartItemRepo.CreateCartItem(newCartItem)
 	}
