@@ -109,7 +109,7 @@ func (h *userHandler) VerifyOTP(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": token, "userID": user.ID})
+	c.JSON(http.StatusOK, gin.H{"token": token, "user": user})
 }
 
 func (h *userHandler) GetNewPassword(c *gin.Context) {
@@ -145,7 +145,7 @@ func (h *userHandler) LoginWithGoogle(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"token": tokenStr, "userID": user.ID})
+	c.JSON(http.StatusOK, gin.H{"token": tokenStr, "user": user})
 }
 
 func (h *userHandler) DeleteUser(c *gin.Context) {

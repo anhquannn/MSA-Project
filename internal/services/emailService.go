@@ -21,7 +21,7 @@ type EmailService interface {
 }
 
 type EmailVerificationResponse struct {
-	Status string `json: "status"`
+	Status string `json:"status"`
 }
 
 func NewEmailService() EmailService {

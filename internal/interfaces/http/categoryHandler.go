@@ -4,6 +4,7 @@ import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/domain/requests"
 	"MSA-Project/internal/usecases/product"
+	"MSA-Project/internal/utils"
 	"net/http"
 	"strconv"
 
@@ -18,7 +19,7 @@ type CategoryHandler interface {
 	CreateCategory(c *gin.Context)
 	UpdateCategory(c *gin.Context)
 	DeleteCategory(c *gin.Context)
-	
+
 	GetCategoryByID(c *gin.Context)
 	GetAllCategories(c *gin.Context)
 }
@@ -116,7 +117,8 @@ func (h *categoryHandler) GetCategoryByID(c *gin.Context) {
 }
 
 func (h *categoryHandler) GetAllCategories(c *gin.Context) {
-	categories, err := h.categoryUsecase.GetAllCategories()
+	page, pageSize := utils.GetPageAndSize(c)
+	categories, err := h.categoryUsecase.GetAllCategories(page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

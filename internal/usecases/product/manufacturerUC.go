@@ -9,9 +9,9 @@ type ManufacturerUsecase interface {
 	CreateManufacturer(manufacturer *models.Manufacturer) error
 	UpdateManufacturer(manufacturer *models.Manufacturer) error
 	DeleteManufacturer(manufacturer *models.Manufacturer) error
-	
+
 	GetManufacturerByID(id uint) (*models.Manufacturer, error)
-	GetAllManufacturers() ([]models.Manufacturer, error)
+	GetAllManufacturers(page, pageSize int) ([]models.Manufacturer, error)
 }
 
 type manufacturerUsecase struct {
@@ -38,6 +38,6 @@ func (u *manufacturerUsecase) GetManufacturerByID(id uint) (*models.Manufacturer
 	return u.manufacturerRepo.GetManufacturerByID(id)
 }
 
-func (u *manufacturerUsecase) GetAllManufacturers() ([]models.Manufacturer, error) {
-	return u.manufacturerRepo.GetAllManufacturers()
+func (u *manufacturerUsecase) GetAllManufacturers(page, pageSize int) ([]models.Manufacturer, error) {
+	return u.manufacturerRepo.GetAllManufacturers(page, pageSize)
 }

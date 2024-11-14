@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -9,11 +11,25 @@ type Product struct {
 	Name  string  `json:"name"`
 	Price float64 `json:"price"`
 	Image string  `json:"image"`
+	Sales uint64  `json:"sales"`
+
+	Size          int       `json:"size"`
+	Color         string    `json:"color"`
+	Specification string    `json:"specification"`
+	Description   string    `json:"description"`
+	Expiry        time.Time `json:"expiry"`
+	StockNumber   int       `json:"stocknumber"`
+	StockLevel    string    `json:"stocklevel"`
 
 	CategoryID     *uint `json:"category_id"`
 	ManufacturerID *uint `json:"manufacturer_id"`
 
-	ProductDetails []ProductDetail `gorm:"foreignKey:ProductID" json:"product_details"`
+	CartItems    []CartItem    `gorm:"foreignKey:ProductID" json:"cart_items"`
+	OrderDetails []OrderDetail `gorm:"foreignKey:ProductID" json:"order_details"`
+	Feedbacks    []Feedback    `gorm:"foreignKey:ProductID" json:"feedbacks"`
+
+	Category     Category     `gorm:"foreignKey:CategoryID"`
+	Manufacturer Manufacturer `gorm:"foreignKey:ManufacturerID"`
 }
 
 type Category struct {
@@ -25,19 +41,6 @@ type Category struct {
 	Children []Category `gorm:"foreignKey:ParentID" json:"children"`
 
 	Products []Product `gorm:"foreignKey:CategoryID" json:"products"`
-}
-
-type ProductDetail struct {
-	gorm.Model
-	Size          int    `json:"size"`
-	Color         string `json:"color"`
-	Specification string `json:"specification"`
-	Expiry        string `json:"expiry"`
-	Description   string `json:"description"`
-	StockNumber   int    `json:"stocknumber"`
-	StockLevel    string `json:"stocklevel"`
-
-	ProductID uint `json:"product_id"`
 }
 
 type Manufacturer struct {

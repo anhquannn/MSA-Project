@@ -167,8 +167,8 @@ func NewCustomerHandler(r *gin.Engine, useCase customer.UseCase) {
         CustomerUseCase: useCase,
     }
     r.POST("/customers", handler.CreateCustomer)
-    r.GET("/customers/:id", handler.GetCustomer)
-}
+    r.GET("/customers/:id/create", handler.GetCustomer)
+} 
 
 func (h *CustomerHandler) CreateCustomer(c *gin.Context) {
     // implementation...

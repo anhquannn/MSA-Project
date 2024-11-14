@@ -12,7 +12,7 @@ type CategoryRepository interface {
 	UpdateCategory(category *models.Category) error
 
 	GetCategoryByID(id uint) (*models.Category, error)
-	GetAllCategories() ([]models.Category, error)
+	GetAllCategories(page, pageSize int) ([]models.Category, error)
 }
 
 type categoryRepository struct {
@@ -43,10 +43,10 @@ func (r *categoryRepository) GetCategoryByID(id uint) (*models.Category, error) 
 	return &category, nil
 }
 
-func (r *categoryRepository) GetAllCategories() ([]models.Category, error) {
+func (r *categoryRepository) GetAllCategories(page, pageSize int) ([]models.Category, error) {
 	var categories []models.Category
-	if err := r.db.Find(&categories).Error; err != nil {
-		return nil, err
-	}
-	return categories, nil
+	err := r.db.Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&categories).Error
+	return categories, err
 }

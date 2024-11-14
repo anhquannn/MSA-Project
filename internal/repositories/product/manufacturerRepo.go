@@ -12,7 +12,7 @@ type ManufacturerRepository interface {
 	UpdateManufacturer(manufacturer *models.Manufacturer) error
 
 	GetManufacturerByID(id uint) (*models.Manufacturer, error)
-	GetAllManufacturers() ([]models.Manufacturer, error)
+	GetAllManufacturers(page, pageSize int) ([]models.Manufacturer, error)
 }
 
 type manufacturerRepository struct {
@@ -43,10 +43,10 @@ func (r *manufacturerRepository) GetManufacturerByID(id uint) (*models.Manufactu
 	return &manufacturer, nil
 }
 
-func (r *manufacturerRepository) GetAllManufacturers() ([]models.Manufacturer, error) {
+func (r *manufacturerRepository) GetAllManufacturers(page, pageSize int) ([]models.Manufacturer, error) {
 	var manufacturers []models.Manufacturer
-	if err := r.db.Find(&manufacturers).Error; err != nil {
-		return nil, err
-	}
-	return manufacturers, nil
+	err := r.db.Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&manufacturers).Error
+	return manufacturers, err
 }
