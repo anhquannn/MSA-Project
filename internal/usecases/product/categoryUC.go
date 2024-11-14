@@ -9,9 +9,9 @@ type CategoryUsecase interface {
 	CreateCategory(category *models.Category) error
 	UpdateCategory(category *models.Category) error
 	DeleteCategory(category *models.Category) error
-	
+
 	GetCategoryByID(id uint) (*models.Category, error)
-	GetAllCategories() ([]models.Category, error)
+	GetAllCategories(page, pageSize int) ([]models.Category, error)
 }
 
 type categoryUsecase struct {
@@ -38,6 +38,6 @@ func (u *categoryUsecase) GetCategoryByID(id uint) (*models.Category, error) {
 	return u.categoryRepo.GetCategoryByID(id)
 }
 
-func (u *categoryUsecase) GetAllCategories() ([]models.Category, error) {
-	return u.categoryRepo.GetAllCategories()
+func (u *categoryUsecase) GetAllCategories(page, pageSize int) ([]models.Category, error) {
+	return u.categoryRepo.GetAllCategories(page, pageSize)
 }

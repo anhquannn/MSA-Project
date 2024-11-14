@@ -3,6 +3,7 @@ package http
 import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/usecases/order"
+	"MSA-Project/internal/utils"
 	"net/http"
 	"strconv"
 
@@ -123,7 +124,8 @@ func (h *orderHandler) GetOrderByID(c *gin.Context) {
 }
 
 func (h *orderHandler) GetAllOrders(c *gin.Context) {
-	orders, err := h.orderUsecase.GetAllOrders()
+	page, pageSize := utils.GetPageAndSize(c)
+	orders, err := h.orderUsecase.GetAllOrders(page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -133,13 +135,14 @@ func (h *orderHandler) GetAllOrders(c *gin.Context) {
 }
 
 func (h *orderHandler) SearchOrderByPhoneNumber(c *gin.Context) {
+	page, pageSize := utils.GetPageAndSize(c)
 	phoneNumber := c.Query("phone_number")
 	if phoneNumber == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Phone number is required"})
 		return
 	}
 
-	orders, err := h.orderUsecase.SearchOrderByPhoneNumber(phoneNumber)
+	orders, err := h.orderUsecase.SearchOrderByPhoneNumber(phoneNumber, page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

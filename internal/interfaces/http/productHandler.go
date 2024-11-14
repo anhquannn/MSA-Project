@@ -4,6 +4,7 @@ import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/domain/requests"
 	"MSA-Project/internal/usecases/product"
+	"MSA-Project/internal/utils"
 	"net/http"
 	"strconv"
 
@@ -145,7 +146,8 @@ func (h *productHandler) GetProductByID(c *gin.Context) {
 }
 
 func (h *productHandler) GetAllProducts(c *gin.Context) {
-	products, err := h.productUsecase.GetAllProducts()
+	page, pageSize := utils.GetPageAndSize(c)
+	products, err := h.productUsecase.GetAllProducts(page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -155,9 +157,10 @@ func (h *productHandler) GetAllProducts(c *gin.Context) {
 }
 
 func (h *productHandler) SearchProducts(c *gin.Context) {
+	page, pageSize := utils.GetPageAndSize(c)
 	name := c.Query("name")
 
-	products, err := h.productUsecase.SearchProductsByName(name)
+	products, err := h.productUsecase.SearchProductsByName(name, page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -167,13 +170,14 @@ func (h *productHandler) SearchProducts(c *gin.Context) {
 }
 
 func (h *productHandler) FilterAndSortProducts(c *gin.Context) {
+	page, pageSize := utils.GetPageAndSize(c)
 	size, _ := strconv.ParseUint(c.Query("size"), 10, 32)
 	minPrice, _ := strconv.ParseFloat(c.Query("min_price"), 64)
 	maxPrice, _ := strconv.ParseFloat(c.Query("max_price"), 64)
 	color := c.Query("color")
 	categoryID, _ := strconv.ParseUint(c.Query("category_id"), 10, 32)
 
-	products, err := h.productUsecase.FilterAndSortProducts(int(size), minPrice, maxPrice, color, uint(categoryID))
+	products, err := h.productUsecase.FilterAndSortProducts(int(size), minPrice, maxPrice, color, uint(categoryID), page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

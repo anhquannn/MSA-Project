@@ -12,9 +12,9 @@ type ProductRepository interface {
 	UpdateProduct(product *models.Product) error
 
 	GetProductByID(id uint) (*models.Product, error)
-	GetAllProducts() ([]models.Product, error)
-	SearchProductsByName(name string) ([]models.Product, error)
-	FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint) ([]models.Product, error)
+	GetAllProducts(page, pageSize int) ([]models.Product, error)
+	SearchProductsByName(name string, page, pageSize int) ([]models.Product, error)
+	FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint, page, pageSize int) ([]models.Product, error)
 }
 
 type productRepository struct {
@@ -45,23 +45,24 @@ func (r *productRepository) GetProductByID(id uint) (*models.Product, error) {
 	return &product, nil
 }
 
-func (r *productRepository) GetAllProducts() ([]models.Product, error) {
+func (r *productRepository) GetAllProducts(page, pageSize int) ([]models.Product, error) {
 	var products []models.Product
-	if err := r.db.Find(&products).Error; err != nil {
-		return nil, err
-	}
-	return products, nil
+	err := r.db.Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&products).Error
+	return products, err
 }
 
-func (r *productRepository) SearchProductsByName(name string) ([]models.Product, error) {
+func (r *productRepository) SearchProductsByName(name string, page, pageSize int) ([]models.Product, error) {
 	var products []models.Product
-	if err := r.db.Where("name LIKE ?", "%"+name+"%").Find(&products).Error; err != nil {
-		return nil, err
-	}
-	return products, nil
+	err := r.db.Where("name LIKE ?", "%"+name+"%").
+		Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&products).Error
+	return products, err
 }
 
-func (r *productRepository) FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint) ([]models.Product, error) {
+func (r *productRepository) FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint, page, pageSize int) ([]models.Product, error) {
 	var products []models.Product
 	query := r.db.Where("1=1")
 
@@ -81,11 +82,10 @@ func (r *productRepository) FilterAndSortProducts(size int, minPrice, maxPrice f
 		query = query.Where("category_id = ?", categoryID)
 	}
 
-	query = query.Order("sales DESC")
+	query = query.Order("sales DESC").
+		Limit(pageSize).
+		Offset((page - 1) * pageSize)
 
-	if err := query.Find(&products).Error; err != nil {
-		return nil, err
-	}
-
-	return products, nil
+	err := query.Find(&products).Error
+	return products, err
 }

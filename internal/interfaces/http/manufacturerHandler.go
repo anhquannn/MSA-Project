@@ -4,6 +4,7 @@ import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/domain/requests"
 	"MSA-Project/internal/usecases/product"
+	"MSA-Project/internal/utils"
 	"net/http"
 	"strconv"
 
@@ -18,7 +19,7 @@ type ManufacturerHandler interface {
 	CreateManufacturer(c *gin.Context)
 	UpdateManufacturer(c *gin.Context)
 	DeleteManufacturer(c *gin.Context)
-	
+
 	GetManufacturerByID(c *gin.Context)
 	GetAllManufacturers(c *gin.Context)
 }
@@ -117,7 +118,8 @@ func (h *manufacturerHandler) GetManufacturerByID(c *gin.Context) {
 }
 
 func (h *manufacturerHandler) GetAllManufacturers(c *gin.Context) {
-	manufacturers, err := h.manufacturerUsecase.GetAllManufacturers()
+	page, pageSize := utils.GetPageAndSize(c)
+	manufacturers, err := h.manufacturerUsecase.GetAllManufacturers(page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

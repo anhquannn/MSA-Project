@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"math/big"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -111,4 +112,16 @@ func AuthRequired() gin.HandlerFunc {
 
 		c.Next()
 	}
+}
+
+func GetPageAndSize(c *gin.Context) (int, int) {
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		page = 1
+	}
+	pageSize, err := strconv.Atoi(c.DefaultQuery("page_size", "10"))
+	if err != nil || pageSize < 1 {
+		pageSize = 10
+	}
+	return page, pageSize
 }

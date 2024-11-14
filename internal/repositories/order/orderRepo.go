@@ -11,8 +11,8 @@ type OrderRepository interface {
 	DeleteOrder(order *models.Order) error
 	UpdateOrder(order *models.Order) error
 
-	GetAllOrders() ([]models.Order, error)
-	SearchOrderByPhoneNumber(phoneNumber string) ([]models.Order, error)
+	GetAllOrders(page, pageSize int) ([]models.Order, error)
+	SearchOrderByPhoneNumber(phoneNumber string, page, pageSize int) ([]models.Order, error)
 	GetOrderByID(id uint) (*models.Order, error)
 	GetOrderWithDetails(orderID uint) (*models.Order, error)
 }
@@ -37,15 +37,21 @@ func (r *orderRepository) UpdateOrder(order *models.Order) error {
 	return r.db.Save(order).Error
 }
 
-func (r *orderRepository) GetAllOrders() ([]models.Order, error) {
+func (r *orderRepository) GetAllOrders(page, pageSize int) ([]models.Order, error) {
 	var orders []models.Order
-	err := r.db.Find(&orders).Error
+	err := r.db.Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&orders).Error
 	return orders, err
 }
 
-func (r *orderRepository) SearchOrderByPhoneNumber(phoneNumber string) ([]models.Order, error) {
+func (r *orderRepository) SearchOrderByPhoneNumber(phoneNumber string, page, pageSize int) ([]models.Order, error) {
 	var orders []models.Order
-	err := r.db.Joins("User").Where("users.phone_number = ?", phoneNumber).Find(&orders).Error
+	err := r.db.Joins("User").
+		Where("users.phone_number = ?", phoneNumber).
+		Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&orders).Error
 	return orders, err
 }
 

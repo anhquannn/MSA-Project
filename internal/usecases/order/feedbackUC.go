@@ -11,7 +11,7 @@ type FeedbackUsecase interface {
 	DeleteFeedback(feedback *models.Feedback) error
 
 	GetFeedbackByID(id uint) (*models.Feedback, error)
-	GetAllFeedbacksByProductID(productID uint) ([]models.Feedback, error)
+	GetAllFeedbacksByProductID(productID uint, page, pageSize int) ([]models.Feedback, error)
 }
 
 type feedbackUsecase struct {
@@ -38,6 +38,6 @@ func (u *feedbackUsecase) GetFeedbackByID(id uint) (*models.Feedback, error) {
 	return u.feedbackRepo.GetFeedbackByID(id)
 }
 
-func (u *feedbackUsecase) GetAllFeedbacksByProductID(productID uint) ([]models.Feedback, error) {
-	return u.feedbackRepo.GetAllFeedbacksByProductID(productID)
+func (u *feedbackUsecase) GetAllFeedbacksByProductID(productID uint, page, pageSize int) ([]models.Feedback, error) {
+	return u.feedbackRepo.GetAllFeedbacksByProductID(productID, page, pageSize)
 }

@@ -15,8 +15,8 @@ type OrderUsecase interface {
 	DeleteOrder(order *models.Order) error
 
 	GetOrderByID(id uint) (*models.Order, error)
-	SearchOrderByPhoneNumber(phoneNumber string) ([]models.Order, error)
-	GetAllOrders() ([]models.Order, error)
+	SearchOrderByPhoneNumber(phoneNumber string, page, pageSize int) ([]models.Order, error)
+	GetAllOrders(page, pageSize int) ([]models.Order, error)
 }
 
 type orderUsecase struct {
@@ -129,10 +129,10 @@ func (u *orderUsecase) GetOrderByID(id uint) (*models.Order, error) {
 	return u.orderRepo.GetOrderByID(id)
 }
 
-func (u *orderUsecase) SearchOrderByPhoneNumber(phoneNumber string) ([]models.Order, error) {
-	return u.orderRepo.SearchOrderByPhoneNumber(phoneNumber)
+func (u *orderUsecase) SearchOrderByPhoneNumber(phoneNumber string, page, pageSize int) ([]models.Order, error) {
+	return u.orderRepo.SearchOrderByPhoneNumber(phoneNumber, page, pageSize)
 }
 
-func (u *orderUsecase) GetAllOrders() ([]models.Order, error) {
-	return u.orderRepo.GetAllOrders()
+func (u *orderUsecase) GetAllOrders(page, pageSize int) ([]models.Order, error) {
+	return u.orderRepo.GetAllOrders(page, pageSize)
 }

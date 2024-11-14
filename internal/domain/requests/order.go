@@ -10,13 +10,10 @@ type Order struct {
 	gorm.Model
 	GrandTotal float64 `json:"grandtotal"`
 
-	UserID     uint `json:"user_id"`
-	CartID     uint `json:"cart_id"`
-	DeliveryID uint `json:"delivery_id"`
-
-	User     User     `gorm:"foreignKey:UserID"`
-	Cart     Cart     `gorm:"foreignKey:CartID"`
-	Delivery Delivery `gorm:"foreignKey:DeliveryID"`
+	UserID uint `json:"user_id"`
+	CartID uint `json:"cart_id"`
+	User   User `gorm:"foreignKey:UserID"`
+	Cart   Cart `gorm:"foreignKey:CartID"`
 
 	Status string `json:"status"`
 
@@ -25,6 +22,7 @@ type Order struct {
 	Payments        []Payment        `gorm:"foreignKey:OrderID" json:"payments"`
 	ReturnOrders    []ReturnOrder    `gorm:"foreignKey:OrderID" json:"return_orders"`
 	Feedbacks       []Feedback       `gorm:"foreignKey:OrderID" json:"feedbacks"`
+	Deliveries      []Delivery       `gorm:"foreignKey:OrderID" json:"deliveries"`
 }
 
 type Payment struct {
@@ -92,10 +90,8 @@ type Feedback struct {
 	Rating   int    `json:"rating"`
 	Comments string `json:"comments"`
 
-	OrderID   uint    `json:"order_id"`
 	UserID    uint    `json:"user_id"`
 	ProductID uint    `json:"product_id"`
-	Order     Order   `gorm:"foreignKey:OrderID"`
 	User      User    `gorm:"foreignKey:UserID"`
 	Product   Product `gorm:"foreignKey:ProductID"`
 }

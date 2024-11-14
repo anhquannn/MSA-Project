@@ -12,7 +12,7 @@ type FeedbackRepository interface {
 	UpdateFeedback(feedback *models.Feedback) error
 
 	GetFeedbackByID(id uint) (*models.Feedback, error)
-	GetAllFeedbacksByProductID(productID uint) ([]models.Feedback, error)
+	GetAllFeedbacksByProductID(productID uint, page, pageSize int) ([]models.Feedback, error)
 }
 
 type feedbackRepository struct {
@@ -41,8 +41,11 @@ func (r *feedbackRepository) GetFeedbackByID(id uint) (*models.Feedback, error) 
 	return &feedback, err
 }
 
-func (r *feedbackRepository) GetAllFeedbacksByProductID(productID uint) ([]models.Feedback, error) {
+func (r *feedbackRepository) GetAllFeedbacksByProductID(productID uint, page, pageSize int) ([]models.Feedback, error) {
 	var feedbacks []models.Feedback
-	err := r.db.Where("product_id = ?", productID).Find(&feedbacks).Error
+	err := r.db.Where("product_id = ?", productID).
+		Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&feedbacks).Error
 	return feedbacks, err
 }

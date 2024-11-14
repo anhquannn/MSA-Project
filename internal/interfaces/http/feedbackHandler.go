@@ -4,6 +4,7 @@ import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/domain/requests"
 	"MSA-Project/internal/usecases/order"
+	"MSA-Project/internal/utils"
 	"net/http"
 	"strconv"
 
@@ -39,7 +40,6 @@ func (h *feedbackHandler) CreateFeedback(c *gin.Context) {
 	feedback := models.Feedback{
 		Rating:    reqFeedback.Rating,
 		Comments:  reqFeedback.Comments,
-		OrderID:   reqFeedback.OrderID,
 		UserID:    reqFeedback.UserID,
 		ProductID: reqFeedback.ProductID,
 	}
@@ -74,7 +74,6 @@ func (h *feedbackHandler) UpdateFeedback(c *gin.Context) {
 
 	feedback.Rating = reqFeedback.Rating
 	feedback.Comments = reqFeedback.Comments
-	feedback.OrderID = reqFeedback.OrderID
 	feedback.UserID = reqFeedback.UserID
 	feedback.ProductID = reqFeedback.ProductID
 
@@ -123,6 +122,7 @@ func (h *feedbackHandler) GetFeedbackByID(c *gin.Context) {
 }
 
 func (h *feedbackHandler) GetAllFeedbacksByProductID(c *gin.Context) {
+	page, pageSize := utils.GetPageAndSize(c)
 	productIDStr := c.Param("product_id")
 	productID, err := strconv.ParseUint(productIDStr, 10, 32)
 	if err != nil {
@@ -130,7 +130,7 @@ func (h *feedbackHandler) GetAllFeedbacksByProductID(c *gin.Context) {
 		return
 	}
 
-	feedbacks, err := h.feedbackUsecase.GetAllFeedbacksByProductID(uint(productID))
+	feedbacks, err := h.feedbackUsecase.GetAllFeedbacksByProductID(uint(productID), page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

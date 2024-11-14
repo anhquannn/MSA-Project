@@ -26,6 +26,7 @@ type Product struct {
 
 	CartItems    []CartItem    `gorm:"foreignKey:ProductID" json:"cart_items"`
 	OrderDetails []OrderDetail `gorm:"foreignKey:ProductID" json:"order_details"`
+	Feedbacks    []Feedback    `gorm:"foreignKey:ProductID" json:"feedbacks"`
 
 	Category     Category     `gorm:"foreignKey:CategoryID"`
 	Manufacturer Manufacturer `gorm:"foreignKey:ManufacturerID"`
