@@ -1,47 +1,20 @@
+
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:crypto/crypto.dart';
+import 'package:gmarket/Models/User.dart';
 
-class Users {
-  final String FullName;
-  final String Email;
-  final String Password;
-  final String PhoneNumber;
-  // final String BirthDay;
-  final String Address;
-
-
-  Users(
-      {
-        required this.FullName,
-        required this.Email,
-        required this.Password,
-        required this.PhoneNumber,
-        required this.Address,
-       // required this.BirthDay
-      });
-
-  factory Users.fromJson(Map<String, dynamic> json) {
-    return Users(
-        FullName: json['FullName'],
-        Email: json['Email'],
-        Password: json['Password'],
-        PhoneNumber: json['PhoneNumber'],
-        Address: json['Address'],
-        // BirthDay: json["BirthDay"]
-    );
-  }
-}
-class UserHTTP {
+class userHTTP {
   final String baseUrl = 'http://192.168.1.16:8080';
-
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   Future<void> SaveToken(String token) async {
     try {
       await secureStorage.write(key: 'token', value: token);
     } catch (e) {
-      throw Exception("Tải thất bại");
+      throw Exception("Tải thất bại $e");
     }
   }
 
@@ -90,26 +63,15 @@ class UserHTTP {
         body: jsonEncode({'email': email, 'password': pass}),
       );
       if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        final token = data['token'];
-        final UserId = data['UserId'];
-
-        if (token != null && UserId != null) {
-          await SaveUserId(UserId.toString());
-          await SaveToken(token);
-          return true;
-        } else {
-          return false;
-        }
-      } else {
-        return false;
+        return true;
       }
     } catch (e) {
       return false;
     }
+    return false;
   }
 
-  Future<String?> LoginWithGoogle(String googleToken) async {
+  Future<bool?> LoginWithGoogle(String googleToken) async {
     final url = Uri.parse('$baseUrl/users/login/google');
 
     try {
@@ -121,57 +83,44 @@ class UserHTTP {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final token = data['token'];
-        final userId = data['userId'];
+        final user = Users.fromJson(data['user']);
 
-        if (token != null && userId != null) {
-          await SaveToken(token);
-          await SaveUserId(userId.toString());
-          return token;
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print('Lỗi đăng nhập: $e');
-      return null;
-    }
-  }
+        await SaveToken(token);
+        await SaveUserData(user, user.ID);
 
-  Future<bool> RegisterUser(
-      String FullName,
-      String Email,
-      String Password,
-      String PhoneNumber,
-      String Address,
-      // String BirthDay
-      ) async {
-    final url = Uri.parse('$baseUrl/users/register');
-    try {
-      final response = await http.post(url,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: jsonEncode({
-            'FullName':FullName,
-            'Email': Email,
-            'Password': Password,
-            'PhoneNumber': PhoneNumber,
-            'Address': Address,
-            // 'BirthDay': BirthDay,
-
-          }));
-      if (response.statusCode == 201) {
-        // final data = jsonDecode(response.body);
-        // return data['email'];
         return true;
       } else {
         return false;
       }
     } catch (e) {
+      print('Lỗi đăng nhập: $e');
       return false;
     }
+  }
+
+  Future<bool> RegisterUser(String FullName, String Email, String Password, String PhoneNumber, String Address,) async {
+    final url = Uri.parse('$baseUrl/users/register');
+    try {
+      final response = await http.post(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: jsonEncode({
+            'fullname':FullName,
+            'email': Email,
+            'password': Password,
+            'phonenumber': PhoneNumber,
+            'address': Address,
+
+          }));
+      if (response.statusCode == 201) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
   }
 
   Future<int?> DeleteUser() async{
@@ -201,8 +150,7 @@ class UserHTTP {
     return 0;
   }
 
-  Future<void> updateUserInfo(String FullName, String Password,
-      String PhoneNumber, String Email, String Address) async {
+  Future<bool?> UpdateUserInfo(String FullName, String Password, String PhoneNumber, String Email, String Address) async {
     final token = await GetToken();
     final userID = await GetUserId();
 
@@ -220,34 +168,80 @@ class UserHTTP {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({
-          'FirstName': FullName,
-          'PhoneNumber': PhoneNumber,
-          'Email': Email,
-          'Password':Password,
+          'fullname': FullName,
+          'phonenumber': PhoneNumber,
+          'email': Email,
+          'password':Password,
         }),
       );
 
-      if (response.statusCode == 200) {
-      } else if (response.statusCode == 400) {
-        throw Exception('Yêu cầu không hợp lệ');
-      } else {
-        throw Exception('Cập nhật thông tin người dùng thất bại');
-      }
+      if (response.statusCode == 200) return true;
     } catch (e) {
-      throw Exception('Cập nhật thông tin người dùng thất bại: $e');
+      return false;
     }
+    return null;
   }
 
-  Future<int> UpdatePassword(
-      String CurrentPassword, String NewPassword) async {
-    final token = await GetToken();
-    final UserId = await GetUserId();
-
-    if (token == null || UserId == null) {
-      //Thông báo phải đăng nhập
-      return -1;
+  Future<bool?> UpdateUser(String currentPassword, String newPassword) async{
+    final userId= await GetUserId();
+    final token=await GetToken();
+    if(userId==null || token==null){
+      return false;
     }
-    final url = Uri.parse('$baseUrl/users/$UserId');
+    final url=Uri.parse('$baseUrl/users/$userId/password');
+     try{
+       final response=await http.put(
+           url,
+           headers: {
+             'Content-Type':'application/json',
+             'Authorization':'Bearer $token'
+           },
+         body: jsonEncode({
+           'currentpassword':currentPassword,
+           'password':newPassword
+         })
+       );
+       if(response.statusCode==200){
+         final data=jsonDecode(response.body);
+         final status=data['status'];
+         final userData=Users.fromJson(data['user']);
+         SaveUserData(userData,userData.ID);
+         return true;
+       }
+     }catch(e){
+       return false;
+     }
+     return false;
+  }
+
+  Future<bool?> GetNewPassWord(String email) async{
+    final url=Uri.parse('$baseUrl/users/resetpass');
+    try{
+      final response= await http.post(
+          url,
+          headers: {
+            'Content-Type':'application/json'
+          },
+          body: jsonEncode({
+            'email':email
+          })
+      );
+      if(response.statusCode==200){
+        final status= jsonDecode(response.body);
+        if(status==null){
+          return false;
+        }
+        return true;
+      }
+    }catch(e){return false;}
+    return false;
+  }
+
+  Future<bool?> UpdateUserPassword(String CurrentPassword, String NewPassword) async {
+    final token = await GetToken();
+    final userId = await GetUserId();
+
+    final url = Uri.parse('$baseUrl/users/$userId/password');
     try {
       final response = await http.put(
         url,
@@ -256,23 +250,82 @@ class UserHTTP {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({
-          'CurrentPassword': CurrentPassword,
-          'Password': NewPassword,
+          'currentpassword': CurrentPassword,
+          'password': NewPassword,
         }),
+      );
+      if (response.statusCode == 200) return true;
+    } catch (e) {
+      //Cập nhật mật khẩu thất bại
+      return false;
+    }
+    return false;
+  }
+
+  Future<int?> verifyOTP(String otpCode) async {
+    final url = Uri.parse('$baseUrl/users/verify');
+    try
+    {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({'otp': otpCode}),
       );
 
       if (response.statusCode == 200) {
+         final data=jsonDecode(response.body);
+
+         final token=data['token'];
+         SaveToken(token);
+
+         final userData=Users.fromJson(data['user']);
+         SaveUserData(userData, userData.ID);
+         SaveUserId(userData.ID.toString());
+
         return 1;
-      } else if (response.statusCode == 400 || response.statusCode == 401) {
-        //Sai mật khẩu hiện tại
-        return -2;
-      } else {
-        //Cập nhật mật khẩu thất bại
-        return 0;
       }
     } catch (e) {
-      //Cập nhật mật khẩu thất bại
+      // throw Exception('Lỗi otp');
       return 0;
+    }
+    return 0;
+  }
+
+  Future<void> SaveUserData(Users user, int userId) async {
+    try {
+      // Chuyển user sang JSON và mã hóa bằng SHA-256
+      final userJson = jsonEncode(user);
+      final bytes = utf8.encode(userJson);
+      final digest = sha256.convert(bytes);
+
+      // Chuyển đổi hash sang chuỗi Base64 để lưu trữ
+      final encrypt = base64Encode(digest.bytes);
+
+      // Lưu trữ hash dưới dạng chuỗi Base64
+      await secureStorage.write(key: userId.toString(), value: encrypt);
+    } catch (e) {
+      print('Error saving user data: $e');
+      return;
+    }
+  }
+
+  Future<Users?> ReadUserData(String userId) async{
+    final encryptedData = await secureStorage.read(key: userId);
+    if (encryptedData == null) return null;
+
+    try {
+      // Giải mã Base64 và chuyển đổi về chuỗi JSON
+      final userJson = utf8.decode(base64Decode(encryptedData));
+      final userMap = jsonDecode(userJson);
+
+      // Tạo đối tượng Users từ JSON
+      final userData = Users.fromJson(userMap);
+      return userData;
+    } catch (e) {
+      print('Error reading user data: $e');
+      return null;
     }
   }
 
@@ -285,11 +338,11 @@ class UserHTTP {
     final url=Uri.parse('$baseUrl/$userId');
     try{
       final response= await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token'
-        }
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          }
       );
       if(response.statusCode==200){
         final userData=jsonDecode(response.body);
@@ -300,111 +353,4 @@ class UserHTTP {
     }
     return null;
   }
-
-  Future<bool> verifyOTP(String otpCode) async {
-    final url = Uri.parse('$baseUrl/users/verify-otp');
-    try {
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({'otp': otpCode}),
-      );
-
-      if (response.statusCode == 200) {
-        final data=jsonDecode(response.body);
-        final token=data['token'];
-        final UserId=data['UserId'];
-        SaveUserId(UserId);
-        SaveToken(token);
-        return true;
-      } else if (response.statusCode == 400 || response.statusCode == 401) {
-        // throw Exception('Sai otp');
-        return false;
-      } else {
-        // throw Exception('Xác minh otp thất bại');
-        return false;
-      }
-    } catch (e) {
-      // throw Exception('Lỗi otp');
-      return false;
-    }
-  }
-  //////////////////////////////////////////////////////////////////////////////
-  Future<Map<String, dynamic>?> GetUserDeatails() async {
-    final token = await GetToken();
-    final userId = await GetUserId();
-
-    if (token == null || userId == null) {
-      throw Exception('Người dùng không đăng nhập được');
-    }
-    final url = Uri.parse('$baseUrl/users/$userId');
-
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode == 200) {
-        return jsonDecode(response.body);
-      } else {
-        throw Exception('Lấy thông tin người dùng thất bại');
-      }
-    } catch (e) {
-      throw Exception('Lấy thông tin người dùng thất bại');
-    }
-  }
-
-  Future<Users?> FetchUserData() async {
-    final userId = await GetUserId();
-    final token = await GetToken();
-
-    final url = Uri.parse('$baseUrl/users/$userId');
-
-    if (token == null) {
-      return null;
-    }
-
-    try {
-      final response = await http.get(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final userData = jsonDecode(response.body);
-        return Users.fromJson(userData);
-      } else {
-        throw Exception("Lấy thông tin thất bại");
-      }
-    } catch (e) {
-      throw Exception('Lấy thông tin thất bại: $e');
-    }
-  }
-
-// Future<void> SendNewPassword(String email) async {
-//   final url = Uri.parse('$baseUrl/users');
-//
-//   try {
-//     final response = await http.post(url,
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: jsonEncode({'email': email}));
-//     if (response.statusCode == 200) {
-//     } else {
-//       throw Exception('Gửi mật khẩu mới thất bại');
-//     }
-//   } catch (e) {
-//     throw Exception('Lỗi gửi mật khẩu $e');
-//   }
-// }
-
 }

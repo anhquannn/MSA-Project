@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gmarket/Http/User.dart';
-import 'package:gmarket/Screens/ForgotPassword/VerifyOTP.dart';
+import 'package:gmarket/Screens/Logins/VerifyOTP.dart';
 import 'package:gmarket/Screens/Logins/Login.dart';
 
 void main() {
@@ -23,10 +23,12 @@ class ForgotPassword extends StatefulWidget {
 
 class ForgotPasswordState extends State<ForgotPassword> {
   late String _email;
-  UserHTTP user = UserHTTP();
+  userHTTP user =userHTTP();
 
   @override
   Widget build(BuildContext context) {
+    userHTTP user=userHTTP();
+
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
@@ -42,15 +44,15 @@ class ForgotPasswordState extends State<ForgotPassword> {
             child: Column(
               children: [
                 SizedBox(
-                  height: height * 0.1,
+                  height: height * 0.05,
                 ),
                 Container(
                   decoration:
                       BoxDecoration(borderRadius: BorderRadius.circular(30)),
                   child: Image.asset(
                     'assets/image/QMarket-White.jpg',
-                    height: height * 0.4,
-                    width: width * 0.5,
+                    height: height * 0.3,
+                    width: width * 0.3,
                   ),
                 ),
                 const Text(
@@ -123,13 +125,12 @@ class ForgotPasswordState extends State<ForgotPassword> {
       ),
     );
   }
-
-  void GetOTP() {
-
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Verifyotp(email: _email),)
-    );
+  Future<void> GetOTP() async{
+    if(await user.GetNewPassWord(_email)==true){
+      Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Verifyotp(email: _email),)
+      );
+    }
   }
 }
