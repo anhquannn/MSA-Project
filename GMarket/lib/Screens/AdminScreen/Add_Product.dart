@@ -1,7 +1,7 @@
 
 import 'dart:convert';
 import 'dart:io';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Http/Category.dart';
@@ -15,6 +15,7 @@ import 'package:image_picker/image_picker.dart';
 void main(){
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
+    theme: ThemeData.light(),
     home: Scaffold(
       body: Add_Product(),
     )));
@@ -40,7 +41,7 @@ class Add_Product_State extends State<Add_Product> {
   late int category_id;
   late int manufaturer_id;
 
-  late DateTime expiry;
+  late String expiry;
 
   Category? selectedCategory;
   Manufacturer? selectedManufacturer;
@@ -308,39 +309,39 @@ class Add_Product_State extends State<Add_Product> {
                           });
                         },
                       ),
-                      // SizedBox(height: height * 0.02,),
-                      // //Hạn sử dụng sản phẩm
-                      // TextField(
-                      //   readOnly: true,
-                      //   controller: dateController,
-                      //   decoration: InputDecoration(
-                      //     labelText: "Hạn sử dụng sản phẩm",
-                      //     labelStyle: const TextStyle(
-                      //         color: Colors.black,
-                      //         fontSize: 18,
-                      //         fontFamily: 'Coiny-Regular-font'
-                      //     ),
-                      //     focusedBorder: OutlineInputBorder(
-                      //         borderRadius: BorderRadius.circular(20),
-                      //         borderSide: const BorderSide(
-                      //           color: Color.fromRGBO(94, 200, 248, 1),
-                      //           width: 3,
-                      //         )
-                      //     ),
-                      //     enabledBorder: OutlineInputBorder(
-                      //         borderRadius: BorderRadius.circular(15),
-                      //         borderSide: const BorderSide(
-                      //           color: Color.fromRGBO(94, 200, 248, 1),
-                      //           width: 2,
-                      //         )
-                      //     ),
-                      //   ),
-                      //   style: const TextStyle(
-                      //       color: Colors.black,
-                      //       fontSize: 15
-                      //   ),
-                      //   onTap: () => selectExpiryDate(context),
-                      // ),
+                  //Hạn sử dụng sản phẩm
+                      SizedBox(height: height * 0.02,),
+                      TextField(
+                        readOnly: true,
+                        controller: dateController,
+                        decoration: InputDecoration(
+                          labelText: "Hạn sử dụng sản phẩm",
+                          labelStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontFamily: 'Coiny-Regular-font'
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                              borderSide: const BorderSide(
+                                color: Color.fromRGBO(94, 200, 248, 1),
+                                width: 3,
+                              )
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide: const BorderSide(
+                                color: Color.fromRGBO(94, 200, 248, 1),
+                                width: 2,
+                              )
+                          ),
+                        ),
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 15
+                        ),
+                        onTap: () => selectExpiryDate(context),
+                      ),
                       SizedBox(height: height * 0.02,),
                       //Số lượng tồn kho sản phẩm
                       TextField(
@@ -420,7 +421,9 @@ class Add_Product_State extends State<Add_Product> {
                             borderSide: const BorderSide(
                               color: Color.fromRGBO(94, 200, 248, 1),
                               width: 2,
-                            ),),),
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(height: height * 0.02,),
                       //Mã loại sản phẩm
@@ -549,18 +552,40 @@ class Add_Product_State extends State<Add_Product> {
                       ),
                       SizedBox(height: height * 0.02,),
                       //Hình ảnh
-                      ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                              const Color.fromRGBO(94, 200, 248, 1)),
-                          onPressed: getImage,
-                          child: const Text(
-                            "Chọn hình ảnh",
-                            style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 18,
-                                fontFamily: 'Coiny-Regular-font'),
-                          )),
+                      Row(
+                          children: [
+                            SizedBox(width: width*0.025,),
+                            ElevatedButton(
+
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                    const Color.fromRGBO(94, 200, 248, 1)),
+                                onPressed: _image==null ? getImage : null,
+                                child: const Text(
+                                  "Chọn hình ảnh",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontFamily: 'Coiny-Regular-font'),
+                                )),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                    backgroundColor:
+                                    const Color.fromRGBO(94, 200, 248, 1)),
+                                onPressed: () {
+                                  setState(() {
+                                    _image=null;
+                                  });
+                                },
+                                child: const Text(
+                                  "Xóa hình ảnh",
+                                  style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                      fontFamily: 'Coiny-Regular-font'),
+                                )),
+                          ],
+                      ),
                       SizedBox(height: height * 0.02,),
                       Container(
                         width: width,
@@ -569,8 +594,9 @@ class Add_Product_State extends State<Add_Product> {
                         ClipRRect(child: Image.file(_image!, fit: BoxFit.cover),) :
                         const Center(child: Text('Vui lòng chọn ảnh'),
                         ),
-                        //test hình ảnh
+
                       ),
+                      //test hình ảnh
                       // ElevatedButton(
                       //     onPressed: () {
                       //       chuyen();
@@ -624,6 +650,8 @@ class Add_Product_State extends State<Add_Product> {
   }
   Future<void> onPressedCreateProduct() async{
 
+    // print(' Ngày hết hạn: ${expiry.toIso8601String()}');
+    print(' Ngày hết hạn: ${expiry}');
     try{
       final ig=await convertImageToBase64(_image!);
       setState(() {
@@ -640,7 +668,6 @@ class Add_Product_State extends State<Add_Product> {
         manufaturer_id=1;
         //
       });
-      print('Base64 của hình ảnh: $ig -----');
 
 
       await productHttp().createProduct(
@@ -648,7 +675,7 @@ class Add_Product_State extends State<Add_Product> {
               image: image, size: size, color: color,
               specification: specification, description: description,
               stocknumber: stocknumber, stocklevel: stocklevel,
-              category_id: category_id, manufacturer_id: manufaturer_id,ID: 1));
+              category_id: category_id, manufacturer_id: manufaturer_id,ID: 1,expiry: expiry));
       // Navigator.pop(context);
     }catch(e){
       throw Exception('Lỗi tạo sản phẩm: $e');
@@ -688,83 +715,40 @@ class Add_Product_State extends State<Add_Product> {
     return base64String;
   }
   //____________________________________________________________________________
-  // File? _imageFile;
-  // String _base64Image = "";
-  // Future<void> getImage() async {
-  //   final picker = ImagePicker();
-  //   final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-  //
-  //   if (pickedFile != null) {
-  //     // Nén hình ảnh
-  //     File? compressedImage = await _compressImage(pickedFile.path);
-  //
-  //     if (compressedImage != null) {
-  //       // Chuyển hình ảnh nén thành Base64
-  //       String base64Image = await _convertImageToBase64(compressedImage);
-  //       setState(() {
-  //         _imageFile = compressedImage;
-  //         _base64Image = base64Image;
-  //         image=_base64Image;
-  //       });
-  //     }
-  //   }
-  // }
-  //
-  // // Hàm nén hình ảnh
-  // Future<File?> _compressImage(String path) async {
-  //   final result = await FlutterImageCompress.compressWithFile(
-  //     path,
-  //     minWidth: 500,
-  //     minHeight: 500,
-  //     quality: 88,
-  //     rotate: 0,
-  //   );
-  //   if (result != null) {
-  //     final compressedFile = File(path)..writeAsBytesSync(result);
-  //     return compressedFile;
-  //   }
-  //   return null;
-  // }
-  //
-  // // Hàm chuyển hình ảnh thành base64
-  // Future<String> _convertImageToBase64(File image) async {
-  //   List<int> imageBytes = await image.readAsBytes();
-  //   return base64Encode(imageBytes);
-  // }
-  //
-  // // Hàm hiển thị hình ảnh từ Base64
-  // Image _base64ImageToWidget(String base64Image) {
-  //   return Image.memory(base64Decode(base64Image));
-  // }
-  // TextEditingController dateController=TextEditingController();
-  // Future<void> selectExpiryDate(context) async {
-  //   DateTime? picked = await showDatePicker(
-  //     context: context,
-  //     initialDate: DateTime.now(),
-  //     firstDate: DateTime(2000),
-  //     lastDate: DateTime(2100),
-  //   );
-  //
-  //   if (picked != null) {
-  //     // Kết hợp ngày được chọn với giờ hiện tại để có đầy đủ thời gian
-  //     DateTime pickedWithTime = DateTime(
-  //       picked.year,
-  //       picked.month,
-  //       picked.day,
-  //       DateTime.now().hour,
-  //       DateTime.now().minute,
-  //       DateTime.now().second,
-  //       DateTime.now().millisecond,
-  //       DateTime.now().microsecond,
-  //     );
-  //     // Chuyển sang chuỗi ISO 8601 với múi giờ địa phương
-  //     DateTime formattedExpiry = pickedWithTime.toLocal();
-  //     setState(() {
-  //       expiry = formattedExpiry;  // Định dạng theo ISO 8601 với múi giờ
-  //       dateController.text = DateFormat('dd/MM/yyyy').format(picked);  // Hiển thị định dạng ngắn gọn
-  //     });
-  //   }
-  // }
+  TextEditingController dateController=TextEditingController();
+  Future<void> selectExpiryDate(context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      // Kết hợp ngày được chọn với giờ hiện tại để có đầy đủ thời gian
+      DateTime pickedWithTime = DateTime(
+        picked.year,
+        picked.month,
+        picked.day,
+        DateTime.now().hour,
+        DateTime.now().minute,
+        DateTime.now().second,
+        DateTime.now().millisecond,
+        DateTime.now().microsecond,
+      );
+      // Chuyển sang chuỗi ISO 8601 với múi giờ địa phương
+      DateTime formattedExpiry = pickedWithTime.toLocal();
+      String formattedDate = "${pickedWithTime.toUtc().toIso8601String().split('.')[0]}Z";
+      setState(() {
+        expiry = formattedDate;  // Định dạng theo ISO 8601 với múi giờ
+        dateController.text = DateFormat('dd/MM/yyyy').format(picked);  // Hiển thị định dạng ngắn gọn
+      });
+    }
+  }
+  String formatDate(DateTime date) {
+    final DateFormat formatter = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    return formatter.format(date.toUtc());
+  }
 
 
   }

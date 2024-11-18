@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-import 'dart:ui';
 
 class Product {
   final String? name;
@@ -14,7 +11,7 @@ class Product {
   final String? stocklevel;
   final int? category_id;
   final int? manufacturer_id;
-  // final DateTime expiry;
+   final String expiry;
   final int ID;
   // final int sales;
   // final int feedbacks;
@@ -27,7 +24,7 @@ class Product {
     required this.color,
     required this.specification,
     required this.description,
-    // required this.expiry,
+    required this.expiry,
     required this.stocknumber,
     required this.stocklevel,
     required this.category_id,
@@ -46,7 +43,7 @@ class Product {
         color: json['color'],
         specification: json['specification'],
         description: json['description'],
-        // expiry: json['expiry'],
+        expiry: json['expiry'],
         stocknumber: json['stocknumber'],
         stocklevel: json['stocklevel'],
         category_id: json['category_id'],
@@ -65,7 +62,7 @@ class Product {
       'color':color,
       'specification':specification,
       'description':description,
-      // 'expiry':expiry,
+      'expiry':expiry,
       'stocknumber':stocknumber,
       'stocklevel':stocklevel,
       'manufacturer_id':manufacturer_id,
@@ -75,20 +72,6 @@ class Product {
       // 'feedbacks':feedbacks
   };
   }
-  //Chuyển hình ảnh sang base64
-  // Future<String?> convertImageToBase64(File? image) async {
-  //   if (image == null) return null;
-  //
-  //   final bytes = await image.readAsBytes(); // Đọc file thành bytes
-  //   String base64String = base64Encode(bytes); // Mã hóa base64
-  //   return base64String;
-  // }
-  //chuyển base64 sang hình ảnh
-  // Image base64ToImage(String base64String) {
-  //   final decodedBytes = base64Decode(base64String);
-  //   return Image.memory(decodedBytes);
-  // }
-
 
 }
 class ListProduct{

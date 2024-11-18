@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:gmarket/Models/FeedBack.dart';
 
 class feedbackHttp{
-  final String baseUrl = 'http://192.168.1.16:8080';
+  final String baseUrl = 'http://192.168.37.92:8080';
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   Future<void> saveFeedbackId(String id) async{

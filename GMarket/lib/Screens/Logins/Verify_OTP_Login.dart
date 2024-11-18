@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:gmarket/Http/Product.dart';
 import 'package:gmarket/Http/User.dart';
-import 'package:gmarket/Screens/AdminScreen/AdminScreen.dart';
-import 'package:gmarket/Screens/CustomerScreen/HomeScreen.dart';
-import 'package:gmarket/Screens/Logins/UpdatePassword.dart';
+import 'package:gmarket/Screens/AdminScreen/Admin_Screen.dart';
+import 'package:gmarket/Screens/CustomerScreen/Home_Screen.dart';
+import 'package:gmarket/Screens/Logins/Update_Password.dart';
 import 'package:gmarket/Screens/Logins/Register.dart';
 //
 // void main() {

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:gmarket/Screens/CustomerScreen/ItemDetail.dart';
+import 'package:gmarket/Screens/CustomerScreen/Item_Detail.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

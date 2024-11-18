@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:gmarket/Http/Product.dart';
 import 'package:gmarket/Http/User.dart';
-import 'package:gmarket/Screens/AdminScreen/AdminScreen.dart';
-import 'package:gmarket/Screens/CustomerScreen/HomeScreen.dart';
-import 'package:gmarket/Screens/Logins/VerifyOTPLogin.dart';
+import 'package:gmarket/Screens/AdminScreen/Admin_Screen.dart';
+import 'package:gmarket/Screens/CustomerScreen/Home_Screen.dart';
+import 'package:gmarket/Screens/Logins/Verify_OTP_Login.dart';
 import 'package:gmarket/Screens/Logins/Register.dart';
-import 'package:gmarket/Screens/Logins/ForgotPassword.dart';
+import 'package:gmarket/Screens/Logins/Forgot_Password.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 void main() {
@@ -387,7 +387,7 @@ class LoginState extends State<Login> {
       if (accessToken != null) {
         await user.LoginWithGoogle(accessToken.toString());
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            context, MaterialPageRoute(builder: (context) => AdminScreen()));
       }
       // Lưu token hoặc sử dụng chúng để gửi yêu cầu đến backend
     } catch (error) {

@@ -7,9 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:gmarket/Http/User.dart';
 
 class productHttp{
-  final String baseUrl='http://192.168.1.16:8080';
+  final String baseUrl='http://192.168.37.92:8080';
   final FlutterSecureStorage secureStorage=FlutterSecureStorage();
-   final token="ya29.a0AeDClZDxjG5FHvAsb8oiINFYHR83vYS3pBpuWXu-7Pwif-jweimh0psK3aIJlIr-A-fI6diBrAoJUdHoPZqHfPO2jkwkFnyxUUpRmp9dOiKLa2l6Yx6MnKeQKm3gMRZwvQnG7ob3e-kqzxoHf7qOoUFuN5OzyRfWfB0SsSP8aCgYKARgSARMSFQHGX2MicJRWiqgGeWp17ekVH-dDBg0175";
+   final token="ya29.a0AeDClZDghdQHqY3r8zjelloSPLElj0sdGsgjPQsKayXs1FUfqP7bCGDg0zHubTsVY9FooZ0hY8D5PjgxbTiEJKBudX6CaJz9g6-0lx5YVRizgOK-Epr1SgomW8Xbonc3ZbI7GB2YLYAaYq8nQ7UnvxneLFyuwZMrwPT9yaZIAwaCgYKAfMSARMSFQHGX2Mifps0kFnqd5j8lumwdbV-aw0177";
 
   //Lưu Product_id
   Future<void> saveProduct_Id(String id) async{
@@ -32,7 +32,7 @@ class productHttp{
     final url=Uri.parse('$baseUrl/products/');
     final token=await userHTTP().GetToken();
     // String formattedExpiry = product.expiry.toIso8601String();
-    try{
+    // try{
       final response=await http.post(
           url,
           headers: {
@@ -51,9 +51,12 @@ class productHttp{
           'stocklevel': product.stocklevel,
           'category_id': product.category_id,
           'manufacturer_id': product.manufacturer_id,
+          'expiry':product.expiry,
         })
 
+
       );
+      print(product.expiry);
       if(response.statusCode==201){
         print("Thanh cong");
         // final data=jsonDecode(response.body);
@@ -61,10 +64,9 @@ class productHttp{
         // saveProduct_Id(product.product_id.toString());
         return true;
       }
-    }catch(e){
-      print("loi try catch");
-      throw Exception('${e}');
-    }
+    // }catch(e){
+    //   throw Exception('loi try catch ${e}');
+    // }
     print("tao khong thanh cong");
     return false;
   }
@@ -127,27 +129,30 @@ class productHttp{
   return false;
   }
 
-  Future<bool?> getProductById(String id) async{
+  Future<Product?> getProductById(int id) async{
     final id= await getProduct_Id();
-    if(id==null) return false;
+    if(id==null) return null;
 
     final url=Uri.parse('$baseUrl/products/$id');
+
 
     try{
       final response=await http.get(
           url,
           headers: {
-            'Content-Type':'application/json'
+            'Content-Type':'application/json',
+            'Authorziration':"Bearer $token"
           }
       );
       if(response.statusCode==200){
         final data=jsonDecode(response.body);
         final product=Product.fromJson(data['product']);
-        // saveProduct_Id(product.product_id.toString());
-        return true;
+        return product;
       }
-    }catch(e) {return false;}
-    return false;
+    }catch(e){
+      throw Exception('Không thể lấy dữ liệu $e');
+    }
+    return null;
   }
 
   Future<List<Product>> getAllProduct() async {
@@ -204,11 +209,5 @@ class productHttp{
     }
     return [];
   }
-  /*
-(GET)
-FilterAndSortProduct:	/products/filter
-			size, min_price, max_price, color, category_id
-			status, product
-  */
 }
 

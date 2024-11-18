@@ -7,7 +7,7 @@ import 'package:gmarket/Screens/AdminScreen/Widget/Widget_Product.dart';
 import 'package:gmarket/Screens/AdminScreen/Widget/Widget_PromoCode.dart';
 import 'package:gmarket/Screens/AdminScreen/Widget/Widget_User.dart';
 import 'package:gmarket/Screens/AdminScreen/Widget/Widget_Order.dart';
-import 'package:gmarket/Screens/CustomerScreen/ItemDetail.dart';
+import 'package:gmarket/Screens/CustomerScreen/Item_Detail.dart';
 import 'package:gmarket/Screens/CustomerScreen/Search.dart';
 import 'package:gmarket/Screens/CustomerScreen/Widget/Widget_Product_Item.dart';
 
@@ -36,29 +36,12 @@ class HomeScreenState extends State<HomeScreen>{
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(94, 200, 248, 1),
-       title: Row(
-          // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: width*0.6, // Kích thước ô tìm kiếm
-                child: TextField(
-                  onTap: () {
-                    onTapSearch();
-                  },
-                  style: const TextStyle(color: Colors.white,fontSize: 16),
-                  readOnly: true,
-                  // enabled: false,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.search),
-                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.white)),
-                    focusedBorder:UnderlineInputBorder(borderSide: BorderSide(color: Colors.white))
-                  ),
-                  // maxLines: 3,
-                ),
-              ),
-          ],
-        ),
         actions: [
+          IconButton(
+              onPressed: () {
+                onPressedInfoUser();
+              },
+              icon: Icon(Icons.search,color: Colors.white,)),
           IconButton(
             onPressed: () {
               onPressedInfoUser();

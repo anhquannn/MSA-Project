@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gmarket/Http/User.dart';
-import 'package:gmarket/Screens/Logins/VerifyOTP.dart';
+import 'package:gmarket/Screens/Logins/Verify_OTP.dart';
 import 'package:gmarket/Screens/Logins/Login.dart';
 
 void main() {

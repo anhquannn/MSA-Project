@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Screens/AdminScreen/Add_Product.dart';
+import 'package:gmarket/Screens/CustomerScreen/Home_Screen.dart';
 
 void main(){
   runApp(MaterialApp(
@@ -32,7 +33,6 @@ class Widget_ProductSate extends State<Widget_Product>{
       body: SingleChildScrollView(
         child:Center(
           child: Container(
-            // color: Color.fromRGBO(0, 0, 0, 1),
             width: width*0.9,
             height: height*0.9,
             child: Center(
@@ -43,7 +43,9 @@ class Widget_ProductSate extends State<Widget_Product>{
                   children: [
                     SizedBox(height: height*0.025,),
                     ElevatedButton(
-                      onPressed: onPressCreateProduct,
+                      onPressed: () {
+                        onPressCreateProduct();
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
                         fixedSize: Size(width * 0.4, width * 0.4),
@@ -74,7 +76,9 @@ class Widget_ProductSate extends State<Widget_Product>{
                     ),
                     SizedBox(height: height*0.03,),
                     ElevatedButton(
-                      onPressed: onPressCreateProduct,
+                      onPressed: () {
+                        onPressUpdateProduct();
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
                         fixedSize: Size(width * 0.4, width * 0.4),
@@ -110,7 +114,9 @@ class Widget_ProductSate extends State<Widget_Product>{
                   children: [
                     SizedBox(height: height*0.025,),
                     ElevatedButton(
-                      onPressed: onPressCreateProduct,
+                      onPressed: () {
+                        onPressGetAllProduct();
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
                         fixedSize: Size(width * 0.4, width * 0.4),
@@ -141,7 +147,9 @@ class Widget_ProductSate extends State<Widget_Product>{
                     ),
                     SizedBox(height: height*0.03,),
                     ElevatedButton(
-                      onPressed: onPressCreateProduct,
+                      onPressed: () {
+                        onPressGetAllProduct();
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
                         fixedSize: Size(width * 0.4, width * 0.4),
@@ -190,6 +198,19 @@ class Widget_ProductSate extends State<Widget_Product>{
         MaterialPageRoute(builder: (context) => Add_Product(),)
     );
   }
+  Future<void> onPressUpdateProduct() async{
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Add_Product(),)
+    );
+  }
+  Future<void> onPressGetAllProduct() async{
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => HomeScreen(),)
+    );
+  }
+
 }
 
   //Tạo sản phẩm
