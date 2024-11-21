@@ -1,8 +1,6 @@
 package models
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -13,13 +11,13 @@ type Product struct {
 	Image string  `json:"image"`
 	Sales uint64  `json:"sales"`
 
-	Size          int       `json:"size"`
-	Color         string    `json:"color"`
-	Specification string    `json:"specification"`
-	Description   string    `json:"description"`
-	Expiry        time.Time `json:"expiry"`
-	StockNumber   int       `json:"stocknumber"`
-	StockLevel    string    `json:"stocklevel"`
+	Size          int    `json:"size"`
+	Color         string `json:"color"`
+	Specification string `json:"specification"`
+	Description   string `json:"description"`
+	Expiry        string `json:"expiry"`
+	StockNumber   int    `json:"stocknumber"`
+	StockLevel    string `json:"stocklevel"`
 
 	CategoryID     *uint `json:"category_id"`
 	ManufacturerID *uint `json:"manufacturer_id"`

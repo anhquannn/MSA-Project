@@ -26,7 +26,7 @@ func NewProductRepository(db *gorm.DB) ProductRepository {
 }
 
 func (r *productRepository) CreateProduct(product *models.Product) error {
-	return r.db.Create(product).Error
+	return r.db.Create(product).Preload("Category").Preload("Manufacturer").First(product, product.ID).Error
 }
 
 func (r *productRepository) DeleteProduct(product *models.Product) error {
@@ -34,12 +34,12 @@ func (r *productRepository) DeleteProduct(product *models.Product) error {
 }
 
 func (r *productRepository) UpdateProduct(product *models.Product) error {
-	return r.db.Save(product).Error
+	return r.db.Save(product).Preload("Category").Preload("Manufacturer").First(product, product.ID).Error
 }
 
 func (r *productRepository) GetProductByID(id uint) (*models.Product, error) {
 	var product models.Product
-	if err := r.db.First(&product, id).Error; err != nil {
+	if err := r.db.Preload("Category").Preload("Manufacturer").First(&product, id).Error; err != nil {
 		return nil, err
 	}
 	return &product, nil
@@ -47,7 +47,7 @@ func (r *productRepository) GetProductByID(id uint) (*models.Product, error) {
 
 func (r *productRepository) GetAllProducts(page, pageSize int) ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.Limit(pageSize).
+	err := r.db.Preload("Category").Preload("Manufacturer").Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(&products).Error
 	return products, err
@@ -55,7 +55,7 @@ func (r *productRepository) GetAllProducts(page, pageSize int) ([]models.Product
 
 func (r *productRepository) SearchProductsByName(name string, page, pageSize int) ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.Where("name LIKE ?", "%"+name+"%").
+	err := r.db.Preload("Category").Preload("Manufacturer").Where("name LIKE ?", "%"+name+"%").
 		Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(&products).Error
@@ -64,7 +64,7 @@ func (r *productRepository) SearchProductsByName(name string, page, pageSize int
 
 func (r *productRepository) FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint, page, pageSize int) ([]models.Product, error) {
 	var products []models.Product
-	query := r.db.Where("1=1")
+	query := r.db.Preload("Category").Preload("Manufacturer").Where("1=1")
 
 	if size > 0 {
 		query = query.Where("size = ?", size)

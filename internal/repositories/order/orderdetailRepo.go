@@ -11,6 +11,7 @@ type OrderDetailRepository interface {
 	DeleteOrderDetail(orderDetail *models.OrderDetail) error
 	UpdateOrderDetail(orderDetail *models.OrderDetail) error
 	GetOrderDetailByID(id uint) (*models.OrderDetail, error)
+	GetOrderDetailsByOrderID(orderID uint) ([]models.OrderDetail, error)
 }
 
 type orderDetailRepository struct {
@@ -22,7 +23,7 @@ func NewOrderDetailRepository(db *gorm.DB) OrderDetailRepository {
 }
 
 func (r *orderDetailRepository) CreateOrderDetail(orderDetail *models.OrderDetail) error {
-	return r.db.Create(orderDetail).Error
+	return r.db.Create(orderDetail).Preload("Product").Preload("Order").First(orderDetail, orderDetail.ID).Error
 }
 
 func (r *orderDetailRepository) DeleteOrderDetail(orderDetail *models.OrderDetail) error {
@@ -30,11 +31,17 @@ func (r *orderDetailRepository) DeleteOrderDetail(orderDetail *models.OrderDetai
 }
 
 func (r *orderDetailRepository) UpdateOrderDetail(orderDetail *models.OrderDetail) error {
-	return r.db.Save(orderDetail).Error
+	return r.db.Save(orderDetail).Preload("Product").Preload("Order").First(orderDetail, orderDetail.ID).Error
 }
 
 func (r *orderDetailRepository) GetOrderDetailByID(id uint) (*models.OrderDetail, error) {
 	var orderDetail models.OrderDetail
-	err := r.db.First(&orderDetail, id).Error
+	err := r.db.Preload("Product").Preload("Order").First(&orderDetail, id).Error
 	return &orderDetail, err
+}
+
+func (r *orderDetailRepository) GetOrderDetailsByOrderID(orderID uint) ([]models.OrderDetail, error) {
+	var orderDetails []models.OrderDetail
+	err := r.db.Preload("Product").Preload("Order").Where("order_id = ?", orderID).Find(&orderDetails).Error
+	return orderDetails, err
 }

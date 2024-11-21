@@ -38,7 +38,9 @@ func (h *manufacturerHandler) CreateManufacturer(c *gin.Context) {
 	}
 
 	manufacturer := models.Manufacturer{
-		Name: reqManufacturer.Name,
+		Name:    reqManufacturer.Name,
+		Address: reqManufacturer.Address,
+		Contact: reqManufacturer.Contact,
 	}
 
 	if err := h.manufacturerUsecase.CreateManufacturer(&manufacturer); err != nil {

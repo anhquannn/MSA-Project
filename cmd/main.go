@@ -5,6 +5,7 @@ import (
 	interfaces "MSA-Project/internal/interfaces/http"
 
 	repoCart "MSA-Project/internal/repositories/cart"
+	repoDeli "MSA-Project/internal/repositories/delivery"
 	repoOrder "MSA-Project/internal/repositories/order"
 	repoProduct "MSA-Project/internal/repositories/product"
 	repoUser "MSA-Project/internal/repositories/user"
@@ -12,6 +13,7 @@ import (
 	svs "MSA-Project/internal/services"
 
 	ucCart "MSA-Project/internal/usecases/cart"
+	ucDeli "MSA-Project/internal/usecases/delivery"
 	ucOrder "MSA-Project/internal/usecases/order"
 	ucProduct "MSA-Project/internal/usecases/product"
 	ucUser "MSA-Project/internal/usecases/user"
@@ -75,6 +77,26 @@ func main() {
 	orderUsecase := ucOrder.NewOrderUsecase(orderRepo, cartUsecase, cartItemUsecase, promoCodeUsecase, orderDetailUsecase, productUsecase)
 	orderHandler := interfaces.NewOrderHandler(orderUsecase)
 
+	//ReturnOrder
+	returnOrderRepo := repoOrder.NewReturnOrderRepository(config.DB)
+	returnOrderUsecase := ucOrder.NewReturnOrderUsecase(returnOrderRepo, orderDetailUsecase, productUsecase, orderUsecase)
+	returnOrderHandler := interfaces.NewReturnOrderHandler(returnOrderUsecase)
+
+	//Payment
+	paymentRepo := repoOrder.NewPaymentRepository(config.DB)
+	paymentUsecase := ucOrder.NewPaymentUsecase(paymentRepo, orderUsecase)
+	paymentHandler := interfaces.NewPaymentHandler(paymentUsecase)
+
+	//Delivery
+	deliveryRepo := repoDeli.NewDeliveryRepository(config.DB)
+	deliveryUsecase := ucDeli.NewDeliveryUsecase(deliveryRepo)
+	deliveryHandler := interfaces.NewDeliveryHandler(deliveryUsecase)
+
+	//DeliveryDetail
+	deliverydetailRepo := repoDeli.NewDeliveryDetailRepository(config.DB)
+	deliverydetailUsecase := ucDeli.NewDeliveryDetailUsecase(deliverydetailRepo)
+	deliverydetailHandler := interfaces.NewDeliveryDetailHandler(deliverydetailUsecase)
+
 	router := gin.Default()
 
 	config.UserRoutes(router, userHandler)
@@ -87,6 +109,10 @@ func main() {
 	config.OrderDetailRoutes(router, orderDetailHandler)
 	config.PromoCodeRoutes(router, promoCodeHandler)
 	config.FeedbackRoutes(router, feedbackHandler)
+	config.ReturnOrderRoutes(router, returnOrderHandler)
+	config.PaymentRoutes(router, paymentHandler)
+	config.DeliveryRoutes(router, deliveryHandler)
+	config.DeliveryDetailRoutes(router, deliverydetailHandler)
 
 	log.Println("Server started at :8080")
 	router.Run(":8080")

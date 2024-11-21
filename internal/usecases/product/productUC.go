@@ -16,6 +16,7 @@ type ProductUsecase interface {
 	SearchProductsByName(name string, page, pageSize int) ([]models.Product, error)
 	FilterAndSortProducts(size int, minPrice, maxPrice float64, color string, categoryID uint, page, pageSize int) ([]models.Product, error)
 	UpdateStockNumber(productID uint, quantity int) error
+	RestoreStock(productID uint, quantity int) error
 }
 
 type productUsecase struct {
@@ -64,6 +65,26 @@ func (u *productUsecase) UpdateStockNumber(productID uint, quantity int) error {
 	if product.StockNumber < 0 {
 		return errors.New("insufficient stock")
 	}
+
+	switch {
+	case product.StockNumber > 300:
+		product.StockLevel = "high"
+	case product.StockNumber > 50:
+		product.StockLevel = "medium"
+	default:
+		product.StockLevel = "low"
+	}
+
+	return u.productRepo.UpdateProduct(product)
+}
+
+func (u *productUsecase) RestoreStock(productID uint, quantity int) error {
+	product, err := u.productRepo.GetProductByID(productID)
+	if err != nil {
+		return err
+	}
+
+	product.StockNumber += quantity
 
 	switch {
 	case product.StockNumber > 300:

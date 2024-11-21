@@ -2,6 +2,7 @@ package http
 
 import (
 	"MSA-Project/internal/domain/models"
+	"MSA-Project/internal/domain/requests"
 	"MSA-Project/internal/usecases/order"
 	"net/http"
 	"strconv"
@@ -28,13 +29,22 @@ func NewOrderDetailHandler(odu order.OrderDetailUsecase) OrderDetailHandler {
 }
 
 func (h *orderDetailHandler) CreateOrderDetail(c *gin.Context) {
-	var reqOrderDetail models.OrderDetail
+	var reqOrderDetail requests.OrderDetail
 	if err := c.ShouldBindJSON(&reqOrderDetail); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
 
-	if err := h.orderDetailUsecase.CreateOrderDetail(&reqOrderDetail); err != nil {
+	orderDetail := models.OrderDetail{
+		Name:       reqOrderDetail.Name,
+		Quantity:   reqOrderDetail.Quantity,
+		UnitPrice:  reqOrderDetail.UnitPrice,
+		TotalPrice: reqOrderDetail.TotalPrice,
+		OrderID:    reqOrderDetail.OrderID,
+		ProductID:  reqOrderDetail.ProductID,
+	}
+
+	if err := h.orderDetailUsecase.CreateOrderDetail(&orderDetail); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -56,7 +66,7 @@ func (h *orderDetailHandler) UpdateOrderDetail(c *gin.Context) {
 		return
 	}
 
-	var reqOrderDetail models.OrderDetail
+	var reqOrderDetail requests.OrderDetail
 	if err := c.ShouldBindJSON(&reqOrderDetail); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
@@ -65,6 +75,9 @@ func (h *orderDetailHandler) UpdateOrderDetail(c *gin.Context) {
 	orderDetail.Quantity = reqOrderDetail.Quantity
 	orderDetail.UnitPrice = reqOrderDetail.UnitPrice
 	orderDetail.TotalPrice = reqOrderDetail.TotalPrice
+	orderDetail.Name = reqOrderDetail.Name
+	orderDetail.OrderID = reqOrderDetail.OrderID
+	orderDetail.ProductID = reqOrderDetail.ProductID
 
 	if err := h.orderDetailUsecase.UpdateOrderDetail(orderDetail); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

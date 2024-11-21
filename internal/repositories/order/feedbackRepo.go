@@ -24,7 +24,7 @@ func NewFeedbackRepository(db *gorm.DB) FeedbackRepository {
 }
 
 func (r *feedbackRepository) CreateFeedback(feedback *models.Feedback) error {
-	return r.db.Create(feedback).Error
+	return r.db.Create(feedback).Preload("User").Preload("Product").First(feedback, feedback.ID).Error
 }
 
 func (r *feedbackRepository) DeleteFeedback(feedback *models.Feedback) error {
@@ -32,18 +32,18 @@ func (r *feedbackRepository) DeleteFeedback(feedback *models.Feedback) error {
 }
 
 func (r *feedbackRepository) UpdateFeedback(feedback *models.Feedback) error {
-	return r.db.Save(feedback).Error
+	return r.db.Save(feedback).Preload("User").Preload("Product").First(feedback, feedback.ID).Error
 }
 
 func (r *feedbackRepository) GetFeedbackByID(id uint) (*models.Feedback, error) {
 	var feedback models.Feedback
-	err := r.db.First(&feedback, id).Error
+	err := r.db.Preload("User").Preload("Product").First(&feedback, id).Error
 	return &feedback, err
 }
 
 func (r *feedbackRepository) GetAllFeedbacksByProductID(productID uint, page, pageSize int) ([]models.Feedback, error) {
 	var feedbacks []models.Feedback
-	err := r.db.Where("product_id = ?", productID).
+	err := r.db.Preload("User").Preload("Product").Where("product_id = ?", productID).
 		Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(&feedbacks).Error

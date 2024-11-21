@@ -38,7 +38,9 @@ func (h *categoryHandler) CreateCategory(c *gin.Context) {
 	}
 
 	category := models.Category{
-		Name: reqCategory.Name,
+		Name:        reqCategory.Name,
+		Description: reqCategory.Description,
+		ParentID:    &reqCategory.ID,
 	}
 
 	if err := h.categoryUsecase.CreateCategory(&category); err != nil {
@@ -71,6 +73,7 @@ func (h *categoryHandler) UpdateCategory(c *gin.Context) {
 
 	category.Name = reqCategory.Name
 	category.Description = reqCategory.Description
+	category.ParentID = &reqCategory.ID
 
 	if err := h.categoryUsecase.UpdateCategory(category); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

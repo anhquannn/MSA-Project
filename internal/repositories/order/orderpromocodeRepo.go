@@ -22,7 +22,7 @@ func NewOrderPromoCodeRepository(db *gorm.DB) OrderPromoCodeRepository {
 }
 
 func (r *orderPromoCodeRepository) CreateOrderPromoCode(orderPromoCode *models.OrderPromoCode) error {
-	return r.db.Create(orderPromoCode).Error
+	return r.db.Create(orderPromoCode).Preload("PromoCode").Preload("Order").First(orderPromoCode, orderPromoCode.ID).Error
 }
 
 func (r *orderPromoCodeRepository) DeleteOrderPromoCode(orderPromoCode *models.OrderPromoCode) error {
@@ -30,11 +30,11 @@ func (r *orderPromoCodeRepository) DeleteOrderPromoCode(orderPromoCode *models.O
 }
 
 func (r *orderPromoCodeRepository) UpdateOrderPromoCode(orderPromoCode *models.OrderPromoCode) error {
-	return r.db.Save(orderPromoCode).Error
+	return r.db.Save(orderPromoCode).Preload("PromoCode").Preload("Order").First(orderPromoCode, orderPromoCode.ID).Error
 }
 
 func (r *orderPromoCodeRepository) GetOrderPromoCodeByID(id uint) (*models.OrderPromoCode, error) {
 	var orderPromoCode models.OrderPromoCode
-	err := r.db.First(&orderPromoCode, id).Error
+	err := r.db.Preload("PromoCode").Preload("Order").First(&orderPromoCode, id).Error
 	return &orderPromoCode, err
 }

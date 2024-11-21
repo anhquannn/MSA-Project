@@ -30,6 +30,7 @@ type UserHandler interface {
 	LoginWithGoogle(c *gin.Context)
 	Login(c *gin.Context)
 	RegisterUser(c *gin.Context)
+	GetAllUsers(c *gin.Context)
 }
 
 func NewUserHandler(uu user.UserUsecase, es services.EmailService) UserHandler {
@@ -281,4 +282,15 @@ func (h *userHandler) GetUserByPhoneNumber(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, user)
+}
+
+func (h *userHandler) GetAllUsers(c *gin.Context) {
+	page, pageSize := utils.GetPageAndSize(c)
+	users, err := h.userUsecase.GetAllUsers(page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, users)
 }

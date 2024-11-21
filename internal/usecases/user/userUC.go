@@ -28,6 +28,7 @@ type UserUsecase interface {
 	GetUserByEmail(email string) (*models.User, error)
 	GetUserByGoogleID(googleID string) (*models.User, error)
 	GenerateAndSetRandomPasswordByEmail(email string) (string, error)
+	GetAllUsers(page, pageSize int) ([]models.User, error)
 }
 
 type userUsecase struct {
@@ -259,6 +260,10 @@ func (u *userUsecase) GetUserByPhoneNumber(phoneNumber string) (*models.User, er
 
 func (u *userUsecase) GetUserByEmail(email string) (*models.User, error) {
 	return u.userRepo.GetUserByEmail(email)
+}
+
+func (u *userUsecase) GetAllUsers(page, pageSize int) ([]models.User, error) {
+	return u.userRepo.GetAllUsers(page, pageSize)
 }
 
 func (u *userUsecase) GetUserByGoogleID(googleID string) (*models.User, error) {

@@ -70,6 +70,7 @@ func (h *cartHandler) UpdateCart(c *gin.Context) {
 	}
 
 	cart.Status = req.Status
+	cart.UserID = req.UserID
 
 	if err := h.cartUsecase.UpdateCart(cart); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

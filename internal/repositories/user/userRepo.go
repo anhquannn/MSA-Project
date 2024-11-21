@@ -15,6 +15,7 @@ type UserRepository interface {
 	GetUserByGoogleID(googleID string) (*models.User, error)
 	GetUserByPhoneNumber(phonenumber string) (*models.User, error)
 	GetUserByEmail(email string) (*models.User, error)
+	GetAllUsers(page, pageSize int) ([]models.User, error)
 }
 
 type userRepository struct {
@@ -66,4 +67,12 @@ func (r *userRepository) GetUserByEmail(email string) (*models.User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+func (r *userRepository) GetAllUsers(page, pageSize int) ([]models.User, error) {
+	var users []models.User
+	err := r.db.Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&users).Error
+	return users, err
 }
