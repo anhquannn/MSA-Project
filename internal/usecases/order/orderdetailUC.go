@@ -11,6 +11,7 @@ type OrderDetailUsecase interface {
 	DeleteOrderDetail(orderDetail *models.OrderDetail) error
 
 	GetOrderDetailByID(id uint) (*models.OrderDetail, error)
+	GetOrderDetailsByOrderID(orderID uint) ([]models.OrderDetail, error)
 }
 
 type orderDetailUsecase struct {
@@ -35,4 +36,8 @@ func (u *orderDetailUsecase) DeleteOrderDetail(orderDetail *models.OrderDetail) 
 
 func (u *orderDetailUsecase) GetOrderDetailByID(id uint) (*models.OrderDetail, error) {
 	return u.orderDetailRepo.GetOrderDetailByID(id)
+}
+
+func (u *orderDetailUsecase) GetOrderDetailsByOrderID(orderID uint) ([]models.OrderDetail, error) {
+	return u.orderDetailRepo.GetOrderDetailsByOrderID(orderID)
 }

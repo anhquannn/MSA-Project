@@ -23,7 +23,7 @@ func NewDeliveryDetailRepository(db *gorm.DB) DeliveryDetailRepository {
 }
 
 func (r *deliveryDetailRepository) CreateDeliveryDetail(deliverydetail *models.DeliveryDetails) error {
-	return r.db.Create(deliverydetail).Error
+	return r.db.Create(deliverydetail).Preload("Delivery").First(deliverydetail, deliverydetail.ID).Error
 }
 
 func (r *deliveryDetailRepository) DeleteDeliveryDetail(deliverydetail *models.DeliveryDetails) error {
@@ -31,11 +31,11 @@ func (r *deliveryDetailRepository) DeleteDeliveryDetail(deliverydetail *models.D
 }
 
 func (r *deliveryDetailRepository) UpdateDeliveryDetail(deliverydetail *models.DeliveryDetails) error {
-	return r.db.Save(deliverydetail).Error
+	return r.db.Save(deliverydetail).Preload("Delivery").First(deliverydetail, deliverydetail.ID).Error
 }
 
 func (r *deliveryDetailRepository) GetDeliveryDetailByID(id uint) (*models.DeliveryDetails, error) {
 	var deliveydetail models.DeliveryDetails
-	err := r.db.First(&deliveydetail, id).Error
+	err := r.db.Preload("Delivery").First(&deliveydetail, id).Error
 	return &deliveydetail, err
 }

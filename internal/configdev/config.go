@@ -15,7 +15,7 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	database, err := gorm.Open(sqlite.Open("msa.db"), &gorm.Config{})
+	database, err := gorm.Open(sqlite.Open("msa.db?_busy_timeout=5000"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to database!")
 		os.Exit(1)
@@ -44,6 +44,7 @@ func UserRoutes(router *gin.Engine, userHandler http.UserHandler) {
 			secured.PUT("/:id/password", userHandler.UpdateUser)
 			secured.PUT("/:id", userHandler.UpdateUserInf)
 			secured.GET("/:id", userHandler.GetUserById)
+			secured.GET("/", userHandler.GetAllUsers)
 			secured.GET("/phone/:phone", userHandler.GetUserByPhoneNumber)
 		}
 	}
@@ -54,8 +55,8 @@ func ProductRoutes(router *gin.Engine, productHandler http.ProductHandler) {
 	{
 		products.GET("/", productHandler.GetAllProducts)
 		products.GET("/:id", productHandler.GetProductByID)
-		products.GET("/search", productHandler.SearchProducts)
-		products.GET("/filter", productHandler.FilterAndSortProducts)
+		products.GET("/search", productHandler.SearchProducts)        //http://localhost:8080/products/search?name=Headphones&page=1&pageSize=10
+		products.GET("/filter", productHandler.FilterAndSortProducts) //http://localhost:8080/products/filter?size=5&min_price=50&max_price=200&color=Black&category_id=2&page=1&pageSize=10
 
 		secured := products.Group("/")
 		secured.Use(utils.AuthRequired())
@@ -188,6 +189,68 @@ func FeedbackRoutes(router *gin.Engine, feedbackHandler http.FeedbackHandler) {
 			secured.PUT("/:id", feedbackHandler.UpdateFeedback)
 			secured.DELETE("/:id", feedbackHandler.DeleteFeedback)
 			secured.GET("/product/:product_id", feedbackHandler.GetAllFeedbacksByProductID)
+		}
+	}
+}
+
+func ReturnOrderRoutes(router *gin.Engine, returnOrderHandler http.ReturnOrderHandler) {
+	returnorders := router.Group("/returnorder")
+	{
+		secured := returnorders.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/:order_id", returnOrderHandler.CreateReturnOrder)
+			secured.PUT("/:id", returnOrderHandler.UpdateReturnOrder)
+			secured.DELETE("/:id", returnOrderHandler.DeleteReturnOrder)
+
+			secured.GET("/all", returnOrderHandler.GetAllReturnOrders)
+			secured.GET("/:id", returnOrderHandler.GetReturnOrderByID)
+		}
+	}
+}
+
+func PaymentRoutes(router *gin.Engine, paymentHandler http.PaymentHandler) {
+	payments := router.Group("/payment")
+	{
+		secured := payments.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/:user_id/:order_id", paymentHandler.CreatePayment)
+			secured.PUT("/:id", paymentHandler.UpdatePayment)
+			secured.DELETE("/:id", paymentHandler.DeletePayment)
+
+			secured.GET("/all", paymentHandler.GetAllPayments)
+			secured.GET("/:id", paymentHandler.GetPaymentByID)
+		}
+	}
+}
+
+func DeliveryRoutes(router *gin.Engine, deliveryHandler http.DeliveryHandler) {
+	deliveries := router.Group("/delivery")
+	{
+		secured := deliveries.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/:user_id/:order_id", deliveryHandler.CreateDelivery)
+			secured.PUT("/:id", deliveryHandler.UpdateDelivery)
+			secured.DELETE("/:id", deliveryHandler.DeleteDelivery)
+
+			secured.GET("/:id", deliveryHandler.GetDeliveryByID)
+		}
+	}
+}
+
+func DeliveryDetailRoutes(router *gin.Engine, deliveryDetailHandler http.DeliveryDetailHandler) {
+	deliverydetails := router.Group("/deliverydetail")
+	{
+		secured := deliverydetails.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/", deliveryDetailHandler.CreateDeliveryDetail)
+			secured.PUT("/:id", deliveryDetailHandler.UpdateDeliveryDetail)
+			secured.DELETE("/:id", deliveryDetailHandler.DeleteDeliveryDetail)
+
+			secured.GET("/:id", deliveryDetailHandler.GetDeliveryDetailByID)
 		}
 	}
 }

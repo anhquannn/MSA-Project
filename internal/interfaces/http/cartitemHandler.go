@@ -60,6 +60,10 @@ func (h *cartItemHandler) UpdateCartItem(c *gin.Context) {
 	}
 
 	cartItem.Quantity = req.Quantity
+	cartItem.Price = req.Price
+	cartItem.Status = req.Status
+	cartItem.ProductID = req.ProductID
+	cartItem.CartID = req.CartID
 	if err := h.cartItemUsecase.UpdateCartItem(cartItem); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

@@ -7,7 +7,7 @@ import (
 )
 
 type CartItemRepository interface {
-	CreateCartItem(cartitem *models.CartItem) error
+	CreateCartItem(artitem *models.CartItem) error
 	DeleteCartItem(cartitem *models.CartItem) error
 	ClearCart(cartID uint) error
 	UpdateCartItem(cartitem *models.CartItem) error
@@ -28,12 +28,12 @@ func NewCartItemRepository(db *gorm.DB) CartItemRepository {
 }
 
 func (r *cartItemRepository) CreateCartItem(cartitem *models.CartItem) error {
-	return r.db.Create(cartitem).Error
+	return r.db.Create(cartitem).Preload("Cart").Preload("Product").First(cartitem, cartitem.ID).Error
 }
 
 func (r *cartItemRepository) GetCartItem(cartID, productID uint) (*models.CartItem, error) {
 	var cartItem models.CartItem
-	err := r.db.Where("cart_id = ? AND product_id = ?", cartID, productID).First(&cartItem).Error
+	err := r.db.Preload("Cart").Preload("Product").Where("cart_id = ? AND product_id = ?", cartID, productID).First(&cartItem).Error
 	if err == gorm.ErrRecordNotFound {
 		return nil, nil
 	} else if err != nil {
@@ -51,17 +51,17 @@ func (r *cartItemRepository) ClearCart(cartID uint) error {
 }
 
 func (r *cartItemRepository) UpdateCartItem(cartitem *models.CartItem) error {
-	return r.db.Save(cartitem).Error
+	return r.db.Save(cartitem).Preload("Cart").Preload("Product").First(cartitem, cartitem.ID).Error
 }
 
 func (r *cartItemRepository) GetCartItemByID(id uint) (*models.CartItem, error) {
 	var cartitem models.CartItem
-	err := r.db.First(&cartitem, id).Error
+	err := r.db.Preload("Cart").Preload("Product").First(&cartitem, id).Error
 	return &cartitem, err
 }
 
 func (r *cartItemRepository) GetCartItemsByCartID(cartID uint, cartItems *[]models.CartItem) error {
-	return r.db.Where("cart_id = ?", cartID).Find(cartItems).Error
+	return r.db.Preload("Cart").Preload("Product").Where("cart_id = ?", cartID).Find(cartItems).Error
 }
 
 func (r *cartItemRepository) CalculateCartTotal(cartID uint) (float64, error) {

@@ -11,17 +11,27 @@ type PaymentUsecase interface {
 	DeletePayment(payment *models.Payment) error
 
 	GetPaymentByID(id uint) (*models.Payment, error)
+	GetAllPayments(page, pageSize int) ([]models.Payment, error)
 }
 
 type paymentUsecase struct {
-	paymentRepo order.PaymentRepository
+	paymentRepo  order.PaymentRepository
+	orderUsecase OrderUsecase
 }
 
-func NewPaymentUsecase(paymentRepo order.PaymentRepository) PaymentUsecase {
-	return &paymentUsecase{paymentRepo}
+func NewPaymentUsecase(paymentRepo order.PaymentRepository, orderUsecase OrderUsecase) PaymentUsecase {
+	return &paymentUsecase{paymentRepo, orderUsecase}
 }
 
 func (u *paymentUsecase) CreatePayment(payment *models.Payment) error {
+	order, err := u.orderUsecase.GetOrderByID(payment.OrderID)
+	if err != nil {
+		return err
+	}
+
+	payment.Status = "Processing..."
+	payment.GrandTotal = order.GrandTotal
+
 	return u.paymentRepo.CreatePayment(payment)
 }
 
@@ -35,4 +45,8 @@ func (u *paymentUsecase) DeletePayment(payment *models.Payment) error {
 
 func (u *paymentUsecase) GetPaymentByID(id uint) (*models.Payment, error) {
 	return u.paymentRepo.GetPaymentByID(id)
+}
+
+func (u *paymentUsecase) GetAllPayments(page, pageSize int) ([]models.Payment, error) {
+	return u.paymentRepo.GetAllPayments(page, pageSize)
 }

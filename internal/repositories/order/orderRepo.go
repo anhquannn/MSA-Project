@@ -66,13 +66,6 @@ func (r *orderRepository) GetOrderWithDetails(orderID uint) (*models.Order, erro
 	if err := r.db.Preload("User").
 		Preload("Cart").
 		Preload("Cart.User").
-		Preload("Delivery").
-		Preload("Delivery.User").
-		Preload("OrderPromoCodes").
-		Preload("OrderDetails").
-		Preload("Payments").
-		Preload("ReturnOrders").
-		Preload("Feedbacks").
 		First(&order, orderID).Error; err != nil {
 		return nil, err
 	}

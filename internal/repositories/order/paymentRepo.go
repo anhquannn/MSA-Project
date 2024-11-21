@@ -10,7 +10,9 @@ type PaymentRepository interface {
 	CreatePayment(payment *models.Payment) error
 	DeletePayment(payment *models.Payment) error
 	UpdatePayment(payment *models.Payment) error
+
 	GetPaymentByID(id uint) (*models.Payment, error)
+	GetAllPayments(page, pageSize int) ([]models.Payment, error)
 }
 
 type paymentRepository struct {
@@ -22,7 +24,7 @@ func NewPaymentRepository(db *gorm.DB) PaymentRepository {
 }
 
 func (r *paymentRepository) CreatePayment(payment *models.Payment) error {
-	return r.db.Create(payment).Error
+	return r.db.Create(payment).Preload("User").Preload("Order").Preload("Order.User").Preload("Order.Cart").Preload("Order.Cart.User").First(payment, payment.ID).Error
 }
 
 func (r *paymentRepository) DeletePayment(payment *models.Payment) error {
@@ -30,11 +32,19 @@ func (r *paymentRepository) DeletePayment(payment *models.Payment) error {
 }
 
 func (r *paymentRepository) UpdatePayment(payment *models.Payment) error {
-	return r.db.Save(payment).Error
+	return r.db.Save(payment).Preload("User").Preload("Order").Preload("Order.User").Preload("Order.Cart").Preload("Order.Cart.User").First(payment, payment.ID).Error
 }
 
 func (r *paymentRepository) GetPaymentByID(id uint) (*models.Payment, error) {
 	var payment models.Payment
-	err := r.db.First(&payment, id).Error
+	err := r.db.Preload("User").Preload("Order").Preload("Order.User").Preload("Order.Cart").Preload("Order.Cart.User").First(&payment, id).Error
 	return &payment, err
+}
+
+func (r *paymentRepository) GetAllPayments(page, pageSize int) ([]models.Payment, error) {
+	var payments []models.Payment
+	err := r.db.Preload("User").Preload("Order").Preload("Order.User").Preload("Order.Cart").Preload("Order.Cart.User").Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&payments).Error
+	return payments, err
 }

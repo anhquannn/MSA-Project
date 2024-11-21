@@ -8,7 +8,7 @@ type Delivery struct {
 	gorm.Model
 	Status string `json:"status"`
 
-	OrderID uint  `gorm:"unique" json:"order_id"`
+	OrderID uint  `json:"order_id"`
 	Order   Order `gorm:"foreignKey:OrderID"`
 
 	UserID uint `json:"user_id"`

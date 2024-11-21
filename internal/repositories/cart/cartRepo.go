@@ -24,7 +24,7 @@ func NewCartRepository(db *gorm.DB) CartRepository {
 }
 
 func (r *cartRepository) CreateCart(cart *models.Cart) error {
-	return r.db.Create(cart).Error
+	return r.db.Create(cart).Preload("User").First(cart, cart.ID).Error
 }
 
 func (r *cartRepository) DeleteCart(cart *models.Cart) error {
@@ -32,12 +32,12 @@ func (r *cartRepository) DeleteCart(cart *models.Cart) error {
 }
 
 func (r *cartRepository) UpdateCart(cart *models.Cart) error {
-	return r.db.Save(cart).Error
+	return r.db.Save(cart).Preload("User").First(cart, cart.ID).Error
 }
 
 func (r *cartRepository) GetCartByID(id uint) (*models.Cart, error) {
 	var cart models.Cart
-	err := r.db.First(&cart, id).Error
+	err := r.db.Preload("User").First(&cart, id).Error
 	return &cart, err
 }
 
