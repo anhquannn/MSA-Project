@@ -35,6 +35,7 @@ func (u *returnOrderUsecase) CreateReturnOrder(returnOrder *models.ReturnOrder) 
 
 	returnOrder.Status = "Processing..."
 	returnOrder.RefundAmount = order.GrandTotal
+	order.Status = "Returning..."
 
 	if err := u.returnOrderRepo.CreateReturnOrder(returnOrder); err != nil {
 		return err
@@ -51,7 +52,11 @@ func (u *returnOrderUsecase) CreateReturnOrder(returnOrder *models.ReturnOrder) 
 		}
 	}
 
-	return err
+	if err := u.orderUsecase.DeleteOrder(order); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *returnOrderUsecase) UpdateReturnOrder(returnOrder *models.ReturnOrder) error {
