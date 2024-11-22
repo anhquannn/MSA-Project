@@ -101,7 +101,7 @@ func ManufacturerRoutes(router *gin.Engine, manufacturerHandler http.Manufacture
 }
 
 func CartRoutes(router *gin.Engine, cartHandler http.CartHandler) {
-	carts := router.Group("/cart")
+	carts := router.Group("/carts")
 	{
 
 		secured := carts.Group("/")
@@ -117,7 +117,7 @@ func CartRoutes(router *gin.Engine, cartHandler http.CartHandler) {
 }
 
 func CartItemRoutes(router *gin.Engine, cartitemHandler http.CartItemHandler) {
-	cartitems := router.Group("/cartitem")
+	cartitems := router.Group("/cartitems")
 	{
 		secured := cartitems.Group("/")
 		secured.Use(utils.AuthRequired())
@@ -133,7 +133,7 @@ func CartItemRoutes(router *gin.Engine, cartitemHandler http.CartItemHandler) {
 }
 
 func OrderDetailRoutes(router *gin.Engine, orderdetailHandler http.OrderDetailHandler) {
-	orderdetails := router.Group("/oderdetail")
+	orderdetails := router.Group("/oderdetails")
 	{
 		secured := orderdetails.Group("/")
 		secured.Use(utils.AuthRequired())
@@ -147,7 +147,7 @@ func OrderDetailRoutes(router *gin.Engine, orderdetailHandler http.OrderDetailHa
 }
 
 func OrderRoutes(router *gin.Engine, orderHandler http.OrderHandler) {
-	orders := router.Group("/order")
+	orders := router.Group("/orders")
 	{
 		secured := orders.Group("/")
 		secured.Use(utils.AuthRequired())
@@ -163,7 +163,7 @@ func OrderRoutes(router *gin.Engine, orderHandler http.OrderHandler) {
 }
 
 func PromoCodeRoutes(router *gin.Engine, promoCodeHandler http.PromoCodeHandler) {
-	promocodes := router.Group("/promocode")
+	promocodes := router.Group("/promocodes")
 	{
 		promocodes.GET("/:id", promoCodeHandler.GetPromoCodeByID)
 
@@ -178,7 +178,7 @@ func PromoCodeRoutes(router *gin.Engine, promoCodeHandler http.PromoCodeHandler)
 }
 
 func FeedbackRoutes(router *gin.Engine, feedbackHandler http.FeedbackHandler) {
-	feedbacks := router.Group("/feedback")
+	feedbacks := router.Group("/feedbacks")
 	{
 		feedbacks.GET("/:id", feedbackHandler.GetFeedbackByID)
 
@@ -194,7 +194,7 @@ func FeedbackRoutes(router *gin.Engine, feedbackHandler http.FeedbackHandler) {
 }
 
 func ReturnOrderRoutes(router *gin.Engine, returnOrderHandler http.ReturnOrderHandler) {
-	returnorders := router.Group("/returnorder")
+	returnorders := router.Group("/returnorders")
 	{
 		secured := returnorders.Group("/")
 		secured.Use(utils.AuthRequired())
@@ -210,7 +210,7 @@ func ReturnOrderRoutes(router *gin.Engine, returnOrderHandler http.ReturnOrderHa
 }
 
 func PaymentRoutes(router *gin.Engine, paymentHandler http.PaymentHandler) {
-	payments := router.Group("/payment")
+	payments := router.Group("/payments")
 	{
 		secured := payments.Group("/")
 		secured.Use(utils.AuthRequired())
@@ -226,7 +226,7 @@ func PaymentRoutes(router *gin.Engine, paymentHandler http.PaymentHandler) {
 }
 
 func DeliveryRoutes(router *gin.Engine, deliveryHandler http.DeliveryHandler) {
-	deliveries := router.Group("/delivery")
+	deliveries := router.Group("/deliveries")
 	{
 		secured := deliveries.Group("/")
 		secured.Use(utils.AuthRequired())
@@ -241,7 +241,7 @@ func DeliveryRoutes(router *gin.Engine, deliveryHandler http.DeliveryHandler) {
 }
 
 func DeliveryDetailRoutes(router *gin.Engine, deliveryDetailHandler http.DeliveryDetailHandler) {
-	deliverydetails := router.Group("/deliverydetail")
+	deliverydetails := router.Group("/deliverydetails")
 	{
 		secured := deliverydetails.Group("/")
 		secured.Use(utils.AuthRequired())

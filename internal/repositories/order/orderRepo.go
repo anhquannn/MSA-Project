@@ -34,12 +34,17 @@ func (r *orderRepository) DeleteOrder(order *models.Order) error {
 }
 
 func (r *orderRepository) UpdateOrder(order *models.Order) error {
-	return r.db.Save(order).Error
+	return r.db.Save(order).Preload("User").
+		Preload("Cart").
+		Preload("Cart.User").
+		First(order, order.ID).Error
 }
 
 func (r *orderRepository) GetAllOrders(page, pageSize int) ([]models.Order, error) {
 	var orders []models.Order
-	err := r.db.Limit(pageSize).
+	err := r.db.Preload("User").
+		Preload("Cart").
+		Preload("Cart.User").Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(&orders).Error
 	return orders, err
@@ -47,7 +52,9 @@ func (r *orderRepository) GetAllOrders(page, pageSize int) ([]models.Order, erro
 
 func (r *orderRepository) SearchOrderByPhoneNumber(phoneNumber string, page, pageSize int) ([]models.Order, error) {
 	var orders []models.Order
-	err := r.db.Joins("User").
+	err := r.db.Preload("User").
+		Preload("Cart").
+		Preload("Cart.User").Joins("User").
 		Where("users.phone_number = ?", phoneNumber).
 		Limit(pageSize).
 		Offset((page - 1) * pageSize).
@@ -57,7 +64,9 @@ func (r *orderRepository) SearchOrderByPhoneNumber(phoneNumber string, page, pag
 
 func (r *orderRepository) GetOrderByID(id uint) (*models.Order, error) {
 	var order models.Order
-	err := r.db.First(&order, id).Error
+	err := r.db.Preload("User").
+		Preload("Cart").
+		Preload("Cart.User").First(&order, id).Error
 	return &order, err
 }
 
