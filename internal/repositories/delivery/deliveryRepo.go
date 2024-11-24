@@ -31,7 +31,13 @@ func (r *deliveryRepository) DeleteDelivery(delivery *models.Delivery) error {
 }
 
 func (r *deliveryRepository) UpdateDelivery(delivery *models.Delivery) error {
-	return r.db.Save(delivery).Preload("User").Preload("Order").First(delivery, delivery.ID).Error
+	err := r.db.Model(&models.Delivery{}).Where("id = ?", delivery.ID).Updates(map[string]interface{}{
+		"status": delivery.Status,
+	}).Error
+	if err != nil {
+		return err
+	}
+	return r.db.Preload("User").Preload("Order").First(delivery, delivery.ID).Error
 }
 
 func (r *deliveryRepository) GetDeliveryByID(id uint) (*models.Delivery, error) {

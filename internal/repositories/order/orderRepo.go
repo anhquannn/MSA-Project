@@ -2,6 +2,7 @@ package order
 
 import (
 	"MSA-Project/internal/domain/models"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -30,11 +31,32 @@ func (r *orderRepository) CreateOrder(order *models.Order) error {
 }
 
 func (r *orderRepository) DeleteOrder(order *models.Order) error {
+	var paymentCount int64
+	if err := r.db.Model(&models.Payment{}).Where("order_id = ?", order.ID).Count(&paymentCount).Error; err != nil {
+		return err
+	}
+	if paymentCount > 0 {
+		return errors.New("cannot delete order: associated payments exist")
+	}
+	var deliveryCount int64
+	if err := r.db.Model(&models.Delivery{}).Where("order_id = ?", order.ID).Count(&deliveryCount).Error; err != nil {
+		return err
+	}
+	if deliveryCount > 0 {
+		return errors.New("cannot delete order: associated deliveries exist")
+	}
 	return r.db.Model(&models.Order{}).Where("id = ?", order.ID).Delete(order).Error
 }
 
 func (r *orderRepository) UpdateOrder(order *models.Order) error {
-	return r.db.Save(order).Preload("User").
+	err := r.db.Model(&models.Order{}).Where("id = ?", order.ID).Updates(map[string]interface{}{
+		"status": order.Status,
+	}).Error
+	if err != nil {
+		return err
+	}
+
+	return r.db.Preload("User").
 		Preload("Cart").
 		Preload("Cart.User").
 		First(order, order.ID).Error
@@ -54,7 +76,8 @@ func (r *orderRepository) SearchOrderByPhoneNumber(phoneNumber string, page, pag
 	var orders []models.Order
 	err := r.db.Preload("User").
 		Preload("Cart").
-		Preload("Cart.User").Joins("User").
+		Preload("Cart.User").
+		Joins("JOIN users ON users.id = orders.user_id").
 		Where("users.phone_number = ?", phoneNumber).
 		Limit(pageSize).
 		Offset((page - 1) * pageSize).

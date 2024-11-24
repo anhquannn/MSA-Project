@@ -109,7 +109,7 @@ func CartRoutes(router *gin.Engine, cartHandler http.CartHandler) {
 		{
 			secured.POST("/", cartHandler.CreateCart)
 			secured.POST("/:user_id", cartHandler.GetOrCreateCartForUser)
-			secured.PUT("/:id", cartHandler.UpdateCart)
+			// secured.PUT("/:id", cartHandler.UpdateCart)
 			secured.DELETE("/:id", cartHandler.DeleteCart)
 			secured.GET("/:id", cartHandler.GetCartByID)
 		}
@@ -139,7 +139,7 @@ func OrderDetailRoutes(router *gin.Engine, orderdetailHandler http.OrderDetailHa
 		secured.Use(utils.AuthRequired())
 		{
 			secured.POST("/", orderdetailHandler.CreateOrderDetail)
-			secured.PUT("/:id", orderdetailHandler.UpdateOrderDetail)
+			// secured.PUT("/:id", orderdetailHandler.UpdateOrderDetail)
 			secured.DELETE("/:id", orderdetailHandler.DeleteOrderDetail)
 			secured.GET("/:id", orderdetailHandler.GetOrderDetailByID)
 		}
@@ -152,8 +152,8 @@ func OrderRoutes(router *gin.Engine, orderHandler http.OrderHandler) {
 		secured := orders.Group("/")
 		secured.Use(utils.AuthRequired())
 		{
-			secured.POST("/", orderHandler.CreateOrder) //http://localhost:8080/order?user_id=1&cart_id=1&promo_code=BLACKFRIDAY
-			secured.PUT("/:id", orderHandler.UpdateOrder)
+			secured.POST("/", orderHandler.CreateOrder) //http://localhost:8080/orders?user_id=1&cart_id=1&promo_code=BLACKFRIDAY
+			// secured.PUT("/:id", orderHandler.UpdateOrder)
 			secured.DELETE("/:id", orderHandler.DeleteOrder)
 			secured.GET("/:id", orderHandler.GetOrderByID)
 			secured.GET("/", orderHandler.GetAllOrders)
@@ -200,7 +200,7 @@ func ReturnOrderRoutes(router *gin.Engine, returnOrderHandler http.ReturnOrderHa
 		secured.Use(utils.AuthRequired())
 		{
 			secured.POST("/:order_id", returnOrderHandler.CreateReturnOrder)
-			secured.PUT("/:id", returnOrderHandler.UpdateReturnOrder)
+			// secured.PUT("/:id", returnOrderHandler.UpdateReturnOrder)
 			secured.DELETE("/:id", returnOrderHandler.DeleteReturnOrder)
 
 			secured.GET("/all", returnOrderHandler.GetAllReturnOrders)

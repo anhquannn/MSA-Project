@@ -2,6 +2,7 @@ package product
 
 import (
 	"MSA-Project/internal/domain/models"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -28,6 +29,13 @@ func (r *manufacturerRepository) CreateManufacturer(manufacturer *models.Manufac
 }
 
 func (r *manufacturerRepository) DeleteManufacturer(manufacturer *models.Manufacturer) error {
+	var productCount int64
+	if err := r.db.Model(&models.Product{}).Where("manufacturer_id = ?", manufacturer.ID).Count(&productCount).Error; err != nil {
+		return err
+	}
+	if productCount > 0 {
+		return errors.New("cannot delete manufacturer: manufacturer has associated products")
+	}
 	return r.db.Delete(manufacturer).Error
 }
 

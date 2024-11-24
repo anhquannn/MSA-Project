@@ -43,7 +43,7 @@ func (r *cartItemRepository) GetCartItem(cartID, productID uint) (*models.CartIt
 }
 
 func (r *cartItemRepository) DeleteCartItem(cartitem *models.CartItem) error {
-	return r.db.Model(&models.Cart{}).Where("id = ?", cartitem.ID).Delete(cartitem).Error
+	return r.db.Model(&models.CartItem{}).Where("id = ?", cartitem.ID).Delete(cartitem).Error
 }
 
 func (r *cartItemRepository) ClearCart(cartID uint) error {
@@ -51,7 +51,15 @@ func (r *cartItemRepository) ClearCart(cartID uint) error {
 }
 
 func (r *cartItemRepository) UpdateCartItem(cartitem *models.CartItem) error {
-	return r.db.Save(cartitem).Preload("Cart").Preload("Product").First(cartitem, cartitem.ID).Error
+	err := r.db.Model(&models.CartItem{}).Where("id = ?", cartitem.ID).Updates(map[string]interface{}{
+		"status":   cartitem.Status,
+		"quantity": cartitem.Quantity,
+	}).Error
+	if err != nil {
+		return err
+	}
+
+	return r.db.Preload("Cart").Preload("Product").First(cartitem, cartitem.ID).Error
 }
 
 func (r *cartItemRepository) GetCartItemByID(id uint) (*models.CartItem, error) {

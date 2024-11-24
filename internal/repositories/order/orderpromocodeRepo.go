@@ -30,7 +30,14 @@ func (r *orderPromoCodeRepository) DeleteOrderPromoCode(orderPromoCode *models.O
 }
 
 func (r *orderPromoCodeRepository) UpdateOrderPromoCode(orderPromoCode *models.OrderPromoCode) error {
-	return r.db.Save(orderPromoCode).Preload("PromoCode").Preload("Order").First(orderPromoCode, orderPromoCode.ID).Error
+	err := r.db.Model(&models.OrderPromoCode{}).Where("id = ?", orderPromoCode.ID).Updates(map[string]interface{}{
+		"order_id":     orderPromoCode.OrderID,
+		"promocode_id": orderPromoCode.PromoCodeID,
+	}).Error
+	if err != nil {
+		return err
+	}
+	return r.db.Preload("PromoCode").Preload("Order").First(orderPromoCode, orderPromoCode.ID).Error
 }
 
 func (r *orderPromoCodeRepository) GetOrderPromoCodeByID(id uint) (*models.OrderPromoCode, error) {

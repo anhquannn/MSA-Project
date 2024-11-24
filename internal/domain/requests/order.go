@@ -37,7 +37,7 @@ type Payment struct {
 
 type OrderDetail struct {
 	gorm.Model
-	Name       string  `json:"status"`
+	Status     string  `json:"status"`
 	Quantity   int     `json:"quantity"`
 	UnitPrice  float64 `json:"unitprice"`
 	TotalPrice float64 `json:"totalprice"`

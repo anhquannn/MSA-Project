@@ -78,6 +78,8 @@ func (h *orderHandler) UpdateOrder(c *gin.Context) {
 
 	order.GrandTotal = reqOrder.GrandTotal
 	order.Status = reqOrder.Status
+	order.CartID = reqOrder.CartID
+	order.UserID = reqOrder.UserID
 
 	if err := h.orderUsecase.UpdateOrder(order); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

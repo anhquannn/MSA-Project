@@ -2,6 +2,7 @@ package user
 
 import (
 	"MSA-Project/internal/domain/models"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -31,6 +32,22 @@ func (r *userRepository) CreateUser(users *models.User) error {
 }
 
 func (r *userRepository) DeleteUser(users *models.User) error {
+	var orderCount int64
+	if err := r.db.Model(&models.Order{}).Where("user_id = ?", users.ID).Count(&orderCount).Error; err != nil {
+		return err
+	}
+	if orderCount > 0 {
+		return errors.New("cannot delete user: user has associated orders")
+	}
+
+	var returnOrderCount int64
+	if err := r.db.Model(&models.ReturnOrder{}).Where("user_id = ?", users.ID).Count(&returnOrderCount).Error; err != nil {
+		return err
+	}
+	if returnOrderCount > 0 {
+		return errors.New("cannot delete user: user has associated return orders")
+	}
+
 	return r.db.Model(&models.User{}).Where("id = ?", users.ID).Delete(users).Error
 }
 
