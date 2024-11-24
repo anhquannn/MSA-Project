@@ -31,7 +31,13 @@ func (r *orderDetailRepository) DeleteOrderDetail(orderDetail *models.OrderDetai
 }
 
 func (r *orderDetailRepository) UpdateOrderDetail(orderDetail *models.OrderDetail) error {
-	return r.db.Save(orderDetail).Preload("Product").Preload("Order").First(orderDetail, orderDetail.ID).Error
+	err := r.db.Model(&models.OrderDetail{}).Where("id = ?", orderDetail.ID).Updates(map[string]interface{}{
+		"status": orderDetail.Status,
+	}).Error
+	if err != nil {
+		return err
+	}
+	return r.db.Preload("Product").Preload("Order").First(orderDetail, orderDetail.ID).Error
 }
 
 func (r *orderDetailRepository) GetOrderDetailByID(id uint) (*models.OrderDetail, error) {

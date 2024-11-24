@@ -31,7 +31,20 @@ func (r *deliveryDetailRepository) DeleteDeliveryDetail(deliverydetail *models.D
 }
 
 func (r *deliveryDetailRepository) UpdateDeliveryDetail(deliverydetail *models.DeliveryDetails) error {
-	return r.db.Save(deliverydetail).Preload("Delivery").First(deliverydetail, deliverydetail.ID).Error
+	err := r.db.Model(&models.DeliveryDetails{}).Where("id = ?", deliverydetail.ID).Updates(map[string]interface{}{
+		"delivery_name":    deliverydetail.DeliveryName,
+		"shipcode":         deliverydetail.ShipCode,
+		"description":      deliverydetail.Description,
+		"weight":           deliverydetail.Weight,
+		"delivery_address": deliverydetail.DeliveryAddress,
+		"delivery_contact": deliverydetail.DeliveryContact,
+		"delivery_fee":     deliverydetail.DeliveryFee,
+		"delivery_id":      deliverydetail.DeliveryID,
+	}).Error
+	if err != nil {
+		return err
+	}
+	return r.db.Preload("Delivery").First(deliverydetail, deliverydetail.ID).Error
 }
 
 func (r *deliveryDetailRepository) GetDeliveryDetailByID(id uint) (*models.DeliveryDetails, error) {

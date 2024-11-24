@@ -32,6 +32,14 @@ func (r *returnOrderRepository) DeleteReturnOrder(returnOrder *models.ReturnOrde
 }
 
 func (r *returnOrderRepository) UpdateReturnOrder(returnOrder *models.ReturnOrder) error {
+	err := r.db.Model(&models.ReturnOrder{}).Where("id = ?", returnOrder.ID).Updates(map[string]interface{}{
+		"status": returnOrder.Status,
+		"reason": returnOrder.Reason,
+	}).Error
+	if err != nil {
+		return err
+	}
+
 	return r.db.Preload("Order").Preload("Order.Cart").Preload("Order.Cart.User").Preload("Order.User").Save(returnOrder).Error
 }
 

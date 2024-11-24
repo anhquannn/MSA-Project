@@ -32,7 +32,14 @@ func (r *feedbackRepository) DeleteFeedback(feedback *models.Feedback) error {
 }
 
 func (r *feedbackRepository) UpdateFeedback(feedback *models.Feedback) error {
-	return r.db.Save(feedback).Preload("User").Preload("Product").First(feedback, feedback.ID).Error
+	err := r.db.Model(&models.Feedback{}).Where("id = ?", feedback.ID).Updates(map[string]interface{}{
+		"rating":   feedback.Rating,
+		"comments": feedback.Comments,
+	}).Error
+	if err != nil {
+		return err
+	}
+	return r.db.Preload("User").Preload("Product").First(feedback, feedback.ID).Error
 }
 
 func (r *feedbackRepository) GetFeedbackByID(id uint) (*models.Feedback, error) {

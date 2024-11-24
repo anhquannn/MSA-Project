@@ -34,7 +34,26 @@ func (r *productRepository) DeleteProduct(product *models.Product) error {
 }
 
 func (r *productRepository) UpdateProduct(product *models.Product) error {
-	return r.db.Save(product).Preload("Category").Preload("Manufacturer").First(product, product.ID).Error
+	err := r.db.Model(&models.Product{}).Where("id = ?", product.ID).Updates(map[string]interface{}{
+		"name":            product.Name,
+		"price":           product.Price,
+		"image":           product.Image,
+		"sales":           product.Sales,
+		"size":            product.Size,
+		"color":           product.Color,
+		"specification":   product.Specification,
+		"description":     product.Description,
+		"expiry":          product.Expiry,
+		"stock_number":    product.StockNumber,
+		"stock_level":     product.StockLevel,
+		"category_id":     product.CategoryID,
+		"manufacturer_id": product.ManufacturerID,
+	}).Error
+	if err != nil {
+		return err
+	}
+
+	return r.db.Preload("Category").Preload("Manufacturer").First(product, product.ID).Error
 }
 
 func (r *productRepository) GetProductByID(id uint) (*models.Product, error) {

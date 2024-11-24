@@ -32,7 +32,14 @@ func (r *cartRepository) DeleteCart(cart *models.Cart) error {
 }
 
 func (r *cartRepository) UpdateCart(cart *models.Cart) error {
-	return r.db.Save(cart).Preload("User").First(cart, cart.ID).Error
+	err := r.db.Model(&models.Cart{}).Where("id = ?", cart.ID).Updates(map[string]interface{}{
+		"status": cart.Status,
+	}).Error
+	if err != nil {
+		return err
+	}
+
+	return r.db.Preload("User").First(cart, cart.ID).Error
 }
 
 func (r *cartRepository) GetCartByID(id uint) (*models.Cart, error) {

@@ -36,7 +36,7 @@ func (h *orderDetailHandler) CreateOrderDetail(c *gin.Context) {
 	}
 
 	orderDetail := models.OrderDetail{
-		Name:       reqOrderDetail.Name,
+		Status:     reqOrderDetail.Status,
 		Quantity:   reqOrderDetail.Quantity,
 		UnitPrice:  reqOrderDetail.UnitPrice,
 		TotalPrice: reqOrderDetail.TotalPrice,
@@ -75,7 +75,7 @@ func (h *orderDetailHandler) UpdateOrderDetail(c *gin.Context) {
 	orderDetail.Quantity = reqOrderDetail.Quantity
 	orderDetail.UnitPrice = reqOrderDetail.UnitPrice
 	orderDetail.TotalPrice = reqOrderDetail.TotalPrice
-	orderDetail.Name = reqOrderDetail.Name
+	orderDetail.Status = reqOrderDetail.Status
 	orderDetail.OrderID = reqOrderDetail.OrderID
 	orderDetail.ProductID = reqOrderDetail.ProductID
 

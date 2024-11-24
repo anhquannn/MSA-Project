@@ -2,6 +2,7 @@ package product
 
 import (
 	"MSA-Project/internal/domain/models"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -28,10 +29,25 @@ func (r *categoryRepository) CreateCategory(category *models.Category) error {
 }
 
 func (r *categoryRepository) DeleteCategory(category *models.Category) error {
+	var productCount int64
+	if err := r.db.Model(&models.Product{}).Where("category_id = ?", category.ID).Count(&productCount).Error; err != nil {
+		return err
+	}
+	if productCount > 0 {
+		return errors.New("cannot delete category: category has associated products")
+	}
 	return r.db.Delete(category).Error
 }
 
 func (r *categoryRepository) UpdateCategory(category *models.Category) error {
+	err := r.db.Model(&models.Category{}).Where("id = ?", category.ID).Updates(map[string]interface{}{
+		"name":        category.Name,
+		"description": category.Description,
+		"parent_id":   category.ParentID,
+	}).Error
+	if err != nil {
+		return err
+	}
 	return r.db.Save(category).Error
 }
 

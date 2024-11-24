@@ -1,8 +1,6 @@
 package models
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -38,7 +36,7 @@ type Payment struct {
 
 type OrderDetail struct {
 	gorm.Model
-	Name       string  `json:"status"`
+	Status     string  `json:"status"`
 	Quantity   int     `json:"quantity"`
 	UnitPrice  float64 `json:"unitprice"`
 	TotalPrice float64 `json:"totalprice"`
@@ -61,15 +59,15 @@ type OrderPromoCode struct {
 
 type PromoCode struct {
 	gorm.Model
-	Name               string    `json:"name"`
-	Code               string    `json:"code"`
-	Description        string    `json:"description"`
-	StartDate          time.Time `json:"startdate"`
-	EndDate            time.Time `json:"enddate"`
-	Status             string    `json:"status"`
-	DiscountType       string    `json:"discounttype"`
-	DiscountPercentage float64   `json:"discountpercentage"`
-	MinimumOrderValue  float64   `json:"minimumordervalue"`
+	Name               string  `json:"name"`
+	Code               string  `json:"code"`
+	Description        string  `json:"description"`
+	StartDate          string  `json:"startdate"`
+	EndDate            string  `json:"enddate"`
+	Status             string  `json:"status"`
+	DiscountType       string  `json:"discounttype"`
+	DiscountPercentage float64 `json:"discountpercentage"`
+	MinimumOrderValue  float64 `json:"minimumordervalue"`
 
 	OrderPromoCodes []OrderPromoCode `gorm:"foreignKey:PromoCodeID" json:"order_promo_codes"`
 }

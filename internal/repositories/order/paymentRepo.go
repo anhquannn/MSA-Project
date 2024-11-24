@@ -32,7 +32,15 @@ func (r *paymentRepository) DeletePayment(payment *models.Payment) error {
 }
 
 func (r *paymentRepository) UpdatePayment(payment *models.Payment) error {
-	return r.db.Save(payment).Preload("User").Preload("Order").Preload("Order.User").Preload("Order.Cart").Preload("Order.Cart.User").First(payment, payment.ID).Error
+	err := r.db.Model(&models.Payment{}).Where("id = ?", payment.ID).Updates(map[string]interface{}{
+		"payment_method": payment.PaymentMethod,
+		"status":         payment.Status,
+	}).Error
+	if err != nil {
+		return err
+	}
+
+	return r.db.Preload("User").Preload("Order").Preload("Order.User").Preload("Order.Cart").Preload("Order.Cart.User").First(payment, payment.ID).Error
 }
 
 func (r *paymentRepository) GetPaymentByID(id uint) (*models.Payment, error) {
