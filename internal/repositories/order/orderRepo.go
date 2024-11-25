@@ -16,6 +16,7 @@ type OrderRepository interface {
 	SearchOrderByPhoneNumber(phoneNumber string, page, pageSize int) ([]models.Order, error)
 	GetOrderByID(id uint) (*models.Order, error)
 	GetOrderWithDetails(orderID uint) (*models.Order, error)
+	GetOrdersByUserIDWithPagination(userID uint, offset int, limit int, orders *[]*models.Order) error
 }
 
 type orderRepository struct {
@@ -102,4 +103,15 @@ func (r *orderRepository) GetOrderWithDetails(orderID uint) (*models.Order, erro
 		return nil, err
 	}
 	return &order, nil
+}
+
+func (r *orderRepository) GetOrdersByUserIDWithPagination(userID uint, offset int, limit int, orders *[]*models.Order) error {
+	return r.db.Preload("OrderDetails.Product").Preload("OrderDetails.Product.Category").Preload("OrderDetails.Product.Manufacturer").
+		Preload("OrderDetails.Order").Preload("OrderDetails.Order.User").Preload("OrderDetails.Order.Cart").Preload("OrderDetails.Order.Cart.User").
+		Where("user_id = ?", userID).
+		Order("created_at DESC").
+		Offset(offset).
+		Limit(limit).
+		Find(orders).
+		Error
 }

@@ -4,6 +4,7 @@ import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/domain/requests"
 	"MSA-Project/internal/usecases/order"
+	"MSA-Project/internal/utils"
 	"net/http"
 	"strconv"
 
@@ -18,7 +19,10 @@ type PromoCodeHandler interface {
 	CreatePromoCode(c *gin.Context)
 	UpdatePromoCode(c *gin.Context)
 	DeletePromoCode(c *gin.Context)
+
 	GetPromoCodeByID(c *gin.Context)
+	GetPromoCodeByCode(c *gin.Context)
+	GetAllPromocodes(c *gin.Context)
 }
 
 func NewPromoCodeHandler(pu order.PromoCodeUsecase) PromoCodeHandler {
@@ -126,4 +130,27 @@ func (h *promoCodeHandler) GetPromoCodeByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, promoCode)
+}
+
+func (h *promoCodeHandler) GetPromoCodeByCode(c *gin.Context) {
+	codeStr := c.Param("code")
+
+	promoCode, err := h.promoCodeUsecase.GetPromoCodeByCode(codeStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, promoCode)
+}
+
+func (h *promoCodeHandler) GetAllPromocodes(c *gin.Context) {
+	page, pageSize := utils.GetPageAndSize(c)
+	promoCodes, err := h.promoCodeUsecase.GetAllPromocodes(page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, promoCodes)
 }

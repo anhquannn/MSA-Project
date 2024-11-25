@@ -125,6 +125,7 @@ func CartItemRoutes(router *gin.Engine, cartitemHandler http.CartItemHandler) {
 			secured.POST("/addproduct/:cartID", cartitemHandler.AddProductToCart)
 			secured.POST("/clearcart", cartitemHandler.ClearCart)
 			secured.PUT("/:id", cartitemHandler.UpdateCartItem)
+			secured.PUT("/", cartitemHandler.UpdateCartItemsStatus)
 			secured.DELETE("/:id", cartitemHandler.DeleteCartItem)
 			secured.GET("/:id", cartitemHandler.GetCartItemByID)
 			secured.GET("/carts/:cartID", cartitemHandler.GetCartItemsByCartID)
@@ -133,7 +134,7 @@ func CartItemRoutes(router *gin.Engine, cartitemHandler http.CartItemHandler) {
 }
 
 func OrderDetailRoutes(router *gin.Engine, orderdetailHandler http.OrderDetailHandler) {
-	orderdetails := router.Group("/oderdetails")
+	orderdetails := router.Group("/orderdetails")
 	{
 		secured := orderdetails.Group("/")
 		secured.Use(utils.AuthRequired())
@@ -142,6 +143,20 @@ func OrderDetailRoutes(router *gin.Engine, orderdetailHandler http.OrderDetailHa
 			// secured.PUT("/:id", orderdetailHandler.UpdateOrderDetail)
 			secured.DELETE("/:id", orderdetailHandler.DeleteOrderDetail)
 			secured.GET("/:id", orderdetailHandler.GetOrderDetailByID)
+		}
+	}
+}
+
+func OrderPromoCodeRoutes(router *gin.Engine, orderPromoCodeHandler http.OrderPromoCodeHandler) {
+	orderpromocodes := router.Group("/orderpromocodes")
+	{
+		secured := orderpromocodes.Group("/")
+		secured.Use(utils.AuthRequired())
+		{
+			secured.POST("/", orderPromoCodeHandler.CreateOrderPromoCode)
+			// secured.PUT("/:id", orderPromoCodeHandler.UpdateOrderPromoCode)
+			secured.DELETE("/:id", orderPromoCodeHandler.DeleteOrderPromoCode)
+			secured.GET("/:id", orderPromoCodeHandler.GetOrderPromoCodeByID)
 		}
 	}
 }
@@ -157,6 +172,7 @@ func OrderRoutes(router *gin.Engine, orderHandler http.OrderHandler) {
 			secured.DELETE("/:id", orderHandler.DeleteOrder)
 			secured.GET("/:id", orderHandler.GetOrderByID)
 			secured.GET("/", orderHandler.GetAllOrders)
+			secured.GET("/history/:user_id", orderHandler.GetOrderHistory)
 			secured.GET("/search", orderHandler.SearchOrderByPhoneNumber)
 		}
 	}
@@ -173,6 +189,9 @@ func PromoCodeRoutes(router *gin.Engine, promoCodeHandler http.PromoCodeHandler)
 			secured.POST("/", promoCodeHandler.CreatePromoCode)
 			secured.PUT("/:id", promoCodeHandler.UpdatePromoCode)
 			secured.DELETE("/:id", promoCodeHandler.DeletePromoCode)
+
+			secured.GET("/code/:code", promoCodeHandler.GetPromoCodeByCode)
+			secured.GET("/", promoCodeHandler.GetAllPromocodes)
 		}
 	}
 }

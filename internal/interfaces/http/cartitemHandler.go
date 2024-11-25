@@ -12,6 +12,7 @@ import (
 type CartItemHandler interface {
 	AddProductToCart(c *gin.Context)
 	UpdateCartItem(c *gin.Context)
+	UpdateCartItemsStatus(c *gin.Context)
 	DeleteCartItem(c *gin.Context)
 	ClearCart(c *gin.Context)
 	GetCartItemByID(c *gin.Context)
@@ -70,6 +71,26 @@ func (h *cartItemHandler) UpdateCartItem(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, cartItem)
+}
+
+func (h *cartItemHandler) UpdateCartItemsStatus(c *gin.Context) {
+	var req struct {
+		CartItemIDs []uint `json:"cart_item_ids"`
+		Status      string `json:"status"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	err := h.cartItemUsecase.UpdateCartItemsStatus(req.CartItemIDs, req.Status)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update cart items"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Cart items updated successfully"})
 }
 
 func (h *cartItemHandler) DeleteCartItem(c *gin.Context) {

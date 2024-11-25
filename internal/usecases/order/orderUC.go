@@ -3,9 +3,12 @@ package order
 import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/repositories/order"
+	services "MSA-Project/internal/services"
 	"MSA-Project/internal/usecases/cart"
 	"MSA-Project/internal/usecases/product"
+	"MSA-Project/internal/usecases/user"
 	"errors"
+	"fmt"
 )
 
 type OrderUsecase interface {
@@ -16,15 +19,19 @@ type OrderUsecase interface {
 	GetOrderByID(id uint) (*models.Order, error)
 	SearchOrderByPhoneNumber(phoneNumber string, page, pageSize int) ([]models.Order, error)
 	GetAllOrders(page, pageSize int) ([]models.Order, error)
+	GetOrderHistoryByUserID(userID uint, page int, size int) ([]*models.Order, error)
 }
 
 type orderUsecase struct {
-	orderRepo          order.OrderRepository
-	cartUsecase        cart.CartUsecase
-	cartItemUsecase    cart.CartItemUsecase
-	promoCodeUsecase   PromoCodeUsecase
-	orderDetailUsecase OrderDetailUsecase
-	productUsecase     product.ProductUsecase
+	orderRepo             order.OrderRepository
+	cartUsecase           cart.CartUsecase
+	cartItemUsecase       cart.CartItemUsecase
+	promoCodeUsecase      PromoCodeUsecase
+	orderPromoCodeUsecase OrderPromoCodeUsecase
+	orderDetailUsecase    OrderDetailUsecase
+	productUsecase        product.ProductUsecase
+	userUsecase           user.UserUsecase
+	emailSvs              services.EmailService
 }
 
 func NewOrderUsecase(
@@ -32,16 +39,22 @@ func NewOrderUsecase(
 	cartUsecase cart.CartUsecase,
 	cartItemUsecase cart.CartItemUsecase,
 	promoCodeUsecase PromoCodeUsecase,
+	orderPromoCodeUsecase OrderPromoCodeUsecase,
 	orderDetailUsecase OrderDetailUsecase,
 	productUsecase product.ProductUsecase,
+	userUsecase user.UserUsecase,
+	emailSvs services.EmailService,
 ) OrderUsecase {
 	return &orderUsecase{
-		orderRepo:          orderRepo,
-		cartUsecase:        cartUsecase,
-		cartItemUsecase:    cartItemUsecase,
-		promoCodeUsecase:   promoCodeUsecase,
-		orderDetailUsecase: orderDetailUsecase,
-		productUsecase:     productUsecase,
+		orderRepo:             orderRepo,
+		cartUsecase:           cartUsecase,
+		cartItemUsecase:       cartItemUsecase,
+		promoCodeUsecase:      promoCodeUsecase,
+		orderPromoCodeUsecase: orderPromoCodeUsecase,
+		orderDetailUsecase:    orderDetailUsecase,
+		productUsecase:        productUsecase,
+		userUsecase:           userUsecase,
+		emailSvs:              emailSvs,
 	}
 }
 
@@ -56,8 +69,10 @@ func (u *orderUsecase) CreateOrder(userID uint, cartID uint, promoCode string) (
 		return nil, errors.New("calculate cart total failed")
 	}
 
+	var promo *models.PromoCode
+
 	if promoCode != "" {
-		promo, err := u.promoCodeUsecase.GetPromoCodeByCode(promoCode)
+		promo, err = u.promoCodeUsecase.GetPromoCodeByCode(promoCode)
 		if err == nil && totalCost >= promo.MinimumOrderValue {
 			discountAmount := totalCost * (promo.DiscountPercentage / 100)
 			totalCost -= discountAmount
@@ -75,6 +90,16 @@ func (u *orderUsecase) CreateOrder(userID uint, cartID uint, promoCode string) (
 
 	if err := u.orderRepo.CreateOrder(order); err != nil {
 		return nil, err
+	}
+
+	if promo != nil {
+		orderPromoCode := &models.OrderPromoCode{
+			OrderID:     order.ID,
+			PromoCodeID: promo.ID,
+		}
+		if err := u.orderPromoCodeUsecase.CreateOrderPromoCode(orderPromoCode); err != nil {
+			return nil, err
+		}
 	}
 
 	fullOrder, err := u.orderRepo.GetOrderWithDetails(order.ID)
@@ -108,6 +133,15 @@ func (u *orderUsecase) CreateOrder(userID uint, cartID uint, promoCode string) (
 		return nil, err
 	}
 
+	user, err := u.userUsecase.GetUserByID(userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve user: %w", err)
+	}
+
+	if err := u.SendOrderDetails(fullOrder, user.Email); err != nil {
+		return nil, err
+	}
+
 	return fullOrder, nil
 }
 
@@ -129,4 +163,36 @@ func (u *orderUsecase) SearchOrderByPhoneNumber(phoneNumber string, page, pageSi
 
 func (u *orderUsecase) GetAllOrders(page, pageSize int) ([]models.Order, error) {
 	return u.orderRepo.GetAllOrders(page, pageSize)
+}
+
+func (u *orderUsecase) GetOrderHistoryByUserID(userID uint, page int, size int) ([]*models.Order, error) {
+	offset := (page - 1) * size
+
+	var orders []*models.Order
+	err := u.orderRepo.GetOrdersByUserIDWithPagination(userID, offset, size, &orders)
+	if err != nil {
+		return nil, err
+	}
+
+	return orders, nil
+}
+
+func (u *orderUsecase) SendOrderDetails(order *models.Order, userEmail string) error {
+	emailBody := fmt.Sprintf("Thank you for your order\n\nOrder Confirmation\n\nOrderID: %d\nGrand Total: %.2f\n", order.ID, order.GrandTotal)
+	orderDetails, err := u.orderDetailUsecase.GetOrderDetailsByOrderID(order.ID)
+
+	for _, detail := range orderDetails {
+		productName := detail.Product.Name
+		quantity := detail.Quantity
+		unitPrice := detail.UnitPrice
+
+		emailBody += fmt.Sprintf("Product: %s\nQuantity: %d\nUnit Price: %.2f\n\n", productName, quantity, unitPrice)
+	}
+
+	subject := "Order Confirmation - Your Order Details"
+	if err := u.emailSvs.SendEmail(userEmail, subject, emailBody); err != nil {
+		return fmt.Errorf("failed to send order confirmation email: %w", err)
+	}
+
+	return err
 }
