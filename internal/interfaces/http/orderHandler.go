@@ -17,6 +17,7 @@ type OrderHandler interface {
 
 	GetOrderByID(c *gin.Context)
 	GetAllOrders(c *gin.Context)
+	GetOrderHistory(c *gin.Context)
 	SearchOrderByPhoneNumber(c *gin.Context)
 }
 
@@ -145,6 +146,35 @@ func (h *orderHandler) SearchOrderByPhoneNumber(c *gin.Context) {
 	}
 
 	orders, err := h.orderUsecase.SearchOrderByPhoneNumber(phoneNumber, page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, orders)
+}
+
+func (h *orderHandler) GetOrderHistory(c *gin.Context) {
+	idStr := c.Param("user_id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user_id"})
+		return
+	}
+
+	page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if err != nil || page < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page parameter"})
+		return
+	}
+
+	size, err := strconv.Atoi(c.DefaultQuery("size", "10"))
+	if err != nil || size < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid size parameter"})
+		return
+	}
+
+	orders, err := h.orderUsecase.GetOrderHistoryByUserID(uint(id), page, size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

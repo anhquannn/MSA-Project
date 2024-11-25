@@ -13,6 +13,7 @@ type PromoCodeRepository interface {
 
 	GetPromoCodeByID(id uint) (*models.PromoCode, error)
 	GetPromoCodeByCode(code string) (*models.PromoCode, error)
+	GetAllPromocodes(page, pageSize int) ([]models.PromoCode, error)
 }
 
 type promoCodeRepository struct {
@@ -47,4 +48,12 @@ func (r *promoCodeRepository) GetPromoCodeByCode(code string) (*models.PromoCode
 		return nil, err
 	}
 	return &promocode, nil
+}
+
+func (r *promoCodeRepository) GetAllPromocodes(page, pageSize int) ([]models.PromoCode, error) {
+	var promocodes []models.PromoCode
+	err := r.db.Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&promocodes).Error
+	return promocodes, err
 }

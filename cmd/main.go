@@ -72,9 +72,14 @@ func main() {
 	orderDetailUsecase := ucOrder.NewOrderDetailUsecase(orderDetailRepo)
 	orderDetailHandler := interfaces.NewOrderDetailHandler(orderDetailUsecase)
 
+	//OrderPromocode
+	orderPromocodeRepo := repoOrder.NewOrderPromoCodeRepository(config.DB)
+	orderPromocodeUsecase := ucOrder.NewOrderPromoCodeUsecase(orderPromocodeRepo)
+	orderPromocodeHandler := interfaces.NewOrderPromoCodeHandler(orderPromocodeUsecase)
+
 	//Order
 	orderRepo := repoOrder.NewOrderRepository(config.DB)
-	orderUsecase := ucOrder.NewOrderUsecase(orderRepo, cartUsecase, cartItemUsecase, promoCodeUsecase, orderDetailUsecase, productUsecase)
+	orderUsecase := ucOrder.NewOrderUsecase(orderRepo, cartUsecase, cartItemUsecase, promoCodeUsecase, orderPromocodeUsecase, orderDetailUsecase, productUsecase, userUsecase, emailService)
 	orderHandler := interfaces.NewOrderHandler(orderUsecase)
 
 	//ReturnOrder
@@ -108,6 +113,7 @@ func main() {
 	config.OrderRoutes(router, orderHandler)
 	config.OrderDetailRoutes(router, orderDetailHandler)
 	config.PromoCodeRoutes(router, promoCodeHandler)
+	config.OrderPromoCodeRoutes(router, orderPromocodeHandler)
 	config.FeedbackRoutes(router, feedbackHandler)
 	config.ReturnOrderRoutes(router, returnOrderHandler)
 	config.PaymentRoutes(router, paymentHandler)

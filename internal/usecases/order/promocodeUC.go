@@ -12,6 +12,7 @@ type PromoCodeUsecase interface {
 
 	GetPromoCodeByID(id uint) (*models.PromoCode, error)
 	GetPromoCodeByCode(code string) (*models.PromoCode, error)
+	GetAllPromocodes(page, pageSize int) ([]models.PromoCode, error)
 }
 
 type promoCodeUsecase struct {
@@ -40,4 +41,8 @@ func (u *promoCodeUsecase) GetPromoCodeByID(id uint) (*models.PromoCode, error) 
 
 func (u *promoCodeUsecase) GetPromoCodeByCode(code string) (*models.PromoCode, error) {
 	return u.promoCodeRepo.GetPromoCodeByCode(code)
+}
+
+func (u *promoCodeUsecase) GetAllPromocodes(page, pageSize int) ([]models.PromoCode, error) {
+	return u.promoCodeRepo.GetAllPromocodes(page, pageSize)
 }

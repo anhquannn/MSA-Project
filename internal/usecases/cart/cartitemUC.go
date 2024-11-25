@@ -10,6 +10,7 @@ type CartItemUsecase interface {
 	CreateCartItem(item *models.CartItem) error
 	GetCartItem(cartID, productID uint) (*models.CartItem, error)
 	UpdateCartItem(item *models.CartItem) error
+	UpdateCartItemsStatus(cartItemIDs []uint, status string) error
 	DeleteCartItem(item *models.CartItem) error
 	ClearCart(cartID uint) error
 
@@ -40,12 +41,16 @@ func (u *cartItemUsecase) UpdateCartItem(item *models.CartItem) error {
 	return u.cartItemRepo.UpdateCartItem(item)
 }
 
+func (u *cartItemUsecase) UpdateCartItemsStatus(cartItemIDs []uint, status string) error {
+	return u.cartItemRepo.BatchUpdateStatus(cartItemIDs, status)
+}
+
 func (u *cartItemUsecase) DeleteCartItem(item *models.CartItem) error {
 	return u.cartItemRepo.DeleteCartItem(item)
 }
 
 func (u *cartItemUsecase) ClearCart(cartID uint) error {
-	return u.cartItemRepo.ClearCart(cartID)
+	return u.cartItemRepo.ClearCart(cartID, "available")
 }
 
 func (u *cartItemUsecase) GetCartItemByID(id uint) (*models.CartItem, error) {
@@ -54,7 +59,7 @@ func (u *cartItemUsecase) GetCartItemByID(id uint) (*models.CartItem, error) {
 
 func (u *cartItemUsecase) GetCartItemsByCartID(cartID uint) ([]models.CartItem, error) {
 	var cartItems []models.CartItem
-	err := u.cartItemRepo.GetCartItemsByCartID(cartID, &cartItems)
+	err := u.cartItemRepo.GetCartItemsByCartID(cartID, &cartItems, "available")
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +82,7 @@ func (u *cartItemUsecase) AddProductToCart(cartID, productID uint, quantity int)
 			CartID:    cartID,
 			ProductID: productID,
 			Quantity:  quantity,
+			Status:    "unavailable",
 			Price:     products.Price,
 		}
 		return u.cartItemRepo.CreateCartItem(newCartItem)
