@@ -129,6 +129,7 @@ func CartItemRoutes(router *gin.Engine, cartitemHandler http.CartItemHandler) {
 			secured.DELETE("/:id", cartitemHandler.DeleteCartItem)
 			secured.GET("/:id", cartitemHandler.GetCartItemByID)
 			secured.GET("/carts/:cartID", cartitemHandler.GetCartItemsByCartID)
+			secured.GET("/carts/all/:cartID", cartitemHandler.GetAllCartItemsByCartID)
 		}
 	}
 }

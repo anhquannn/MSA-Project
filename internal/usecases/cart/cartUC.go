@@ -39,18 +39,20 @@ func (u *cartUsecase) GetCartByID(id uint) (*models.Cart, error) {
 }
 
 func (u *cartUsecase) GetOrCreateCartForUser(userID uint) (*models.Cart, error) {
+	// Lấy giỏ hàng dựa trên userID
 	cart, err := u.cartRepo.GetCartByUserID(userID)
 	if err != nil {
-		return nil, err
+		return nil, err // Trả về lỗi nếu có vấn đề khi truy vấn giỏ hàng
 	}
 
+	// Nếu không tìm thấy giỏ hàng, tạo một giỏ hàng mới
 	if cart == nil {
 		newCart := &models.Cart{UserID: userID, Status: "active"}
 		if err := u.cartRepo.CreateCart(newCart); err != nil {
-			return nil, err
+			return nil, err // Trả về lỗi nếu không thể tạo giỏ hàng mới
 		}
-		return newCart, nil
+		return newCart, nil // Trả về giỏ hàng mới tạo
 	}
 
-	return cart, nil
+	return cart, nil // Trả về giỏ hàng hiện tại nếu đã tồn tại
 }

@@ -62,6 +62,8 @@ func (u *productUsecase) UpdateStockNumber(productID uint, quantity int) error {
 	}
 
 	product.StockNumber -= quantity
+	product.Sales += uint64(quantity)
+
 	if product.StockNumber < 0 {
 		return errors.New("insufficient stock")
 	}
@@ -85,6 +87,7 @@ func (u *productUsecase) RestoreStock(productID uint, quantity int) error {
 	}
 
 	product.StockNumber += quantity
+	product.Sales -= uint64(quantity)
 
 	switch {
 	case product.StockNumber > 300:

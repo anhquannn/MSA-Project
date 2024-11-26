@@ -40,14 +40,18 @@ func GenerateRandomPassword() (string, error) {
 	return password, nil
 }
 
+// Khoá bí mật để ký JWT
 var jwtKey = []byte("nopainnogain")
 
+// Cấu trúc Claims chứa thông tin người dùng và các claim đã đăng ký của JWT
 type Claims struct {
 	Email string `json:"email"`
 	jwt.RegisteredClaims
 }
 
+// Hàm GenerateJWT tạo một JWT mới với email của người dùng
 func GenerateJWT(email string) (string, error) {
+	// Thiết lập thời gian hết hạn cho token
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		Email: email,
@@ -56,6 +60,7 @@ func GenerateJWT(email string) (string, error) {
 		},
 	}
 
+	// Tạo token mới với phương thức ký HS256
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(jwtKey)
 	if err != nil {
@@ -65,9 +70,11 @@ func GenerateJWT(email string) (string, error) {
 	return tokenString, nil
 }
 
+// Hàm ValidateJWT xác thực và giải mã token thành Claims
 func ValidateJWT(tokenString string) (*Claims, error) {
 	claims := &Claims{}
 
+	// Giải mã token với khóa bí mật
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
@@ -78,6 +85,7 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 		return nil, err
 	}
 
+	// Kiểm tra tính hợp lệ của token
 	if !token.Valid {
 		return nil, jwt.ErrSignatureInvalid
 	}
@@ -85,8 +93,10 @@ func ValidateJWT(tokenString string) (*Claims, error) {
 	return claims, nil
 }
 
+// Middleware AuthRequired yêu cầu xác thực JWT cho các yêu cầu HTTP
 func AuthRequired() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Lấy header Authorization từ yêu cầu
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization token not provided"})
@@ -94,6 +104,7 @@ func AuthRequired() gin.HandlerFunc {
 			return
 		}
 
+		// Loại bỏ tiền tố "Bearer " khỏi chuỗi token
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 		if tokenString == authHeader {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid Authorization format"})
@@ -101,6 +112,7 @@ func AuthRequired() gin.HandlerFunc {
 			return
 		}
 
+		// Xác thực token và lấy thông tin Claims
 		claims, err := ValidateJWT(tokenString)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
@@ -108,6 +120,7 @@ func AuthRequired() gin.HandlerFunc {
 			return
 		}
 
+		// Lưu email người dùng vào context
 		c.Set("user_email", claims.Email)
 
 		c.Next()
