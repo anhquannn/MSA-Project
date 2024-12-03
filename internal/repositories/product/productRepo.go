@@ -58,7 +58,7 @@ func (r *productRepository) UpdateProduct(product *models.Product) error {
 
 func (r *productRepository) GetProductByID(id uint) (*models.Product, error) {
 	var product models.Product
-	if err := r.db.Preload("Category").Preload("Manufacturer").First(&product, id).Error; err != nil {
+	if err := r.db.Preload("Category").Preload("Manufacturer").Preload("OrderDetails").Preload("OrderDetails.Product").Preload("OrderDetails.Order").First(&product, id).Error; err != nil {
 		return nil, err
 	}
 	return &product, nil
@@ -66,7 +66,7 @@ func (r *productRepository) GetProductByID(id uint) (*models.Product, error) {
 
 func (r *productRepository) GetAllProducts(page, pageSize int) ([]models.Product, error) {
 	var products []models.Product
-	err := r.db.Preload("Category").Preload("Manufacturer").Limit(pageSize).
+	err := r.db.Preload("Category").Preload("Manufacturer").Preload("OrderDetails").Preload("OrderDetails.Product").Preload("OrderDetails.Order").Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(&products).Error
 	return products, err

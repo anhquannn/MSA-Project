@@ -8,6 +8,7 @@ import (
 	"MSA-Project/internal/utils"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -16,7 +17,7 @@ type UserUsecase interface {
 	CreateUser(user *models.User) error
 	RegisterUser(users *models.User) (string, error)
 	Login(email, password string) (string, error)
-	VerifyOTP(otp string) (*models.User, error)
+	VerifyOTP(otp string) (string, *models.User, error)
 	GetNewPassword(email string) (string, error)
 	LoginWithGoogle(accessToken string) (string, *models.User, error)
 	DeleteUser(users *models.User) error
@@ -109,18 +110,23 @@ func (u *userUsecase) GetNewPassword(email string) (string, error) {
 	return otp, nil
 }
 
-func (u *userUsecase) VerifyOTP(otp string) (*models.User, error) {
+func (u *userUsecase) VerifyOTP(otp string) (string, *models.User, error) {
 	email, err := u.emailService.ValidateOTP(otp)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
 	user, err := u.userRepo.GetUserByEmail(email)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 
-	return user, err
+	token, err := utils.GenerateJWT(user.Email)
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to generate token: %w", err)
+	}
+
+	return token, user, nil
 }
 
 func (u *userUsecase) LoginWithGoogle(accessToken string) (string, *models.User, error) {
@@ -178,7 +184,7 @@ func (u *userUsecase) LoginWithGoogle(accessToken string) (string, *models.User,
 		}
 	}
 
-	tokenStr, err := utils.GenerateJWT(user.FullName)
+	tokenStr, err := utils.GenerateJWT(user.Email)
 	if err != nil {
 		return "", nil, errors.New("failed to generate token")
 	}

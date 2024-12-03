@@ -173,7 +173,8 @@ func OrderRoutes(router *gin.Engine, orderHandler http.OrderHandler) {
 			secured.DELETE("/:id", orderHandler.DeleteOrder)
 			secured.GET("/:id", orderHandler.GetOrderByID)
 			secured.GET("/", orderHandler.GetAllOrders)
-			secured.GET("/history/:user_id", orderHandler.GetOrderHistory)
+			secured.GET("/preview-order", orderHandler.PreviewOrder) //http://localhost:8080/orders/preview-order?user_id=1&cart_id=1&promo_code=NY2024
+			secured.GET("history/:user_id/:status", orderHandler.GetOrdersByStatus)
 			secured.GET("/search", orderHandler.SearchOrderByPhoneNumber)
 		}
 	}
@@ -271,6 +272,8 @@ func DeliveryDetailRoutes(router *gin.Engine, deliveryDetailHandler http.Deliver
 			secured.DELETE("/:id", deliveryDetailHandler.DeleteDeliveryDetail)
 
 			secured.GET("/:id", deliveryDetailHandler.GetDeliveryDetailByID)
+			secured.GET("/", deliveryDetailHandler.GetAllDeliveryDetails)
+			secured.GET("/delivery/:delivery_id", deliveryDetailHandler.GetAllDeliveryDetailsByDeliveryID)
 		}
 	}
 }

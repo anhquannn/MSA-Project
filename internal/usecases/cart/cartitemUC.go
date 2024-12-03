@@ -103,7 +103,7 @@ func (u *cartItemUsecase) AddProductToCart(cartID, productID uint, quantity int)
 	}
 
 	// Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng
-	cartItem.Quantity = quantity
+	cartItem.Quantity += quantity
 	if err := u.cartItemRepo.UpdateCartItem(cartItem); err != nil {
 		return nil, err
 	}

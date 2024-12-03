@@ -12,6 +12,8 @@ type DeliveryDetailRepository interface {
 	UpdateDeliveryDetail(deliverydetail *models.DeliveryDetails) error
 
 	GetDeliveryDetailByID(id uint) (*models.DeliveryDetails, error)
+	GetAllDeliveryDetails(page, pageSize int) ([]models.DeliveryDetails, error)
+	GetAllDeliveryDetailsByDeliveryID(deliveryId uint, page, pageSize int) ([]models.DeliveryDetails, error)
 }
 
 type deliveryDetailRepository struct {
@@ -23,7 +25,7 @@ func NewDeliveryDetailRepository(db *gorm.DB) DeliveryDetailRepository {
 }
 
 func (r *deliveryDetailRepository) CreateDeliveryDetail(deliverydetail *models.DeliveryDetails) error {
-	return r.db.Create(deliverydetail).Preload("Delivery").First(deliverydetail, deliverydetail.ID).Error
+	return r.db.Create(deliverydetail).Preload("Delivery").Preload("Delivery.Order").Preload("Delivery.User").Preload("Delivery.Order.Cart").First(deliverydetail, deliverydetail.ID).Error
 }
 
 func (r *deliveryDetailRepository) DeleteDeliveryDetail(deliverydetail *models.DeliveryDetails) error {
@@ -44,11 +46,27 @@ func (r *deliveryDetailRepository) UpdateDeliveryDetail(deliverydetail *models.D
 	if err != nil {
 		return err
 	}
-	return r.db.Preload("Delivery").First(deliverydetail, deliverydetail.ID).Error
+	return r.db.Preload("Delivery").Preload("Delivery.Order").Preload("Delivery.User").Preload("Delivery.Order.Cart").First(deliverydetail, deliverydetail.ID).Error
 }
 
 func (r *deliveryDetailRepository) GetDeliveryDetailByID(id uint) (*models.DeliveryDetails, error) {
 	var deliveydetail models.DeliveryDetails
-	err := r.db.Preload("Delivery").First(&deliveydetail, id).Error
+	err := r.db.Preload("Delivery").Preload("Delivery.Order").Preload("Delivery.User").Preload("Delivery.Order.Cart").First(&deliveydetail, id).Error
 	return &deliveydetail, err
+}
+
+func (r *deliveryDetailRepository) GetAllDeliveryDetails(page, pageSize int) ([]models.DeliveryDetails, error) {
+	var deliveryDetails []models.DeliveryDetails
+	err := r.db.Preload("Delivery").Preload("Delivery.Order").Preload("Delivery.User").Preload("Delivery.Order.Cart").Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&deliveryDetails).Error
+	return deliveryDetails, err
+}
+
+func (r *deliveryDetailRepository) GetAllDeliveryDetailsByDeliveryID(deliveryId uint, page, pageSize int) ([]models.DeliveryDetails, error) {
+	var deliveryDetails []models.DeliveryDetails
+	err := r.db.Preload("Delivery").Preload("Delivery.Order").Preload("Delivery.User").Preload("Delivery.Order.Cart").Where("delivery_id = ?", deliveryId).Limit(pageSize).
+		Offset((page - 1) * pageSize).
+		Find(&deliveryDetails).Error
+	return deliveryDetails, err
 }

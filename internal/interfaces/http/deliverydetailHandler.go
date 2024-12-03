@@ -4,6 +4,7 @@ import (
 	"MSA-Project/internal/domain/models"
 	"MSA-Project/internal/domain/requests"
 	"MSA-Project/internal/usecases/delivery"
+	"MSA-Project/internal/utils"
 	"net/http"
 	"strconv"
 
@@ -15,6 +16,8 @@ type DeliveryDetailHandler interface {
 	UpdateDeliveryDetail(c *gin.Context)
 	DeleteDeliveryDetail(c *gin.Context)
 	GetDeliveryDetailByID(c *gin.Context)
+	GetAllDeliveryDetails(c *gin.Context)
+	GetAllDeliveryDetailsByDeliveryID(c *gin.Context)
 }
 
 type deliveryDetailHandler struct {
@@ -123,4 +126,33 @@ func (h *deliveryDetailHandler) GetDeliveryDetailByID(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, detail)
+}
+
+func (h *deliveryDetailHandler) GetAllDeliveryDetails(c *gin.Context) {
+	page, pageSize := utils.GetPageAndSize(c)
+
+	details, err := h.deliveryDetailUsecase.GetAllDeliveryDetails(page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, details)
+}
+
+func (h *deliveryDetailHandler) GetAllDeliveryDetailsByDeliveryID(c *gin.Context) {
+	page, pageSize := utils.GetPageAndSize(c)
+	idStr := c.Param("delivery_id")
+	id, err := strconv.ParseUint(idStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	details, err := h.deliveryDetailUsecase.GetAllDeliveryDetailsByDeliveryID(uint(id), page, pageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, details)
 }

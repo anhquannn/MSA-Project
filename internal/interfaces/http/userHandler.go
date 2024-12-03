@@ -98,15 +98,9 @@ func (h *userHandler) VerifyOTP(c *gin.Context) {
 		return
 	}
 
-	user, err := h.userUsecase.VerifyOTP(rq.Otp)
+	token, user, err := h.userUsecase.VerifyOTP(rq.Otp)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-		return
-	}
-
-	token, err := utils.GenerateJWT(user.Email)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
