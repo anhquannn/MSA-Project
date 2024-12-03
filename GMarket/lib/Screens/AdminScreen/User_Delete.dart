@@ -2,7 +2,6 @@
 import 'package:gmarket/Http/User.dart';
 import 'package:gmarket/Models/User.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -54,23 +53,22 @@ class User_Delete_State extends State<User_Delete> {
           ),
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.white),
-            // Mũi tên quay lại màu trắng
             onPressed: () {
-              Navigator.pop(context); // Quay lại màn hình trước đó
+              Navigator.pop(context);
             },
           ),
           title: TextField(
             keyboardType: TextInputType.number,
             onSubmitted: (value) {
               setState(()  async{
-                await userProvider.getUserById(int.parse(value));
-                if(userProvider.user!=null){
-                  await getData(userProvider.user!);
+                await userProvider.GetUserByNumberPhone(value);
+                if(userProvider.usersearch!=null){
+                  await getData(userProvider.usersearch!);
                 }
               });
             },
             decoration: InputDecoration(
-              hintText: "Tìm kiếm",
+              hintText: "Số điện thoại người dùng",
               hintStyle: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -95,165 +93,171 @@ class User_Delete_State extends State<User_Delete> {
         ),
         body: Consumer<User_Provider>(
             builder: (context, value, child) {
-              if(value.user==null){
-                return Center(child: CircularProgressIndicator(),);
-              }
-              else{
-                return  SingleChildScrollView(
-                  child: Center(
-                      child: Container(
-                        color: Colors.white,
-                        width: width * 0.9,
-                        child: Column(
-                          children: [
-                            SizedBox(height: height*0.03,),
-                            TextField(readOnly: true,
-                              controller: fullname,
-                              decoration: InputDecoration(
-                                labelText: "Họ Tên",
-                                labelStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontFamily: 'Coiny-Regular-font'
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(94, 200, 248, 1),
-                                      width: 3,
-                                    )
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(94, 200, 248, 1),
-                                      width: 2,
-                                    )
-                                ),
-                              ),
-                              style: const TextStyle(
+              return  SingleChildScrollView(
+                child: Center(
+                    child: Container(
+                      color: Colors.white,
+                      width: width * 0.9,
+                      child: Column(
+                        children: [
+                          SizedBox(height: height*0.03,),
+                          TextField(readOnly: true,
+                            controller: fullname,
+                            decoration: InputDecoration(
+                              labelText: "Họ Tên",
+                              labelStyle: const TextStyle(
                                   color: Colors.black,
-                                  fontSize: 15
+                                  fontSize: 18,
+                                  fontFamily: 'Coiny-Regular-font'
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    color: Color.fromRGBO(94, 200, 248, 1),
+                                    width: 3,
+                                  )
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: const BorderSide(
+                                    color: Color.fromRGBO(94, 200, 248, 1),
+                                    width: 2,
+                                  )
                               ),
                             ),
-                            SizedBox(height: height * 0.02,),
-                            TextField(
-                              readOnly: true,
-                              controller: email,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: "Email",
-                                labelStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontFamily: 'Coiny-Regular-font'
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(94, 200, 248, 1),
-                                      width: 3,
-                                    )
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(94, 200, 248, 1),
-                                      width: 2,
-                                    )
-                                ),
-                              ),
-                              style: const TextStyle(
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 15
+                            ),
+                          ),
+                          SizedBox(height: height * 0.02,),
+                          TextField(
+                            readOnly: true,
+                            controller: email,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Email",
+                              labelStyle: const TextStyle(
                                   color: Colors.black,
-                                  fontSize: 15
+                                  fontSize: 18,
+                                  fontFamily: 'Coiny-Regular-font'
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    color: Color.fromRGBO(94, 200, 248, 1),
+                                    width: 3,
+                                  )
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: const BorderSide(
+                                    color: Color.fromRGBO(94, 200, 248, 1),
+                                    width: 2,
+                                  )
                               ),
                             ),
-                            SizedBox(height: height * 0.02,),
-                            TextField(
-                              readOnly: true,
-                              controller: address,
-                              keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
-                                labelText: "Địa chỉ",
-                                labelStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontFamily: 'Coiny-Regular-font'
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(94, 200, 248, 1),
-                                      width: 3,
-                                    )
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(94, 200, 248, 1),
-                                      width: 2,
-                                    )
-                                ),
-                              ),
-                              style: const TextStyle(
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 15
+                            ),
+                          ),
+                          SizedBox(height: height * 0.02,),
+                          TextField(
+                            readOnly: true,
+                            controller: address,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Địa chỉ",
+                              labelStyle: const TextStyle(
                                   color: Colors.black,
-                                  fontSize: 15
+                                  fontSize: 18,
+                                  fontFamily: 'Coiny-Regular-font'
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    color: Color.fromRGBO(94, 200, 248, 1),
+                                    width: 3,
+                                  )
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: const BorderSide(
+                                    color: Color.fromRGBO(94, 200, 248, 1),
+                                    width: 2,
+                                  )
                               ),
                             ),
-                            SizedBox(height: height * 0.02,),
-                            TextField(
-                              readOnly: true,
-                              controller: phonenumber,
-                              decoration: InputDecoration(
-                                labelText: "Số điện thoại",
-                                labelStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 18,
-                                    fontFamily: 'Coiny-Regular-font'
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(94, 200, 248, 1),
-                                      width: 3,
-                                    )
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(15),
-                                    borderSide: const BorderSide(
-                                      color: Color.fromRGBO(94, 200, 248, 1),
-                                      width: 2,
-                                    )
-                                ),
-                              ),
-                              style: const TextStyle(
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 15
+                            ),
+                          ),
+                          SizedBox(height: height * 0.02,),
+                          TextField(
+                            readOnly: true,
+                            controller: phonenumber,
+                            decoration: InputDecoration(
+                              labelText: "Số điện thoại",
+                              labelStyle: const TextStyle(
                                   color: Colors.black,
-                                  fontSize: 15
+                                  fontSize: 18,
+                                  fontFamily: 'Coiny-Regular-font'
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  borderSide: const BorderSide(
+                                    color: Color.fromRGBO(94, 200, 248, 1),
+                                    width: 3,
+                                  )
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  borderSide: const BorderSide(
+                                    color: Color.fromRGBO(94, 200, 248, 1),
+                                    width: 2,
+                                  )
                               ),
                             ),
-                            SizedBox(height: height * 0.02,),
-                            ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    backgroundColor:
-                                    const Color.fromRGBO(94, 200, 248, 1)),
-                                onPressed: () {
-                                  onPressedDeleteUser();
-                                },
-                                child: const Text(
-                                  "Xóa người dùng",
-                                  style: TextStyle(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontFamily: 'Coiny-Regular-font'),
-                                )),
-                            SizedBox(height: height * 0.2,),
-                          ],
-                        ),
-                      )
-                  ),
-                );
-              }
-            },
+                            style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 15
+                            ),
+                          ),
+                          SizedBox(height: height * 0.02,),
+                          //Xóa người dùng
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
+                              onPressed: () async{
+                                await userProvider.deleteUser(userProvider.usersearch!.ID);
+                                Navigator.pop(context);
+                                showMessage(context, userProvider.deleteIsSuccess!);
+                              },
+                              child: const Text(
+                                "Xóa người dùng",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontFamily: 'Coiny-Regular-font'),
+                              )),
+
+                          SizedBox(height: height * 0.2,),
+                        ],
+                      ),
+                    )
+                ),
+              );
+                        },
         )
     );
   }
@@ -267,14 +271,6 @@ class User_Delete_State extends State<User_Delete> {
         behavior: SnackBarBehavior.floating,
       ),
     );
-  }
-
-  Future onPressedDeleteUser() async{
-    if(await userHTTP().DeleteUser(ID!)==1){
-      print("Xoa thanh cong");
-      Navigator.pop(context);
-      showMessage(context, "Xóa người dùng $ID thành công");
-    }
   }
 
 }

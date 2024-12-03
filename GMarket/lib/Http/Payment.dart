@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class paymentHttp{
   String baseUrl='http://192.168.1.6:8080';
-  // String baseUrl='http://172.20.10.7:8080';
+  // String baseUrl='http://172.22.14.98:8080';
 
   Future<Payment?> createPayment(Payment pay) async{
     final url=Uri.parse('$baseUrl/payments/${pay.user_id}/${pay.order_id}');
@@ -22,8 +22,6 @@ class paymentHttp{
             'paymentmethod': pay.paymentmethod,
             'status': pay.status,
             'grandtotal': pay.grandtotal,
-            'user_id': pay.user_id,
-            'order_id': pay.order_id,
           })
       );
       if(response.statusCode==201){

@@ -1,16 +1,14 @@
-import 'dart:ffi';
 
-import 'package:gmarket/Models/Delivery.dart';
 
 class DeliveryDetail {
   final int? ID;
   final String? deliveryName;
   final String? shipCode;
   final String? description;
-  final Float? weight;
+  final int? weight;
   final String? deliveryAddress;
   final String? deliveryContact;
-  final Float? deliveryFee;
+  final int? deliveryFee;
   final int? deliveryId;
 
   DeliveryDetail({

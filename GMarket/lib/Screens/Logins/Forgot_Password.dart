@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gmarket/Http/User.dart';
 import 'package:gmarket/Screens/Logins/Verify_OTP.dart';
-import 'package:gmarket/Screens/Logins/Login.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -27,7 +26,6 @@ class ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   Widget build(BuildContext context) {
-    userHTTP user=userHTTP();
 
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;

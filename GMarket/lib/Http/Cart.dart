@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class cartHttp{
   String baseUrl='http://192.168.1.6:8080';
-  // String baseUrl='http://172.20.10.7:8080';
+  // String baseUrl='http://172.22.14.98:8080';
 
   Future<bool?> createCart(Cart c) async{
     final url=Uri.parse('$baseUrl/carts/');

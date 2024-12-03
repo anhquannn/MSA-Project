@@ -18,7 +18,6 @@ class Category_Provider extends ChangeNotifier{
       List<Category> cate=await categoryHttp().getAllCategory();
       listCategory=cate;
         }catch(e){
-      print("Khong the lay  Category");
     } finally{
       isLoading=false;
       notifyListeners();

@@ -1,10 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gmarket/Http/Category.dart';
 import 'package:gmarket/Http/Manufaturer.dart';
-
-import 'package:gmarket/Models/Category.dart';
 import 'package:gmarket/Models/Manufacturer.dart';
 import 'package:gmarket/Provider/Manufacturer_Provider.dart';
 import 'package:provider/provider.dart';
@@ -45,6 +42,7 @@ class Manufacturer_Update_State extends State<Manufacturer_Update> {
   }
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     final manu=Provider.of<Manufacturer_Provider>(context,listen: false);
     manu.getManufacturerById(widget.id!).then((_){
       if(manu.manufacturer!=null){
@@ -227,8 +225,15 @@ class Manufacturer_Update_State extends State<Manufacturer_Update> {
                         children: [
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                  const Color.fromRGBO(94, 200, 248, 1)),
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
                               onPressed: () {
                                 itemManufacturer.updateManufacturer(new Manufacturer(
                                         name: name.text, address: address.text,
@@ -246,8 +251,15 @@ class Manufacturer_Update_State extends State<Manufacturer_Update> {
                           SizedBox(height: height * 0.01,),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                  const Color.fromRGBO(94, 200, 248, 1)),
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
                               onPressed: () {
                                 itemManufacturer.deleteManufacturer(itemManufacturer.manufacturer!.ID).then((_){
                                   itemManufacturer.getAllManufacturer();
@@ -284,6 +296,7 @@ class Manufacturer_Update_State extends State<Manufacturer_Update> {
       ),
     );
   }
+
   Future onPressedUpdateManufacturer() async{
     if( await manufacturerHttp().updateManufacturer(new Manufacturer(name: name.text, address: address.text, ID: id!,contact: contact.text))==true){
       Navigator.pop(context);

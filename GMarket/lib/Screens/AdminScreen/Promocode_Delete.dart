@@ -1,26 +1,7 @@
 
-import 'dart:convert';
-import 'dart:io';
 import 'package:gmarket/Http/PromoCode.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gmarket/Http/Category.dart';
-import 'package:gmarket/Http/Manufaturer.dart';
-import 'package:gmarket/Http/Product.dart';
-import 'package:gmarket/Models/Category.dart';
-import 'package:gmarket/Models/Manufacturer.dart';
-import 'package:gmarket/Models/Product.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-
-void main(){
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Promocode_Delete(),
-      )));
-}
 
 class Promocode_Delete extends StatefulWidget{
   @override
@@ -452,8 +433,15 @@ class Promocode_Delete_State extends State<Promocode_Delete> {
                           SizedBox(height: height * 0.02,),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                  const Color.fromRGBO(94, 200, 248, 1)),
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
                               onPressed: () {
                                 onPressedDeletePromocode();
                               },

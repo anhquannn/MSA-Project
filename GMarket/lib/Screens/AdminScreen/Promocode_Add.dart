@@ -1,5 +1,4 @@
 
-import 'package:gmarket/Http/PromoCode.dart';
 import 'package:gmarket/Models/Promocode.dart';
 import 'package:gmarket/Provider/Promocode_Provider.dart';
 import 'package:intl/intl.dart';
@@ -385,8 +384,15 @@ class Promocode_Add_State extends State<Promocode_Add> {
                       SizedBox(height: height * 0.02,),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                              const Color.fromRGBO(94, 200, 248, 1)),
+                              backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  side: const BorderSide(
+                                      color: Colors.black,
+                                      width: 0.2
+                                  )
+                              )
+                          ),
                           onPressed: () {
                             if(isValid(discountpercentage!)==0){
                               showMessage(context, "Phần trăm không được lớn hơn 100");

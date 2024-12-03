@@ -35,13 +35,12 @@ class CartItem_Item_State extends State<CartItem_Item>{
       widget.quantity++;
     });
     print("Tang quantity ${widget.quantity} productid: ${widget.product_id}");
-    Provider.of<CartItem_Provider>(context,listen: false).
-    addProductToCart(
-      new CartItem(ID: 0, status: "status",
-          price: 999, quantity: widget.quantity,
-          cart_id: widget.cart_id, product_id: widget.product_id)
-    );
+    Provider.of<CartItem_Provider>(context,listen: false).updateCartItem(
+        new CartItem(
+            ID: widget.cartItemId, status: "status", price: 999, quantity: widget.quantity, cart_id: widget.cart_id, product_id: widget.product_id
+        ));
   }
+
 
   void decrease() {
     if (widget.quantity > 1) {

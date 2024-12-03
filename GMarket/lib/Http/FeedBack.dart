@@ -7,7 +7,7 @@ import 'package:gmarket/Models/FeedBack.dart';
 
 class feedbackHttp{
   String baseUrl='http://192.168.1.6:8080';
-  // String baseUrl='http://172.20.10.7:8080';
+  // String baseUrl='http://172.22.14.98:8080';
   final FlutterSecureStorage secureStorage = const FlutterSecureStorage();
 
   Future<bool?> createFeedback(FeedBack fb)async{

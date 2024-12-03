@@ -1,10 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gmarket/Provider/CartItem_Provider.dart';
 import 'package:gmarket/Provider/Order_Provider.dart';
-import 'package:gmarket/Provider/Product_Provider.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
 import 'package:provider/provider.dart';
 
@@ -126,8 +123,15 @@ class Order_Delete_State extends State<Order_Delete>{
               //button xoa
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                      const Color.fromRGBO(94, 200, 248, 1)),
+                      backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: const BorderSide(
+                              color: Colors.black,
+                              width: 0.2
+                          )
+                      )
+                  ),
                   onPressed: () {
                     orderProvider.deleteOrder(orderProvider.order!.ID).then((_){
                       if(orderProvider.isLoading==false){

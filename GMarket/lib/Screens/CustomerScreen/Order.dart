@@ -1,19 +1,30 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gmarket/Models/CartItem.dart';
+import 'package:gmarket/Models/Delivery.dart';
+import 'package:gmarket/Models/DeliveryDetail.dart';
 import 'package:gmarket/Models/Order.dart';
 import 'package:gmarket/Models/Payment.dart';
 import 'package:gmarket/Models/Promocode.dart';
+import 'package:gmarket/Models/zaloMethod.dart';
 import 'package:gmarket/Provider/CartItem_Provider.dart';
 import 'package:gmarket/Provider/Cart_Provider.dart';
+import 'package:gmarket/Provider/DeliveryDetail_Provider.dart';
+import 'package:gmarket/Provider/Delivery_Provider.dart';
 import 'package:gmarket/Provider/Order_Provider.dart';
 import 'package:gmarket/Provider/Payment_Provider.dart';
 import 'package:gmarket/Provider/Product_Provider.dart';
 import 'package:gmarket/Provider/Promocode_Provider.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
+import 'package:gmarket/Screens/CustomerScreen/DeliveryDetail_List.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Create_Order extends StatefulWidget {
+  const Create_Order({super.key});
+
 
   @override
   State<StatefulWidget> createState() {
@@ -27,7 +38,10 @@ class Create_Order_State extends State<Create_Order> {
   bool shipCode=true;
   String promoCode="";
   String method="";
-
+  String orderurl="";
+  String payResult = "";
+  static const EventChannel eventChannel = EventChannel('flutter.native/eventPayOrder');
+  static const MethodChannel platform = MethodChannel('flutter.native/channelPayOrder');
   Future<void> increase() async {
     setState(() {
       quantity++;
@@ -35,7 +49,7 @@ class Create_Order_State extends State<Create_Order> {
 
     await Provider.of<CartItem_Provider>(context,listen: false).
     updateCartItem(
-        new CartItem(ID: Provider.of<CartItem_Provider>(context,listen: false).cart!.ID,
+        CartItem(ID: Provider.of<CartItem_Provider>(context,listen: false).cart!.ID,
             status: "available",
             price: 999,
             quantity: quantity,
@@ -51,7 +65,7 @@ class Create_Order_State extends State<Create_Order> {
       });
       await Provider.of<CartItem_Provider>(context,listen: false).
       updateCartItem(
-          new CartItem(ID: Provider.of<CartItem_Provider>(context,listen: false).cart!.ID,
+          CartItem(ID: Provider.of<CartItem_Provider>(context,listen: false).cart!.ID,
               status: "available",
               price: 999,
               quantity: quantity,
@@ -62,10 +76,40 @@ class Create_Order_State extends State<Create_Order> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    if (Platform.isIOS) {
+      eventChannel.receiveBroadcastStream().listen(_onEvent, onError: _onError);
+    }
+  }
+
+  void _onEvent(dynamic event) {
+
+    if (event is Map<dynamic, dynamic>) {
+      var res = Map<String, dynamic>.from(event);
+      setState(() {
+        if (res["errorCode"] == 1) {
+          payResult = "Thanh toán thành công";
+        } else if (res["errorCode"] == 4) {
+          payResult = "User hủy thanh toán";
+        } else {
+          payResult = "Giao dịch thất bại";
+        }
+      });
+    } else {
+    }
+  }
+
+  void _onError(dynamic error) {
+    setState(() {
+      payResult = "Giao dịch thất bại";
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-
     final itemProduct = Provider.of<ProductProvider>(context);
     final userProvider = Provider.of<User_Provider>(context);
     final orderProvider=Provider.of<Order_Provider>(context);
@@ -73,8 +117,8 @@ class Create_Order_State extends State<Create_Order> {
     final cartItemProvider=Provider.of<CartItem_Provider>(context);
     final paymentProvider=Provider.of<Payment_Provider>(context);
     final promocodeProvider=Provider.of<Promocode_Provider>(context);
-
-
+    final deliveryDetailProvider=Provider.of<DeliveryDetail_Provider>(context);
+    final deliveryProvider=Provider.of<Delivery_Provider>(context);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -156,11 +200,20 @@ class Create_Order_State extends State<Create_Order> {
                      children: [
                        ElevatedButton(
                            style: ElevatedButton.styleFrom(
-                               backgroundColor: Color.fromRGBO(94, 200, 248, 0.5),
-                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15),
-                               ),
+                               backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                               shape: RoundedRectangleBorder(
+                                   borderRadius: BorderRadius.circular(15),
+                                   side: const BorderSide(
+                                       color: Colors.black,
+                                       width: 0.2
+                                   )
+                               )
                            ),
-                           onPressed: () {
+                           onPressed: () async {
+
+                               await deliveryDetailProvider.getAllDeliveryDetail();
+                               Navigator.push(context, MaterialPageRoute(builder: (context) => DeliveryDetail_List(),));
+
 
                            },
                            child: const Row(
@@ -189,7 +242,7 @@ class Create_Order_State extends State<Create_Order> {
                  crossAxisAlignment: CrossAxisAlignment.stretch,
                  children: [
                    //hinh anh
-                   Container(
+                   SizedBox(
                      width: width * 0.35,
                      height: height * 0.5,
                      child: Image.memory(
@@ -198,7 +251,7 @@ class Create_Order_State extends State<Create_Order> {
                      ),
                    ),
                    SizedBox(width: width * 0.03),
-                   Container(
+                   SizedBox(
                      width: width * 0.55,
                      child: Column(
                        crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,17 +299,17 @@ class Create_Order_State extends State<Create_Order> {
                                    ),
                                  ),
                                ),
-                               child: Text("-"),
+                               child: const Text("-"),
                              ),
                              //quantity
-                             SizedBox(width: 10),
-                             Text("$quantity",
+                             const SizedBox(width: 10),
+                             Text("${cartItemProvider.cart!.quantity ==null ? 0 :cartItemProvider.cart!.quantity}",
                                style: const TextStyle(
                                  color: Colors.black,
                                  fontSize: 16,
                                ),
                              ),
-                             SizedBox(width: 10),
+                             const SizedBox(width: 10),
                              // Nút tăng số lượng
                              ElevatedButton(
                                onPressed:() async {
@@ -276,7 +329,7 @@ class Create_Order_State extends State<Create_Order> {
                                    ),
                                  ),
                                ),
-                               child: Text("+"),
+                               child: const Text("+"),
                              ),
                            ],
                          ),
@@ -288,147 +341,194 @@ class Create_Order_State extends State<Create_Order> {
              ),
              //Phí vận chuyển
              SizedBox(height: height * 0.01),
-             Container(
+             SizedBox(
                width: width*0.95,
                child: const Text("Phí vận chuyển: 5k/km",
                  textAlign: TextAlign.start,
                  style: TextStyle(color: Colors.black, fontSize: 14),),
              ),
-             //Ma giam gia
              SizedBox(height: height * 0.03),
-             DropdownButtonFormField<PromoCode>(
-               decoration: InputDecoration(
-                 labelText: "Mã giảm giá",
-                 labelStyle: const TextStyle(
-                   color: Colors.black,
-                   fontSize: 18,
-                   fontWeight: FontWeight.bold
-                 ),
-                 focusedBorder: OutlineInputBorder(
-                   borderRadius: BorderRadius.circular(20),
-                   borderSide: const BorderSide(
-                     color: Color.fromRGBO(94, 200, 248, 1),
-                     width: 2,
+             //Ma giam gia
+             SizedBox(
+               width: width * 0.9,
+               height: height * 0.15,
+               child: DropdownButtonFormField<PromoCode>(
+                 decoration: InputDecoration(
+                   labelText: "Mã giảm giá",
+                   labelStyle: const TextStyle(
+                     color: Colors.black,
+                     fontSize: 16,
+                     fontWeight: FontWeight.bold,
+                   ),
+                   focusedBorder: OutlineInputBorder(
+                     borderRadius: BorderRadius.circular(20),
+                     borderSide: const BorderSide(
+                       color: Color.fromRGBO(94, 200, 248, 1),
+                       width: 2,
+                     ),
+                   ),
+                   enabledBorder: OutlineInputBorder(
+                     borderRadius: BorderRadius.circular(15),
+                     borderSide: const BorderSide(
+                       color: Color.fromRGBO(94, 200, 248, 1),
+                       width: 1,
+                     ),
                    ),
                  ),
-                 enabledBorder: OutlineInputBorder(
-                   borderRadius: BorderRadius.circular(15),
-                   borderSide: const BorderSide(
-                     color: Color.fromRGBO(94, 200, 248, 1),
-                     width: 1,
-                   ),),),
-               style: const TextStyle(
-                 color: Colors.black, fontSize: 15,),
-               hint: const Text("Chọn mã giảm giá",
-                 style: TextStyle(color: Colors.black),),
-               onChanged: (PromoCode? newValue) async {
-                 loading();
-                 await orderProvider.getPreviewOrder(userProvider.user!.ID, cartProvider.cart!.ID, newValue!.code! );
-                 setState(() {
-                   promoCode=newValue.code!;
-                 });
-                 Navigator.pop(context);
+                 style: const TextStyle(
+                   color: Colors.black,
+                   fontSize: 60,
+                 ),
+                 hint: const Text(
+                   "",
+                   style: TextStyle(color: Colors.black),
+                 ),
+                 onChanged: (PromoCode? newValue) async {
+                   loading();
+                   await orderProvider.getPreviewOrder(userProvider.user!.ID, cartProvider.cart!.ID, newValue!.code!);
+                   setState(() {
+                     promoCode = newValue.code!;
+                   });
+                   Navigator.pop(context);
                  },
-               items: promocodeProvider.promocodes.map((PromoCode pc) {
-                 return DropdownMenuItem<PromoCode>(
-                   value: pc,
-                   child: Text(pc.code!),
-                 );
-               }).toList(),
+                 items: promocodeProvider.promocodes.map((PromoCode pc) {
+                   return DropdownMenuItem<PromoCode>(
+                     value: pc,
+                     child: Container(
+                       margin: EdgeInsets.all(5),
+                       padding: EdgeInsets.all(5),
+                       width: width * 0.7,
+                       height: height * 0.07, // Tăng chiều cao của phần tử trong dropdown
+                       decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(10),
+                         border: Border.all(
+                           width: 1.5,
+                           color: Color.fromRGBO(94, 200, 248, 1),
+                         ),
+                       ),
+                       child: Row(
+                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                         children: [
+                           Column(
+                             crossAxisAlignment: CrossAxisAlignment.start,
+                             children: [
+                               Text(
+                                 "Giảm ngay ${pc.discountpercentage}%",
+                                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                               ),
+                               Text(
+                                 "Đơn tối thiểu: ${pc.minimumordervalue!} VND",
+                                 style: const TextStyle(fontSize: 14),
+                               ),
+                             ],
+                           ),
+                           Icon(Icons.discount),
+                         ],
+                       ),
+                     ),
+                   );
+                 }).toList(),
+               ),
              ),
              SizedBox(height: height * 0.01),
              //Phương thức thanh toán
-             Container(
-                 child: Column(
+             Column(
+               children: [
+                 const Text("Phương thức thanh toán",
+                   style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
+                 SizedBox(height: height*0.02,),
+                 Row(
+                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                    children: [
-                     const Text("Phương thức thanh toán",
-                       style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),),
-                     SizedBox(height: height*0.02,),
-                     Row(
-                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                       children: [
-                         //Zalo Pay
-                         ElevatedButton(
-                             style: ElevatedButton.styleFrom(
-                                 backgroundColor: Color.fromRGBO(94, 200, 248, 1),
-                                 shape: RoundedRectangleBorder(
-                                     borderRadius: BorderRadius.circular(15)
+                     //Zalo Pay
+                     ElevatedButton(
+                         style: ElevatedButton.styleFrom(
+                             backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                             shape: RoundedRectangleBorder(
+                                 borderRadius: BorderRadius.circular(15),
+                                 side: const BorderSide(
+                                     color: Colors.black,
+                                     width: 0.2
                                  )
-                             ),
-                             onPressed: () {
-                               if(zaloPay==false){
-                                 setState(() {
-                                   zaloPay=true;
-                                   shipCode=false;
-                                 });
-                               }
-                               else{
-                                 setState(() {
-                                   shipCode=true;
-                                   zaloPay=false;
-                                 });
-                               }
-                             },
-                             child: Row(
-                               children: [
-                                 Text("Zalo Pay", style: TextStyle(color: Colors.black, fontSize: 16),),
-                                 Checkbox( activeColor: Color.fromRGBO(94, 200, 248, 1),
-                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                   value: zaloPay,
-                                   onChanged: (value) {
-                                   setState(() {
-                                     zaloPay=value!;
-                                     zaloPay==true? shipCode=false:shipCode=true;
-                                   });
+                             )
+                         ),
+                         onPressed: () {
+                           if(zaloPay==false){
+                             setState(() {
+                               zaloPay=true;
+                               shipCode=false;
+                             });
+                           }
+                           else{
+                             setState(() {
+                               shipCode=true;
+                               zaloPay=false;
+                             });
+                           }
+                         },
+                         child: Row(
+                           children: [
+                             const Text("Zalo Pay", style: TextStyle(color: Colors.black, fontSize: 16),),
+                             Checkbox( activeColor: const Color.fromRGBO(94, 200, 248, 1),
+                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                               value: zaloPay,
+                               onChanged: (value) {
+                               setState(() {
+                                 zaloPay=value!;
+                                 zaloPay==true? shipCode=false:shipCode=true;
+                               });
 
-                                   },
+                               },
+                             )
+                           ],
+                         )
+                     ),
+                     // Ship Code
+                     ElevatedButton(
+                         style: ElevatedButton.styleFrom(
+                             backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                             shape: RoundedRectangleBorder(
+                                 borderRadius: BorderRadius.circular(15),
+                                 side: const BorderSide(
+                                     color: Colors.black,
+                                     width: 0.2
                                  )
-                               ],
                              )
                          ),
-                         // Ship Code
-                         ElevatedButton(
-                             style: ElevatedButton.styleFrom(
-                                 backgroundColor: Color.fromRGBO(170, 184, 194, 1),
-                                 shape: RoundedRectangleBorder(
-                                     borderRadius: BorderRadius.circular(15)
-                                 )
-                             ),
-                             onPressed: () {
-                               if(shipCode==true){
+                         onPressed: () {
+                           if(shipCode==true){
+                             setState(() {
+                               shipCode=false;
+                               zaloPay=true;
+                             });
+                           }
+                           else{
+                             setState(() {
+                               shipCode=true;
+                               zaloPay=false;
+                             });
+                           }
+                         },
+                         child: Row(
+                           children: [
+                             const Text("Ship Code", style: TextStyle(color: Colors.black, fontSize: 16),),
+                             Checkbox(
+                               activeColor: const Color.fromRGBO(94, 200, 248, 1),
+                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                               value: shipCode,
+                               onChanged: (value) {
                                  setState(() {
-                                   shipCode=false;
-                                   zaloPay=true;
+                                   shipCode=value!;
+                                   shipCode==true?zaloPay=false:zaloPay=true;
                                  });
-                               }
-                               else{
-                                 setState(() {
-                                   shipCode=true;
-                                   zaloPay=false;
-                                 });
-                               }
-                             },
-                             child: Row(
-                               children: [
-                                 Text("Ship Code", style: TextStyle(color: Colors.black, fontSize: 16),),
-                                 Checkbox(
-                                   activeColor: Color.fromRGBO(94, 200, 248, 1),
-                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                                   value: shipCode,
-                                   onChanged: (value) {
-                                     setState(() {
-                                       shipCode=value!;
-                                       shipCode==true?zaloPay=false:zaloPay=true;
-                                     });
-                                   },
-                                 )
-                               ],
+                               },
                              )
-                         ),
-                       ],
+                           ],
+                         )
                      ),
                    ],
-                 )
+                 ),
+               ],
              ),
              SizedBox(height: height * 0.03),
              //Thông tin thanh toán
@@ -436,12 +536,12 @@ class Create_Order_State extends State<Create_Order> {
                return Container(
                  decoration: BoxDecoration(
                      border: Border.all(
-                       color: Color.fromRGBO(94, 200, 248,  1 ),
+                       color: const Color.fromRGBO(94, 200, 248,  1 ),
                        width: 1.5,
                      ),
                      borderRadius: BorderRadius.circular(10),
                  ),
-                 padding: EdgeInsets.all(5),
+                 padding: const EdgeInsets.all(5),
                  width: width*0.9,
                  //Thông tin thanh toán
                  child: Row(
@@ -470,16 +570,16 @@ class Create_Order_State extends State<Create_Order> {
                        children: [
                          const SizedBox(height: 7,),
                          //Tổng tiền
-                         Text('${value.previewOrder.total_cost} VND', style: TextStyle(color: Colors.black, fontSize: 12),),
+                         Text('${value.previewOrder.total_cost} VND', style: const TextStyle(color: Colors.black, fontSize: 12),),
                          const SizedBox(height: 5,),
                          //Tiền giảm giá
-                         Text("${value.previewOrder.discount} VND", style: TextStyle(color: Colors.black, fontSize: 12),),
+                         Text("${value.previewOrder.discount} VND", style: const TextStyle(color: Colors.black, fontSize: 12),),
                          const SizedBox(height: 5,),
                          //Phí vận chuyển
-                         Text("0 VND", style: TextStyle(color: Colors.black, fontSize: 12),),
+                         const Text("0 VND", style: TextStyle(color: Colors.black, fontSize: 12),),
                          const SizedBox(height: 5,),
                          //Còn lại
-                         Text("${value.previewOrder.grand_total} VND", style: TextStyle(color: Colors.black, fontSize: 12),),
+                         Text("${value.previewOrder.grand_total} VND", style: const TextStyle(color: Colors.black, fontSize: 12),),
                          const SizedBox(height: 7,),
                        ],
                      ),
@@ -490,49 +590,130 @@ class Create_Order_State extends State<Create_Order> {
 
              SizedBox(height: height * 0.03),
              //Đặt hàng
-             Container(
+             SizedBox(
                height: height*0.06,
                width: width*0.4,
                child:  ElevatedButton(
                    style: ElevatedButton.styleFrom(
-                     backgroundColor: Color.fromRGBO(94, 200, 248, 1),
-                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15),
-                     ),
+                       backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                       shape: RoundedRectangleBorder(
+                           borderRadius: BorderRadius.circular(15),
+                           side: const BorderSide(
+                               color: Colors.black,
+                               width: 0.2
+                           )
+                       )
                    ),
                    onPressed: () async {
-                     showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
-                       return const Center(
-                         child: CircularProgressIndicator(),
-                       );
-                     },);
+                    loading();
                      if(zaloPay==true){
                        setState(() {
-                         method="ZaloPay";
+                         method="zalopay";
                        });
+                       //Tao order
+                       await orderProvider.createOrder(
+                           Order( ID: 0,
+                           user_id: userProvider.user!.ID,
+                           cart_id: cartProvider.cart!.ID,
+                           grandtotal: orderProvider.previewOrder.grand_total,
+                           status: "paying",order_details: [], User: userProvider.user!
+                       ), promoCode);
+                       //UpdateOrder
+                       await orderProvider.updateStatusOrder(
+                           orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "paying");
+                       //Tao payment
+                       await paymentProvider.createPayment(
+                           new Payment(
+                               ID: 0, paymentmethod: method,
+                               status: "paying", grandtotal: orderProvider.previewOrder.grand_total,
+                               order_id: orderProvider.order!.ID, user_id: userProvider.user!.ID));
+
+                       //____________________Thanh toan zalopay___________________________________________
+                       final result=await getOrderZalo(orderProvider.previewOrder.grand_total);
+                         await launchUrl(Uri.parse(result!.orderurl), mode: LaunchMode.externalApplication);
+                         //________________________________________________________________________________
+
+                         //update payment success
+                       await paymentProvider.updatePayment(
+                         new Payment(ID: paymentProvider.payment!.ID,
+                             paymentmethod: "zalopay", status: "success",
+                             grandtotal:orderProvider.previewOrder.grand_total, order_id: orderProvider.order!.ID,
+                             user_id: userProvider.user!.ID)
+                       );
+                       //UpdateOrder paid
+                       await orderProvider.updateStatusOrder(
+                           orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "paid");
+                       //nếu zalo trả về đã thanh toán, update status
+                       //tạo delivery
+                       await deliveryProvider.createDelivery(
+                           new Delivery(ID: 0, status: "delivering",
+                               orderId: orderProvider.order!.ID, userId: userProvider.user!.ID,
+                               details: null),
+                           userProvider.user!.ID,
+                           orderProvider.order!.ID);
+                       await orderProvider.updateStatusOrder(
+                           orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "delivering");
+                       await deliveryDetailProvider.createDeliveryDetail(
+                         new DeliveryDetail(ID: 0,
+                             deliveryName: deliveryDetailProvider.deliveryDetail!.deliveryName,
+                             shipCode: "",
+                             description: "",
+                             weight: 0,
+                             deliveryAddress: deliveryDetailProvider.deliveryDetail!.deliveryAddress,
+                             deliveryContact: deliveryDetailProvider.deliveryDetail!.deliveryContact,
+                             deliveryFee: 0,
+                             deliveryId: deliveryProvider.delivery!.ID)
+                       );
                      }
                      else{
+                       loading();
                        setState(() {
                          method="COD";
                        });
-                     }
-                     await orderProvider.createOrder(new Order(
-                       ID: 0,
-                       user_id: userProvider.user!.ID,
-                       cart_id: cartProvider.cart!.ID,
-                       grandtotal: orderProvider.previewOrder.grand_total,
-                       status: "",
-                     ), promoCode);
+                       //Tao order
+                       await orderProvider.createOrder(Order(
+                           ID: 0,
+                           user_id: userProvider.user!.ID,
+                           cart_id: cartProvider.cart!.ID,
+                           grandtotal: orderProvider.previewOrder.grand_total,
+                           status: "",order_details: [], User: userProvider.user!
+                       ), promoCode);
+                       //UpdateOrder
+                       await orderProvider.updateStatusOrder(
+                           orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "delivering");
+                       //Tao payment
+                       await paymentProvider.createPayment(
+                           new Payment(
+                               ID: 0, paymentmethod: method,
+                               status: "paying", grandtotal: orderProvider.previewOrder.grand_total,
+                               order_id: orderProvider.order!.ID, user_id: userProvider.user!.ID));
+                       //tạo delivery
+                       await deliveryProvider.createDelivery(
+                           new Delivery(ID: 0, status: "delivering",
+                               orderId: orderProvider.order!.ID, userId: userProvider.user!.ID,
+                               details: null),
+                           userProvider.user!.ID,
+                           orderProvider.order!.ID);
+                       await deliveryDetailProvider.createDeliveryDetail(
+                           new DeliveryDetail(ID: 0,
+                               deliveryName: deliveryDetailProvider.deliveryDetail!.deliveryName,
+                               shipCode: "",
+                               description: "",
+                               weight: 0,
+                               deliveryAddress: deliveryDetailProvider.deliveryDetail!.deliveryAddress,
+                               deliveryContact: deliveryDetailProvider.deliveryDetail!.deliveryContact,
+                               deliveryFee: 0,
+                               deliveryId: deliveryProvider.delivery!.ID)
+                       );
 
-                     await paymentProvider.createPayment(
-                         new Payment(ID: 0, paymentmethod:method,
-                             status: "pending",
-                             grandtotal: orderProvider.order!.grandtotal, order_id: orderProvider.order!.ID,
-                             user_id: userProvider.user!.ID));
+
+                     }
                      orderProvider.clearPreviewOrder();
-                     Navigator.of(context).pop();
+                    Navigator.pop(context);
                      if (orderProvider.isSucess == true) {
                        Navigator.pop(context);
                        showMessage(context, "Đặt hàng thành công");
+                       Navigator.pop(context);
                      } else {
                        showMessage(context, "Không tồn tại mã giảm giá");
                      }
@@ -558,7 +739,7 @@ class Create_Order_State extends State<Create_Order> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
         backgroundColor: Colors.blue,
         behavior: SnackBarBehavior.floating,
       ),

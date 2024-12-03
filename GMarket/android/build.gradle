@@ -2,6 +2,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://zalo-pay-sdk.s3.ap-southeast-1.amazonaws.com/android/' }
     }
 }
 rootProject.buildDir = "../build"

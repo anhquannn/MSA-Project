@@ -52,7 +52,7 @@ class Payment_Provider extends ChangeNotifier{
     }
   }
 
-  Future getPayment(int id) async{
+  Future getPaymentByID(int id) async{
     _payment=null;
     _isLoading=true;
     notifyListeners();

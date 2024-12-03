@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 
 class orderHttp{
   String baseUrl='http://192.168.1.6:8080';
-  // String baseUrl='http://172.20.10.7:8080';
+  // String baseUrl='http://172.22.14.98:8080';
   final FlutterSecureStorage secureStorage=FlutterSecureStorage();
 
   Future<Order?> createOrder(Order od,String code) async{
@@ -96,26 +96,61 @@ class orderHttp{
     return [];
   }
 
-  Future<List<Order>> searchOrderByNumberPhone(String phoneNumber)async{
-    final url=Uri.parse('$baseUrl/orders/search?phone_number=$phoneNumber');
+  Future<List<Order>> fillOrder(int page)async{
+    final url=Uri.parse('$baseUrl/orders/?page=$page&pageSize=10');
     final token=await userHTTP().GetToken();
     try{
-      final response=await http.get(url,
-        headers: {
-          'Content-Type':'application/json',
-          'Authorization':'Bearer $token',
-        },
+      final response=await http.get(
+          url,
+          headers: {
+            'Content-Type':'application/json',
+            'Authorization':'Bearer $token'
+          }
       );
       if(response.statusCode==200){
         final List<dynamic> data=jsonDecode(response.body);
-        final list=data.map((json)=>Order.fromJson(json)).toList();
-        print('danh sach ${list[0].status}');
+        List<Order> list=data.map((json)=>Order.fromJson(json)).toList();
         return list;
       }
     }catch(e){
-      throw Exception("Không thể load Order: $e");
+      throw Exception("Không thể load fillOrder: $e");
     }
     return [];
+  }
+
+  Future<List<Order>> searchOrderByNumberPhone(String phoneNumber) async {
+    final url = Uri.parse('$baseUrl/orders/search?phone_number=$phoneNumber');
+    final token = await userHTTP().GetToken();
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // In ra nội dung của response.body để kiểm tra
+        print('Response body: ${response.body}');
+
+        // Giải mã dữ liệu JSON
+        final data = jsonDecode(response.body) as List<dynamic>?;
+
+        if (data != null) {
+          final list = data.map((json) => Order.fromJson(json)).toList();
+          print('danh sach ${list[0].grandtotal}');
+          return list;
+        } else {
+          throw Exception("Dữ liệu JSON là null hoặc không hợp lệ");
+        }
+      } else {
+        throw Exception("Không thể tải đơn hàng. Mã trạng thái: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("HTTP - Không thể load Order: $e");
+    }
   }
 
   Future<List<Order>> getOrderHistory(int userId) async {
@@ -132,6 +167,7 @@ class orderHttp{
       if (response.statusCode == 200) {
         List<dynamic> data = jsonDecode(response.body);
         List<Order> list = data.map((json)=>Order.fromJson(json)).toList();
+        print("Http - getOrderHistory ${list[0].User.address}");
         return list;
       }
     } catch (e) {
@@ -162,4 +198,56 @@ class orderHttp{
     }
     return null;
   }
+
+  Future<Order?> updateStatusOrder(int orderId,int userId, int cartId, String status) async{
+    final url=Uri.parse('$baseUrl/orders/$orderId');
+    final token=await userHTTP().GetToken();
+    try{
+      final response=await http.put(
+          url,
+          headers: {
+            'Content-Type':'application/json',
+            'Authorization':'Bearer $token'
+          },
+        body: jsonEncode({
+          "status":status,
+          "user_id":userId,
+          "cart_id":cartId
+        })
+      );
+      if(response.statusCode==200){
+        final data=jsonDecode(response.body);
+        final od=Order.fromJson(data);
+        return od;
+      }
+    }catch(e){
+      throw Exception("Http - Khong the updateStatusOrder $e");
+    }
+    return null;
+  }
+
+  Future<List<Order>?> getOrderByStatus(String status, int userId) async{
+    final url = Uri.parse('$baseUrl/orders/history/$userId/$status');
+    final token = await userHTTP().GetToken();
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+       List<dynamic> data=jsonDecode(response.body);
+       List<Order> list=data.map((json)=>Order.fromJson(json)).toList();
+       return list;
+      }
+    } catch (e) {
+      throw Exception("HTTP - Không thể load getOrderByStatus: $e");
+    }
+    return null;
+  }
 }
+
+

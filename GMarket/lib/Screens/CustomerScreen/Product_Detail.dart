@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Models/CartItem.dart';
+import 'package:gmarket/Models/DeliveryDetail.dart';
 import 'package:gmarket/Provider/CartItem_Provider.dart';
 import 'package:gmarket/Provider/Cart_Provider.dart';
+import 'package:gmarket/Provider/DeliveryDetail_Provider.dart';
 import 'package:gmarket/Provider/FeedBack_Provider.dart';
 import 'package:gmarket/Provider/Order_Provider.dart';
 import 'package:gmarket/Provider/Product_Provider.dart';
@@ -36,7 +38,7 @@ class Product_Detail_State extends State<Product_Detail>{
     final itemFeedback = Provider.of<FeedBack_Provider>(context, listen: false);
     final promocodeProvider=Provider.of<Promocode_Provider>(context);
     final itemOrder=Provider.of<Order_Provider>(context);
-
+    final deliveryDetailProvider=Provider.of<DeliveryDetail_Provider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -267,7 +269,6 @@ class Product_Detail_State extends State<Product_Detail>{
                   onPressed: () async {
                     try{
                       itemCartItem.clearListId();
-                      await itemCart.getOrCreateCartForUser(itemUser.user!.ID);
                       await itemCartItem.getAllCartItemsByCartID(itemCart.cart!.ID);
                       if (itemCartItem.cartItems!.isNotEmpty) {
                         print("1");
@@ -301,14 +302,12 @@ class Product_Detail_State extends State<Product_Detail>{
               //Thêm vào giỏ hàng
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      minimumSize: Size(width*0.25, height*0.08),
-                      alignment: Alignment.center,
-                      backgroundColor: Colors.white,
+                      backgroundColor: Color.fromRGBO(94, 200, 248, 1),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(15),
                           side: const BorderSide(
-                              color: Color.fromRGBO(94, 190, 248, 1),
-                              width: 2
+                              color: Colors.black,
+                              width: 0.2
                           )
                       )
                   ),
@@ -337,14 +336,12 @@ class Product_Detail_State extends State<Product_Detail>{
               //Mua ngay
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      minimumSize: Size(width*0.25, height*0.08),
-                      alignment: Alignment.center,
-                      backgroundColor: const Color.fromRGBO(94, 200, 248, 1),
+                      backgroundColor: Color.fromRGBO(94, 200, 248, 1),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(15),
                           side: const BorderSide(
-                              color: Color.fromRGBO(94, 190, 248, 1),
-                              width: 2
+                              color: Colors.black,
+                              width: 0.2
                           )
                       )
                   ),
@@ -362,6 +359,17 @@ class Product_Detail_State extends State<Product_Detail>{
                     id.add(itemCartItem.cart!.ID!);
                     await itemCartItem.updateCartItemStatus(id, "available");
                     await itemOrder.getPreviewOrder(itemUser.user!.ID, itemCart.cart!.ID, "" );
+                    deliveryDetailProvider.setDeliveryDetail(
+                        new DeliveryDetail(
+                            ID: 0,
+                            deliveryName: itemUser.user!.fullname,
+                            shipCode: "",
+                            description: "",
+                            weight: 0,
+                            deliveryAddress: itemUser.user!.address,
+                            deliveryContact: itemUser.user!.phonenumber,
+                            deliveryFee: 0,
+                            deliveryId: null));
                     Navigator.pop(context);
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => Create_Order(),)

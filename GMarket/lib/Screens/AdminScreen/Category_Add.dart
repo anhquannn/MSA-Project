@@ -1,7 +1,6 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gmarket/Http/Category.dart';
 import 'package:gmarket/Models/Category.dart';
 import 'package:gmarket/Provider/Category_Provider.dart';
 import 'package:provider/provider.dart';
@@ -133,8 +132,15 @@ class Category_Add_State extends State<Category_Add> {
                       SizedBox(height: height * 0.01,),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                              const Color.fromRGBO(94, 200, 248, 1)),
+                              backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  side: const BorderSide(
+                                      color: Colors.black,
+                                      width: 0.2
+                                  )
+                              )
+                          ),
                           onPressed: () {
                             itemCategory.createCategory(new Category(name: name, description: description, ID: 0));
                             Navigator.pop(context);

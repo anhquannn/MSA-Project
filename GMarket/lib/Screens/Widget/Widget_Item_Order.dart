@@ -1,12 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gmarket/Models/CartItem.dart';
-import 'package:gmarket/Provider/CartItem_Provider.dart';
-import 'package:gmarket/Provider/Cart_Provider.dart';
-import 'package:gmarket/Provider/Order_Provider.dart';
-import 'package:gmarket/Provider/Product_Provider.dart';
-import 'package:provider/provider.dart';
 
 class Widget_Item_Order extends StatefulWidget{
   @override
@@ -38,8 +32,7 @@ class Widget_Item_Order_State extends State<Widget_Item_Order>{
   Widget build(BuildContext context) {
     final width=MediaQuery.of(context).size.width;
     final height=MediaQuery.of(context).size.height;
-    final orderProvider=Provider.of<Order_Provider>(context);
-    final itemCartItem=Provider.of<CartItem_Provider>(context,listen: false);
+
     return
       Scaffold(
           backgroundColor: Colors.white,

@@ -1,6 +1,4 @@
 
-import 'dart:collection';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Provider/Category_Provider.dart';
@@ -42,113 +40,111 @@ class Widget_ProductSate extends State<Widget_Product>{
 
     return Scaffold(
       backgroundColor: const Color.fromRGBO(255, 255, 255, 1.0),
-      body: SingleChildScrollView(
+      body: Container(
         child:Center(
           child: Container(
-            width: width*0.9,
+              width: width*0.9,
+              height: height*0.9,
             child: Center(
-              child: Column(
-              children: [
-                SizedBox(height: height*0.02,),
-                Row(
-                  children: [
-                    SizedBox(width: width*0.025,),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => Add_Product(),)
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
-                        fixedSize: Size(width * 0.4, width * 0.4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        shadowColor: Colors.grey[300],
-                        elevation: 7,
+              child:Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Thêm sản phẩm
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Add_Product(),)
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
+                      fixedSize: Size(width * 0.4, width * 0.4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add,
-                            color: const Color.fromRGBO(94, 200, 248, 1),
-                            size: width * 0.2,
-                          ),
-                          const Center(
-                            child: Text(
-                              "Thêm sản phẩm",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily: 'Coiny-Regular-font',
-                                color: Colors.black,
-                              ),textAlign: TextAlign.center,
-                            ),
-                          )
-                        ],
-                      ),
+                      shadowColor: Colors.grey[300],
+                      elevation: 7,
                     ),
-                    SizedBox(width: width*0.045,),
-                    ElevatedButton(
-                      onPressed: () {
-                        itemCategory.getAllCategory();
-                        itemProvider.getAllProduct();
-                        itemManufacturer.getAllManufacturer();
-                        if(itemProvider.products!=null){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Product_List(),)
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
-                        fixedSize: Size(width * 0.4, width * 0.4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: const Color.fromRGBO(94, 200, 248, 1),
+                          size: width * 0.2,
                         ),
-                        shadowColor: Colors.grey[300],
-                        elevation: 7,
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.list,
-                            color: const Color.fromRGBO(94, 200, 248, 1),
-                            size: width * 0.2,
+                        const Center(
+                          child: Text(
+                            "Thêm sản phẩm",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Coiny-Regular-font',
+                              color: Colors.black,
+                            ),textAlign: TextAlign.center,
                           ),
-                          const Center(
-                            child: Text(
-                              "Xem sản phẩm",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontFamily: 'Coiny-Regular-font',
-                                color: Colors.black,
-                              ),textAlign: TextAlign.center,
-                            ),
-                          )
-                        ],
-                      ),
+                        )
+                      ],
                     ),
-                  ],
-                ),
-                SizedBox(height: height*0.2,)
-              ],
-            ),
-                
+                  ),
+                  // Xem sản phẩm
+                  ElevatedButton(
+                    onPressed: () async{
+                      loading();
+                      await itemCategory.getAllCategory();
+                      await itemProvider.getAllProduct();
+                      await itemManufacturer.getAllManufacturer();
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Product_List(),)
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
+                      fixedSize: Size(width * 0.4, width * 0.4),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      shadowColor: Colors.grey[300],
+                      elevation: 7,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.list,
+                          color: const Color.fromRGBO(94, 200, 248, 1),
+                          size: width * 0.2,
+                        ),
+                        const Center(
+                          child: Text(
+                            "Xem sản phẩm",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Coiny-Regular-font',
+                              color: Colors.black,
+                            ),textAlign: TextAlign.center,
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
             )
           ),
         )
-
-
         ),
     );
   }
 
-
+  void loading(){
+    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },);
+  }
 }
-
-  //Tạo sản phẩm

@@ -2,20 +2,9 @@
 import 'package:gmarket/Provider/Manufacturer_Provider.dart';
 import 'package:gmarket/Screens/AdminScreen/Manufacturer_Update.dart';
 import 'package:gmarket/Screens/Widget/Widget_Manufacturer_Item.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:provider/provider.dart';
-
-void main(){
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(),
-      home: const Scaffold(
-        body: Manufacturer_List(),
-      )));
-}
 
 class Manufacturer_List extends StatefulWidget{
   const Manufacturer_List({super.key});
@@ -30,6 +19,7 @@ class Manufacturer_List_State extends State<Manufacturer_List> {
 
   @override
   void didChangeDependencies() {
+    super.didChangeDependencies();
     final itemManufacturer=Provider.of<Manufacturer_Provider>(context,listen: false);
     itemManufacturer.getAllManufacturer().then((_){
       setState(() {
@@ -40,10 +30,8 @@ class Manufacturer_List_State extends State<Manufacturer_List> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
-
     final itemManufacturer=Provider.of<Manufacturer_Provider>(context,listen: false);
+
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -57,13 +45,10 @@ class Manufacturer_List_State extends State<Manufacturer_List> {
           ),
           centerTitle: true,
         ),
-         body: Consumer<Manufacturer_Provider>(
+         body: Container(
+           child: Consumer<Manufacturer_Provider>(
              builder:(context, value, child) {
-               return GridView.builder(
-                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                     crossAxisCount: 2,
-                     childAspectRatio: 1.5
-                 ),
+               return ListView.builder(
                  itemCount: itemManufacturer.listManufacturer.length,
                  itemBuilder: (context, index) {
                    final man = itemManufacturer.listManufacturer[index];
@@ -83,6 +68,8 @@ class Manufacturer_List_State extends State<Manufacturer_List> {
                  },
                );
              },)
+         )
+
     );
 
   }

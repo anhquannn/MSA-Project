@@ -595,8 +595,15 @@ class Add_Product_State extends State<Add_Product> {
                       SizedBox(height: height * 0.02,),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                              const Color.fromRGBO(94, 200, 248, 1)),
+                              backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  side: const BorderSide(
+                                      color: Colors.black,
+                                      width: 0.2
+                                  )
+                              )
+                          ),
                           onPressed: () async {
                             if(isValid()==0){
                               showMessage(context, "Hạn sử dụng quá ngắn");
@@ -710,7 +717,6 @@ class Add_Product_State extends State<Add_Product> {
         DateTime.now().microsecond,
       );
       // Chuyển sang chuỗi ISO 8601 với múi giờ địa phương
-      DateTime formattedExpiry = pickedWithTime.toLocal();
       String formattedDate = pickedWithTime.toUtc().toIso8601String();
       setState(() {
         date=pickedWithTime;

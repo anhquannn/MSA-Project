@@ -2,18 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gmarket/Http/User.dart';
 import 'package:gmarket/Provider/Cart_Provider.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
-import 'package:gmarket/Screens/Logins/Login.dart';
 import 'package:gmarket/Screens/Logins/Update_Password.dart';
 import 'package:provider/provider.dart';
-//
-// void main() {
-//   runApp(MaterialApp(
-//     debugShowCheckedModeBanner: false,
-//     home: Scaffold(
-//       body: Verifyotp(email: '',),
-//     ),
-//   ));
-// }
 
 class Verifyotp extends StatefulWidget {
   late String email;

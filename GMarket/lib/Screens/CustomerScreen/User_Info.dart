@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,8 +5,10 @@ import 'package:gmarket/Provider/Order_Provider.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
 import 'package:gmarket/Screens/CustomerScreen/Box_Chat.dart';
 import 'package:gmarket/Screens/CustomerScreen/Change_Password.dart';
-import 'package:gmarket/Screens/CustomerScreen/Order_Item.dart';
+import 'package:gmarket/Screens/CustomerScreen/Home_Screen.dart';
+import 'package:gmarket/Screens/CustomerScreen/Order_List.dart';
 import 'package:gmarket/Screens/CustomerScreen/Update_UserInfo.dart';
+import 'package:gmarket/Screens/Logins/Login.dart';
 import 'package:provider/provider.dart';
 
 class User_Info extends StatefulWidget{
@@ -21,15 +22,19 @@ class User_Info_State extends State<User_Info>{
   Widget build(BuildContext context) {
     final width=MediaQuery.of(context).size.width;
     final height=MediaQuery.of(context).size.height;
+
     final userProvider=Provider.of<User_Provider>(context);
-    final orderProvider=Provider.of<Order_Provider>(context);
+    final orderProvider=Provider.of<Order_Provider>(context,listen: false);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(94, 200, 248, 1),
         leading: IconButton(
-            onPressed: () {
-              Navigator.pop(context);
-            },
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(context,
+              MaterialPageRoute(builder: (context) => HomeScreen(),),
+                  (Route<dynamic> route) => false,
+            );
+          },
             icon: Icon(Icons.arrow_back_rounded, color: Colors.black,),
         )
       ),
@@ -103,7 +108,13 @@ class User_Info_State extends State<User_Info>{
             //Xem don hang
             ElevatedButton(
               onPressed: () async {
-                await orderProvider.searchOrderByNumberPhone(userProvider.user!.phonenumber);
+                loading();
+                await orderProvider.getOrderPending(userProvider.user!.ID);
+                await orderProvider.getOrderPaying(userProvider.user!.ID);
+                await orderProvider.getOrderDelivering(userProvider.user!.ID);
+                await orderProvider.getOrderSuccess(userProvider.user!.ID);
+                await orderProvider.getOrderReturned(userProvider.user!.ID);
+                Navigator.pop(context);
                 Navigator.push(context, 
                     MaterialPageRoute(builder: (context) => Order_Info(),)
                 );
@@ -160,6 +171,7 @@ class User_Info_State extends State<User_Info>{
                       )
                   )
               ),
+                //Đổi mật khẩu
               child: Row(
                 children: [
                   const Text("Đổi mật khẩu",
@@ -219,10 +231,46 @@ class User_Info_State extends State<User_Info>{
               ),
             ),
             SizedBox(height: height*0.01,),
+            //dang xuat2
+            ElevatedButton(
+              onPressed: () async {
+                userProvider.clearUser();
+                Navigator.pushAndRemoveUntil(
+                    context, 
+                    MaterialPageRoute(builder: (context) => Login(),),
+                        (Route<dynamic> route) => false,
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                      side: const BorderSide(
+                          color: Colors.black,
+                          width: 0.2
+                      )
+                  )
+              ),
+              child: const Text("Đăng xuất",
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'Coiny-Regular-font',
+                    color: Colors.black
+                ),
+              ),
+            ),
+            SizedBox(height: height*0.01,),
           ],
         ),
       ),
     );
   }
-
+  void loading(){
+    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },);
+  }
 }

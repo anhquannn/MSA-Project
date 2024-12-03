@@ -39,6 +39,7 @@ class CartItem_Provider extends ChangeNotifier{
     notifyListeners();
     final result=await cartItemHttp().updateCartItem(c);
     if(result==true){
+      getCartItemByID(c.ID!);
       _isLoading=false;
       notifyListeners();
     }else{
@@ -154,7 +155,7 @@ class CartItem_Provider extends ChangeNotifier{
         notifyListeners();
       }
       else{
-        print("Provider khong the getAllCartItemsByCartID ${_cartItems?[0].ID}");
+        print("Provider khong the getAllCartItemsByCartID ${_cartItems[0].ID}");
       }
     }catch(e){
       throw Exception("provider -  khong the getAllCartItemsByCartID cartId: $cartId -:- $e");

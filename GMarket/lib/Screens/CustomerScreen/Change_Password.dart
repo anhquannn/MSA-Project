@@ -2,7 +2,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
-import 'package:gmarket/Screens/Logins/Login.dart';
 import 'package:provider/provider.dart';
 
 class Change_Password extends StatefulWidget{
@@ -27,6 +26,25 @@ class Change_Password_State extends State<Change_Password>{
     final height = MediaQuery.of(context).size.height;
     final userrovider=Provider.of<User_Provider>(context);
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+        titleTextStyle: const TextStyle(
+        ),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        title: const Text("Đổi mật khẩu",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Coiny-Regular-font',
+            fontSize: 20,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: Stack(
         children: [
           Center(
@@ -64,7 +82,7 @@ class Change_Password_State extends State<Change_Password>{
                               fontSize: 16,
                             ),
                             decoration: InputDecoration(
-                                hintText: "Mật khẩu mới",
+                                hintText: "Mật khẩu cũ",
                                 hintStyle: const TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'Coiny-Regular-font',
@@ -180,8 +198,15 @@ class Change_Password_State extends State<Change_Password>{
                           SizedBox(height: height*0.01,),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                  const Color.fromRGBO(94, 200, 248, 1)),
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
                               onPressed: () {
                                 print(isValid(context));
                                 if(isValid(context)==true){

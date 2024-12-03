@@ -8,6 +8,7 @@ import 'package:gmarket/Models/User.dart';
 class userHTTP {
 
   // String baseUrl='http://172.20.10.7:8080';
+  // String baseUrl='http://172.22.14.98:8080';
 
   String baseUrl='http://192.168.1.6:8080';
 
@@ -105,16 +106,17 @@ class userHTTP {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
+        final token=data['token'];
+        SaveToken(token);
         final user = Users.fromJson(data['user']);
-
         return user;
       }
     } catch (e) {
       print('Lỗi đăng nhập: $e');
       return null;
     }
+    return null;
   }
-
 
   Future<bool> RegisterUser(String FullName, String Email, String Password, String PhoneNumber, String Address,) async {
     final url = Uri.parse('$baseUrl/users/register');
@@ -140,7 +142,7 @@ class userHTTP {
     return false;
   }
 
-  Future<int?> DeleteUser(int id) async{
+  Future<bool?> DeleteUser(int id) async{
     final token= await GetToken();
     final url=Uri.parse('$baseUrl/users/$id');
 
@@ -153,12 +155,14 @@ class userHTTP {
         }
       );
       if(response.statusCode==200){
-        return 1;
+        return true;
+      }else if(response.statusCode==500){
+        return false;
       }
     } catch(e){
-      return 0;
+      throw Exception("Http - Khong the xoa user $e");
     }
-    return 0;
+    return false;
   }
 
   Future<bool?> UpdateUserInfo(String FullName, String Password, String PhoneNumber, String Email, String Address,int id) async {
@@ -315,6 +319,49 @@ class userHTTP {
       if(response.statusCode==200){
         final userData=jsonDecode(response.body);
         return Users.fromJson(userData);
+      }
+    } catch(e){
+      return null;
+    }
+    return null;
+  }
+
+  Future<Users?> GetUserByNumberPhone(String numberPhone) async{
+    final token=await GetToken();
+    final url=Uri.parse('$baseUrl/users/phone/$numberPhone');
+    try{
+      final response= await http.get(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          }
+      );
+      if(response.statusCode==200){
+        final userData=jsonDecode(response.body);
+        return Users.fromJson(userData);
+      }
+    } catch(e){
+      return null;
+    }
+    return null;
+  }
+
+  Future<List<Users>?> getAllUser() async{
+    final token=await GetToken();
+    final url=Uri.parse('$baseUrl/users/');
+    try{
+      final response= await http.get(
+          url,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token'
+          }
+      );
+      if(response.statusCode==200){
+        List<dynamic> userData=jsonDecode(response.body);
+        List<Users> list=userData.map((json)=>Users.fromJson(json)).toList();
+        return list;
       }
     } catch(e){
       return null;

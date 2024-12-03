@@ -6,9 +6,21 @@ class User_Provider extends ChangeNotifier{
   Users? _user;
   bool _isLoading=false;
   final List<Users> _difusers=[];
+  String _name="";
+  String _address="";
+  String _phoneNumber="";
+  Users? _usersearch;
+  List<Users>? _listuser;
+  String? _issucesss;
 
+  String? get deleteIsSuccess=>_issucesss;
+  List<Users>? get listUser=>_listuser;
+  String get name=>_name;
+  String get address=>_address;
+  String get phoneNumber=>_phoneNumber;
   List<Users> get difuser=>_difusers;
   Users? get user=>_user;
+  Users? get usersearch=>_usersearch;
   bool get isLoading=>_isLoading;
 
   Future loginWithGoogle(String googleToken) async{
@@ -46,11 +58,9 @@ class User_Provider extends ChangeNotifier{
     notifyListeners();
     try {
       final result = await userHTTP().GetUserById(userId);
-      print("dfasdfasdf${result!.fullname}");
-      if (result !=null) {
-        _difusers.add(result);
-      }
-    } catch (e) {
+      _difusers.add(result!);
+      print("Provider - getUserById thanh cong, name: ${_difusers[0].fullname}");
+        } catch (e) {
       throw Exception("Provider - Khong the getUserById $e");
     }
     _isLoading = false;
@@ -63,10 +73,8 @@ class User_Provider extends ChangeNotifier{
     try {
       final result = await userHTTP().GetUserById(userId);
       print("dfasdfasdf${result!.fullname}");
-      if (result !=null) {
-        _user=result;
-      }
-    } catch (e) {
+      _user=result;
+        } catch (e) {
       throw Exception("Provider - Khong the getUserById $e");
     }
     _isLoading = false;
@@ -109,6 +117,75 @@ class User_Provider extends ChangeNotifier{
       _isLoading=false;
       notifyListeners();
     }
+  }
+
+  Future searchUser(int userId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final result = await userHTTP().GetUserById(userId);
+      print("dfasdfasdf${result!.fullname}");
+      _usersearch=result;
+        } catch (e) {
+      throw Exception("Provider - Khong the getUserById $e");
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future deleteUser(int userId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final result = await userHTTP().DeleteUser(userId);
+      if(result==true){
+        print("Provider - etUserById thanh cong ");
+        _issucesss="Xóa thành công";
+      }else{
+        _issucesss="Xóa không thành công";
+      }
+
+        } catch (e) {
+      _issucesss="Xóa không thành công";
+      throw Exception("Provider - Khong the getUserById $e");
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future GetUserByNumberPhone(String numberPhone) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final result = await userHTTP().GetUserByNumberPhone(numberPhone);
+      _usersearch=result;
+        } catch (e) {
+      throw Exception("Provider - Khong the GetUserByNumberPhone $e");
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future getAllUsers() async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final result = await userHTTP().getAllUser();
+      if(result!=null) {
+        _listuser=result;
+      }
+    } catch (e) {
+      throw Exception("Provider - Khong the getAllUsers $e");
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  void updateAddress(String name, String address, String phoneNumber){
+    this._name=name;
+    this._address=address;
+    this._phoneNumber=phoneNumber;
+    notifyListeners();
   }
 
   void clearUser(){

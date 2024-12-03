@@ -3,6 +3,7 @@ import 'package:gmarket/Http/User.dart';
 import 'package:gmarket/Provider/Cart_Provider.dart';
 import 'package:gmarket/Provider/Product_Provider.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
+import 'package:gmarket/Screens/AdminScreen/Admin_Screen.dart';
 import 'package:gmarket/Screens/CustomerScreen/Home_Screen.dart';
 import 'package:provider/provider.dart';
 
@@ -121,15 +122,17 @@ class VerifyotploginState extends State<Verifyotplogin> {
                                 loading();
                                 await productProvider.getAllProduct();
                                 await userProvider.verifyOTP(_otp);
+                                await cartProvider.getOrCreateCartForUser(Provider.of<User_Provider>(context,listen: false).user!.ID) ;
                                 Navigator.pop(context);
                                 if(userProvider.user!=null){
-                                  // Navigator.pushAndRemoveUntil(context,
-                                  //   MaterialPageRoute(builder: (context) => HomeScreen(),),
-                                  //       (Route<dynamic> route) => false,
-                                  // );
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder: (context) => HomeScreen(),)
-                                  );
+                                  if(userProvider.user!.role=="admin"){
+                                    Navigator.push(
+                                        context, MaterialPageRoute(builder: (context) => AdminScreen()));
+                                  }
+                                  else{
+                                    Navigator.push(
+                                        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                                  }
                                 }
                                 cartProvider.getOrCreateCartForUser(userProvider.user!.ID);
                               },
@@ -164,6 +167,7 @@ class VerifyotploginState extends State<Verifyotplogin> {
       throw Exception("Không thể gửi lại $e");
     }
   }
+
   void loading(){
     showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
       return const Center(

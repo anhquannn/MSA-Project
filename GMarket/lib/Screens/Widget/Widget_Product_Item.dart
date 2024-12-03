@@ -21,8 +21,6 @@ class WidgetProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
-    final height = MediaQuery.of(context).size.height;
     String floatToMoney(int price){
       NumberFormat formatter = NumberFormat.currency(locale: 'vi_VN'); // Định dạng tiền tệ cho Việt Nam
       String formattedAmount = formatter.format(price);

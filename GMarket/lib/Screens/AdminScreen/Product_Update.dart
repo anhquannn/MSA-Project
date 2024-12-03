@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:gmarket/Provider/Category_Provider.dart';
 import 'package:gmarket/Provider/Manufacturer_Provider.dart';
 import 'package:gmarket/Provider/Product_Provider.dart';
+import 'package:gmarket/Screens/AdminScreen/Product_List.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,14 +14,6 @@ import 'package:gmarket/Models/Manufacturer.dart';
 import 'package:gmarket/Models/Product.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
-void main(){
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Product_Update_Delete(id: 0,),
-      )));
-}
 
 class Product_Update_Delete extends StatefulWidget{
   int? id;
@@ -35,84 +28,47 @@ class Product_Update_Delete extends StatefulWidget{
 
 class Product_Update_Delete_State extends State<Product_Update_Delete> {
   int? productId;
+  String? image = "";
   TextEditingController name = TextEditingController();
   TextEditingController price = TextEditingController();
-  String? image = "";
   TextEditingController size = TextEditingController();
   TextEditingController color = TextEditingController();
   TextEditingController specification = TextEditingController();
   TextEditingController description = TextEditingController();
   TextEditingController stocknumber = TextEditingController();
   TextEditingController stocklevel = TextEditingController();
-  // TextEditingController category_id = TextEditingController();
-  // TextEditingController manufaturer_id = TextEditingController();
   TextEditingController expiry = TextEditingController();
   Category? selectedCategory;
   Manufacturer? selectedManufacturer;
-  Product? product;
-  List<Category>? listCate;
-  String? namee;
-
+  int page=1;
   @override
-  void dispose() {
-    name.dispose();
-    price.dispose();
-    size.dispose();
-    color.dispose();
-    specification.dispose();
-    description.dispose();
-    stocknumber.dispose();
-    stocklevel.dispose();
-    // category_id.dispose();
-    // manufaturer_id.dispose();
-    expiry.dispose();
-    super.dispose();
-  }
-//Lấy dữ liệu
-  Future getData(Product data) async {
+  void initState(){
+    super.initState();
+    final itemProvider = Provider.of<ProductProvider>(context,listen: false);
+    final itemManufacturer = Provider.of<Manufacturer_Provider>(context,listen: false);
+    final itemCategory = Provider.of<Category_Provider>(context,listen: false);
     setState(() {
-      _image=null;
-      image = data.image.toString();
-      productId = data.ID;
-      name.text = data.name.toString();
-      price.text = data.price.toString();
-      size.text = data.size.toString();
-      color.text = data.color.toString();
-      specification.text = data.specification.toString();
-      description.text = data.description.toString();
-      stocknumber.text = data.stocknumber.toString();
-      stocklevel.text = data.stocklevel.toString();
-      expiry.text = data.expiry.toString();
-
+      image = itemProvider.product?.image.toString();
+      productId = itemProvider.product?.ID;
+      name.text = itemProvider.product!.name.toString();
+      price.text = itemProvider.product!.price.toString();
+      size.text = itemProvider.product!.size.toString();
+      color.text = itemProvider.product!.color.toString();
+      specification.text = itemProvider.product!.specification.toString();
+      description.text = itemProvider.product!.description.toString();
+      stocknumber.text = itemProvider.product!.stocknumber.toString();
+      stocklevel.text = itemProvider.product!.stocklevel.toString();
+      expiry.text = itemProvider.product!.expiry.toString();
+      selectedManufacturer=itemManufacturer.manufacturer;
+      selectedCategory=itemCategory.category!;
     });
-  }
-  bool _isInitialized = false;
-  @override
-  void didChangeDependencies(){
-    super.didChangeDependencies();
-    if (!_isInitialized) {
-      final itemProvider = Provider.of<ProductProvider>(context);
-
-      itemProvider.getProductById(widget.id!).then((_) {
-        final product = itemProvider.product;
-        if (product != null) {
-            getData(product);
-        }
-        setState(() {
-          selectedManufacturer=Provider.of<Manufacturer_Provider>(context,listen: false).manufacturer;
-          selectedCategory=Provider.of<Category_Provider>(context, listen: false).category;
-            _isInitialized = true;
-        });
-      });
-
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final itemProvider = Provider.of<ProductProvider>(context);
-    final itemCategory=Provider.of<Category_Provider>(context);
-    final itemManufacturer=Provider.of<Manufacturer_Provider>(context);
+    final itemCategory=Provider.of<Category_Provider>(context,listen: false);
+    final itemManufacturer=Provider.of<Manufacturer_Provider>(context,listen: false);
 
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
@@ -128,7 +84,7 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
           },
         ),
       ),
-      body: _isInitialized==false? Center(child: CircularProgressIndicator(),):
+      body:
       Center(
         child: Container(
             color: Colors.white,
@@ -433,19 +389,20 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                       SizedBox(height: height * 0.02,),
                       //Mức tồn kho sản phẩm
                       DropdownButtonFormField<String>(
+                        hint: Text("${stocklevel.text}"),
                         style: TextStyle(color: Colors.black, fontSize: 15),
                         items: const [
                           DropdownMenuItem(
                               value: 'Low',
-                              child: Text('Thấp')
+                              child: Text('Low')
                           ),
                           DropdownMenuItem(
                               value: 'Medium',
-                              child: Text('Trung Bình')
+                              child: Text('Medium')
                           ),
                           DropdownMenuItem(
                               value: 'High',
-                              child: Text('Cao')
+                              child: Text('High')
                           )
                         ],
                         onChanged: (String? value) {
@@ -453,7 +410,7 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                             stocklevel.text = value!;
                           });
                         },
-                        value: stocklevel.text,
+                        // value: stocklevel.text,
                         decoration: InputDecoration(
                           labelText: "Mức tồn kho sản phẩm",
                           labelStyle: const TextStyle(
@@ -480,11 +437,10 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                       SizedBox(height: height * 0.02,),
                       //Mã loại sản phẩm
                       DropdownButtonFormField<Category>(
-                         // value: selectedCategory,
+                        // value: null,
                         onChanged: (Category? newValue) {
                           setState(() {
-                              selectedCategory = newValue;
-                              // category_id.text = newValue.ID.toString();
+                            selectedCategory = newValue;
                           });
                         },
                         items: itemCategory.list.map<DropdownMenuItem<Category>>((Category category) {
@@ -493,7 +449,7 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                             child: Text(category.name),
                           );
                         }).toList(),
-                        hint: Text('${Provider.of<Category_Provider>(context).category!.name}'),
+                        hint: Text('${selectedCategory!.name}'),
                         decoration: InputDecoration(
                           labelText: "Danh mục",
                           labelStyle: const TextStyle(
@@ -517,7 +473,6 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                           ),
                         ),
                       ),
-
                       SizedBox(height: height * 0.02,),
                       //Mã nhà sản xuất sản phẩm
                       DropdownButtonFormField<Manufacturer>(
@@ -558,16 +513,28 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                           ),
                         ),
                       ),
-
-
+                      SizedBox(height: height * 0.02,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text("Đã bán: ${itemProvider.product!.sales}"),
+                          Text("Còn lại: ${itemProvider.product!.stocknumber}"),
+                        ],
+                      ),
                       SizedBox(height: height * 0.02,),
                       //Hình ảnh
                       SizedBox(width: width*0.025,),
                       ElevatedButton(
-
                           style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                              const Color.fromRGBO(94, 200, 248, 1)),
+                              backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  side: const BorderSide(
+                                      color: Colors.black,
+                                      width: 0.2
+                                  )
+                              )
+                          ),
                           onPressed: () {
                             _image=null;
                             _getImage();
@@ -579,7 +546,7 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                                 fontSize: 15,
                                 fontFamily: 'Coiny-Regular-font'),
                           )),
-
+                      SizedBox(height: height * 0.02,),
                       SizedBox(height: height * 0.02,),
                       Container(
                           width: width,
@@ -588,22 +555,27 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                           Image.memory(base64Decode(image!),fit: BoxFit.cover,)
 
                       ),
+                      // Sửa sản phẩm
+                      // Xóa sản phẩm
                       Column(
                         children: [
+                          // Sửa sản phẩm
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                  const Color.fromRGBO(94, 200, 248, 1)),
-                              onPressed: () {
-                                print('asdf asdfa sdf df ${selectedManufacturer!.name}');
-                                print('asdf asdfa sdf df ${selectedCategory!.name}');
-                                if(selectedCategory==null){
-                                  selectedCategory=Provider.of<Category_Provider>(context, listen: false).category;
-                                }
-                                if(selectedManufacturer==null){
-                                  selectedManufacturer=Provider.of<Manufacturer_Provider>(context,listen: false).manufacturer;
-                                }
-                                itemProvider.updateProduct(new Product(name: name.text, price: int.parse(price.text),
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
+                              onPressed: () async{
+                                loading();
+                                selectedCategory ??= Provider.of<Category_Provider>(context, listen: false).category!;
+                                selectedManufacturer ??= Provider.of<Manufacturer_Provider>(context,listen: false).manufacturer;
+                                await itemProvider.updateProduct(new Product(name: name.text, price: int.parse(price.text),
                                     image: image, size: int.parse(size.text),
                                     color: color.text, specification: specification.text,
                                     description: description.text, expiry: expiry.text,
@@ -611,11 +583,14 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                                     // category_id: int.parse(selectedCategory.ID! as String),
                                      category_id: selectedCategory!.ID,
                                     manufacturer_id: selectedManufacturer!.ID
-                                    , ID: productId,category: null, manufacturer: null, sales: 0)).then((_){
-                                      itemProvider.getAllProduct();
+                                    , ID: productId,category: null, manufacturer: null, sales: 0));
+                                      await itemProvider.getAllProduct();
                                   Navigator.pop(context);
+                                Navigator.pushAndRemoveUntil(context,
+                                  MaterialPageRoute(builder: (context) => Product_List(),),
+                                      (Route<dynamic> route) => false,
+                                );
                                   showMessage(context, "Sửa thành công");
-                                    });
 
                                 // onPressedUpdateProduct();
                               },
@@ -626,13 +601,28 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
                                     fontSize: 16,
                                     fontFamily: 'Coiny-Regular-font'),
                               )),
+                          // Xóa sản phẩm
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                  const Color.fromRGBO(94, 200, 248, 1)),
-                              onPressed: () {
-                                itemProvider.deleteProduct(widget.id!);
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
+                              onPressed: ()async {
+                                loading();
+                               await itemProvider.deleteProduct(widget.id!);
+                                await itemProvider.getAllProduct();
                                 Navigator.pop(context);
+                                Navigator.pushAndRemoveUntil(context,
+                                    MaterialPageRoute(builder: (context) => Product_List(),),
+                                      (Route<dynamic> route) => false,
+                                );
+
                                 showMessage(context, "Xóa thành công");
                                 // onPressedDeleteProduct();
                               },
@@ -669,6 +659,7 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
   //____________________________________________________________________________
   // Lấy hình ảnh từ điện thoại
   File? _image;
+
   Future<File?> pickImage(ImageSource source) async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source);
@@ -680,6 +671,7 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
       return null;
     }
   }
+
   Future _getImage() async {
     final pickedImage = await pickImage(ImageSource.gallery);
     if(pickedImage!=null){
@@ -732,9 +724,18 @@ class Product_Update_Delete_State extends State<Product_Update_Delete> {
     Navigator.pop(context);
     showMessage(context, "Sửa thành công");
   }
+
   Future<void> onPressedDeleteProduct()async{
     await productHttp().deleteProduct(productId!);
     showMessage(context, "Xóa thành công");
     Navigator.pop(context);
+  }
+
+  void loading(){
+    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },);
   }
 }

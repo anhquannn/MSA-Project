@@ -14,16 +14,6 @@ import 'package:gmarket/Screens/CustomerScreen/User_Info.dart';
 import 'package:gmarket/Screens/Widget/Widget_Product_Item.dart';
 import 'package:provider/provider.dart';
 
-void main() {
-  runApp(MaterialApp(
-    debugShowCheckedModeBanner: false,
-    theme: ThemeData(primaryColor: Colors.white),
-    home: Scaffold(
-      body: HomeScreen(),
-    ),
-  ));
-}
-
 class HomeScreen extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -82,6 +72,7 @@ class HomeScreen_State extends State<HomeScreen> {
     final itemCategory=Provider.of<Category_Provider>(context, listen: false);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Color.fromRGBO(94, 200, 248, 1),
@@ -96,18 +87,24 @@ class HomeScreen_State extends State<HomeScreen> {
           // search
           IconButton(
             onPressed: () async {
+              setState(() {
+                page=1;
+              });
               itemProduct.clearProductSearch();
-              await itemCart.getOrCreateCartForUser(itemUser.user!.ID);
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => Search_Product()),
               );
+
             },
             icon: Icon(Icons.search, color: Colors.white),
           ),
           // user info
           IconButton(
             onPressed: () {
+              setState(() {
+                page=1;
+              });
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => User_Info()),
@@ -119,13 +116,14 @@ class HomeScreen_State extends State<HomeScreen> {
           // cart
           IconButton(
             onPressed: () async {
+              setState(() {
+                page=1;
+              });
               try {
                 loading();
                 itemCartItem.clearListId();
-                await itemCart.getOrCreateCartForUser(itemUser.user!.ID);
                 await itemCartItem.getAllCartItemsByCartID(itemCart.cart!.ID);
                 if (itemCartItem.cartItems!.isNotEmpty) {
-                  print("1");
                   itemProduct.clearProducts();
                   for (int i = 0; i < itemCartItem.cartItems!.length; i++) {
                     int? product_id = itemCartItem.cartItems?[i].product_id;
@@ -141,6 +139,8 @@ class HomeScreen_State extends State<HomeScreen> {
                 }
               } catch (e) {
                 showMessage(context, "Giỏ hàng trống");
+                Navigator.pop(context);
+
               }
             },
             icon: Icon(Icons.add_shopping_cart_sharp, color: Colors.white),
@@ -148,6 +148,9 @@ class HomeScreen_State extends State<HomeScreen> {
           // sort
           IconButton(
             onPressed: () {
+              setState(() {
+                page=1;
+              });
               showModalBottomSheet( context: context, builder: (BuildContext context) {
                 return StatefulBuilder(
                   builder: (BuildContext context, StateSetter setState) {
@@ -158,6 +161,7 @@ class HomeScreen_State extends State<HomeScreen> {
                         mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
                           SizedBox(height: height*0.01,),
+                          //Sắp xếp theo
                           Container(
                             child:  const Text("Sắp xếp theo: ",
                               style: TextStyle(
@@ -292,7 +296,13 @@ class HomeScreen_State extends State<HomeScreen> {
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Color.fromRGBO(94, 200, 248, 1),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15),
+                                          side: const BorderSide(
+                                              color: Colors.black,
+                                              width: 0.2
+                                          )
+                                      )
                                   ),
                                   onPressed: () async {
                                     if(minprice!>maxprice!){
@@ -322,7 +332,13 @@ class HomeScreen_State extends State<HomeScreen> {
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                       backgroundColor: Color.fromRGBO(94, 200, 248, 1),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(15),
+                                          side: const BorderSide(
+                                              color: Colors.black,
+                                              width: 0.2
+                                          )
+                                      )
                                   ),
                                   onPressed: () async {
                                     loading();
@@ -359,7 +375,7 @@ class HomeScreen_State extends State<HomeScreen> {
               return Center(child: Text("Không có dữ liệu"));
             } else {
               return Container(
-                color: Color.fromRGBO(94, 200, 248, 0.1),
+                
                 child: Center(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -383,6 +399,9 @@ class HomeScreen_State extends State<HomeScreen> {
                               price: product.price,
                               id: product.ID,
                               onTap: () async {
+                                setState(() {
+                                  page=1;
+                                });
                                 showDialog(
                                   context: context,
                                   barrierDismissible: false,
@@ -416,8 +435,14 @@ class HomeScreen_State extends State<HomeScreen> {
                       // xem thêm
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromRGBO(94, 200, 248, 1),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))
+                            backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                                side: const BorderSide(
+                                    color: Colors.black,
+                                    width: 0.2
+                                )
+                            )
                         ),
                         onPressed: () async {
                           loading();

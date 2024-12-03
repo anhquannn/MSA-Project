@@ -4,9 +4,6 @@ import 'package:gmarket/Screens/AdminScreen/Category_Update.dart';
 import 'package:gmarket/Screens/Widget/Widget_Category_Item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gmarket/Http/Category.dart';
-
-import 'package:gmarket/Models/Category.dart';
 import 'package:provider/provider.dart';
 
 
@@ -30,15 +27,13 @@ class Category_List_State extends State<Category_List> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     final itemCategory=Provider.of<Category_Provider>(context);
     
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(94, 200, 248, 1),
-        title: const Text("Quản Lý Cửa Hàng",
+        title: const Text("Quản lý loại sản phẩm",
           style: TextStyle(
             color: Colors.white,
             fontFamily: 'Coiny-Regular-font',
@@ -47,16 +42,10 @@ class Category_List_State extends State<Category_List> {
         ),
         centerTitle: true,
       ),
-      body:
-            GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 1.5
-              ),
+      body: ListView.builder(
               itemCount: itemCategory.listCategory.length,
               itemBuilder: (context, index) {
                 final cat = itemCategory.listCategory[index];
-                print("${cat.description}");
                 return Widget_Category_Item(
                     name: cat.name,
                     description: cat.description,

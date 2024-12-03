@@ -32,102 +32,89 @@ class Widget_Category_Sate extends State<Widget_Category>{
 
     return Scaffold(
       backgroundColor: Color.fromRGBO(255, 255, 255, 1.0),
-      body: SingleChildScrollView(
-          child:Center(
-            child: Container(
-              // color: Color.fromRGBO(0, 0, 0, 1),
-                width: width*0.9,
-                height: height*0.9,
-                child: Center(
-                  child: Column(
-                    children: [
-                      SizedBox(height: height*0.04,),
-                      Row(
+      body: Center(
+          child:Container(
+            width: width*0.9,
+            child: SingleChildScrollView(
+                child:  Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        onPressCreateCategory();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
+                        fixedSize: Size(width * 0.4, width * 0.4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        shadowColor: Colors.grey[300],
+                        elevation: 7,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(width: width*0.035,),
-                          ElevatedButton(
-                            onPressed: () {
-                              onPressCreateCategory();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
-                              fixedSize: Size(width * 0.4, width * 0.4),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              shadowColor: Colors.grey[300],
-                              elevation: 7,
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.add,
-                                  color: const Color.fromRGBO(94, 200, 248, 1),
-                                  size: width * 0.2,
-                                ),
-                                const Center(
-                                  child: Text(
-                                    "Thêm loại sản phẩm",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'Coiny-Regular-font',
-                                      color: Colors.black,
-                                    ),textAlign: TextAlign.center,
-                                  ),
-                                )
-                              ],
-                            ),
+                          Icon(
+                            Icons.add,
+                            color: const Color.fromRGBO(94, 200, 248, 1),
+                            size: width * 0.2,
                           ),
-                          SizedBox(width: width*0.02,),
-                          ElevatedButton(
-                            onPressed: () {
-                              itemCategory.getAllCategory();
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => Category_List(),)
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
-                              fixedSize: Size(width * 0.4, width * 0.4),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              shadowColor: Colors.grey[300],
-                              elevation: 7,
+                          const Center(
+                            child: Text(
+                              "Thêm loại sản phẩm",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'Coiny-Regular-font',
+                                color: Colors.black,
+                              ),textAlign: TextAlign.center,
                             ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.list,
-                                  color: const Color.fromRGBO(94, 200, 248, 1),
-                                  size: width * 0.2,
-                                ),
-                                const Center(
-                                  child: Text(
-                                    "Xem loại sản phẩm",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      fontFamily: 'Coiny-Regular-font',
-                                      color: Colors.black,
-                                    ),textAlign: TextAlign.center,
-                                  ),
-                                )
-                              ],
-                            ),
-                          ),
+                          )
                         ],
                       ),
-                    ],
-                  ),
-
-                )
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        itemCategory.getAllCategory();
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => Category_List(),)
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromRGBO(240, 248, 255, 1),
+                        fixedSize: Size(width * 0.4, width * 0.4),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        shadowColor: Colors.grey[300],
+                        elevation: 7,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.list,
+                            color: const Color.fromRGBO(94, 200, 248, 1),
+                            size: width * 0.2,
+                          ),
+                          const Center(
+                            child: Text(
+                              "Xem loại sản phẩm",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontFamily: 'Coiny-Regular-font',
+                                color: Colors.black,
+                              ),textAlign: TextAlign.center,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
             ),
           )
-
-
       ),
     );
   }

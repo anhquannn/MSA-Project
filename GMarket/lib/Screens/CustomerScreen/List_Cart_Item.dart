@@ -39,9 +39,12 @@ class List_Cart_Item_State extends State<List_Cart_Item> {
         backgroundColor: Color.fromRGBO(94, 200, 248, 1),
         leading: IconButton(
           onPressed: () async {
+            loading();
             itemProduct.clearProducts();
             await itemProduct.getAllProduct();
             Navigator.pop(context);
+            Navigator.pop(context);
+
           },
           icon: Icon(Icons.arrow_back_rounded, color: Colors.black),
         ),
@@ -97,11 +100,14 @@ class List_Cart_Item_State extends State<List_Cart_Item> {
                 //Đặt hàng
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromRGBO(94, 200, 240, 1),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    fixedSize: Size(width * 0.4, height * 0.07),
+                      backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                          side: const BorderSide(
+                              color: Colors.black,
+                              width: 0.2
+                          )
+                      )
                   ),
                   onPressed: () async {
                     /*
@@ -111,11 +117,9 @@ class List_Cart_Item_State extends State<List_Cart_Item> {
                      */
                     if (itemCartItem.listid.isNotEmpty) {
                       await itemCartItem.updateCartItemStatus(itemCartItem.listid, "available");
-                      print("list -- ${itemCartItem.listid}");
                       // itemCartItem.clearListId();
                       itemProduct.clearProducts();
                       await promocodeProvider.getAllPromoCode();
-                      print("${itemCart.cart!.ID}");
                       await itemCartItem.getCartItemsByCartID(itemCart.cart!.ID);
                       for (int i = 0; i < itemCartItem.cartItems!.length; i++) {
                         await itemProduct.addProduct(itemCartItem.cartItems![i].product_id!);
@@ -156,5 +160,13 @@ class List_Cart_Item_State extends State<List_Cart_Item> {
         behavior: SnackBarBehavior.floating,
       ),
     );
+  }
+
+  void loading(){
+    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },);
   }
 }

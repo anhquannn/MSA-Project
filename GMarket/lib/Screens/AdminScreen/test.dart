@@ -1,20 +1,8 @@
 
-import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
 import 'package:gmarket/Http/PromoCode.dart';
-import 'package:gmarket/Models/Promocode.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gmarket/Http/Category.dart';
-import 'package:gmarket/Http/Manufaturer.dart';
-import 'package:gmarket/Http/Product.dart';
-import 'package:gmarket/Models/Category.dart';
-import 'package:gmarket/Models/Manufacturer.dart';
-import 'package:gmarket/Models/Product.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+
 
 void main(){
   runApp(MaterialApp(
@@ -66,8 +54,6 @@ class Promocode_Update_State extends State<test> {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(94, 200, 248, 1),

@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:gmarket/Http/Product.dart';
 import 'package:gmarket/Http/PromoCode.dart';
 import 'package:gmarket/Models/Promocode.dart';
 
@@ -8,7 +7,9 @@ class Promocode_Provider extends ChangeNotifier {
   PromoCode? _promocodeSearch;
   PromoCode? _promocode;
   bool _isLoading = false;
+  int _index=0;
 
+  int get index=>_index;
   List<PromoCode> get promocodes => _promocodes;
   PromoCode? get promocodeSearch => _promocodeSearch;
   PromoCode? get promocode => _promocode;
@@ -85,5 +86,10 @@ class Promocode_Provider extends ChangeNotifier {
 
   void clearPromoCodeSearch(){
     this._promocodeSearch=null;
+  }
+
+  void setIndex(int id){
+    _index=id;
+    notifyListeners();
   }
 }

@@ -44,7 +44,6 @@ class Widget_Cart_Item_State extends State<Widget_Cart_Item> {
   Widget build(BuildContext context) {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
-    final itemCartItem=Provider.of<CartItem_Provider>(context);
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(

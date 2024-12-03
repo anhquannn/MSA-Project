@@ -1,12 +1,9 @@
-import 'dart:ffi';
-
-import 'package:gmarket/Models/Order.dart';
 
 class ReturnOrder {
   int id;
   String status;
   String reason;
-  Float refundAmount;
+  int refundAmount;
   int orderId;
 
   ReturnOrder({

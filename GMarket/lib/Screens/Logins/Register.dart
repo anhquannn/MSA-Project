@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:gmarket/Screens/Logins/Login.dart';
 import 'package:gmarket/Http/User.dart';
-import 'package:gmarket/Screens/Logins/Verify_OTP.dart';
-import 'package:gmarket/Screens/Logins/Verify_OTP_Login.dart';
+
 void main() {
   runApp( const MaterialApp(
     debugShowCheckedModeBanner: false,
@@ -32,11 +31,11 @@ class RegisterState extends State<Register>{
   userHTTP user=userHTTP();
   late String _email;
   late String _password;
-  late String _verifyPassword;
   late String _fName;
   late String _lName;
   late String _phoneNumber;
   late String _address;
+  late String _verifyPassword;
 
 
   @override

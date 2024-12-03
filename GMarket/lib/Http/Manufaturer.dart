@@ -7,7 +7,7 @@ import 'package:gmarket/Models/Manufacturer.dart';
 
 class manufacturerHttp{
   String baseUrl='http://192.168.1.6:8080';
-  // String baseUrl='http://172.20.10.7:8080';
+  // String baseUrl='http://172.22.14.98:8080';
   final FlutterSecureStorage secureStorage=FlutterSecureStorage();
 
   Future<bool?> createManufaturer(Manufacturer manu) async{

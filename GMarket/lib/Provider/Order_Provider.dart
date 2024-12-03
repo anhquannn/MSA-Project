@@ -6,16 +6,28 @@ import 'package:gmarket/Models/previewOrder.dart';
 
 class Order_Provider extends ChangeNotifier {
   List<Order> _orders = [];
+  List<Order> _paying = [];
+  List<Order> _delivering = [];
+  List<Order> _success = [];
+  List<Order> _returned = [];
+  List<Order> _pending = [];
   bool _isLoading = false;
-  Order? _order;
   bool _isSucess = false;
+  Order? _order;
   PreviewOrder _previewOrder=new PreviewOrder(total_cost: 0, discount: 0, grand_total: 0);
+  final List<int> _listproductid=[];
 
+  List<int> get list_idproduct=>_listproductid;
   PreviewOrder get previewOrder => _previewOrder;
   bool get isSucess => _isSucess;
-  List<Order> get orders => _orders;
   bool get isLoading => _isLoading;
   Order? get order => _order;
+  List<Order> get orders => _orders;
+  List<Order> get paying => _paying;
+  List<Order> get delivering => _delivering;
+  List<Order> get success => _success;
+  List<Order> get returned => _returned;
+  List<Order> get pending => _pending;
 
   Future createOrder(Order od, String pc) async {
     _isSucess = false;
@@ -27,10 +39,8 @@ class Order_Provider extends ChangeNotifier {
         _order = result;
         _isSucess = true;
         notifyListeners();
-        print("Provider - Tao Order thanh cong");
       }
     } catch (e) {
-      print("Provider - Khong the tao Order: $e");
     }
     _isLoading = false;
     notifyListeners();
@@ -41,11 +51,9 @@ class Order_Provider extends ChangeNotifier {
     try {
       final result = await orderHttp().deleteOrder(id);
       if (result == true) {
-        print("Delete Order thanh cong");
         _orders.removeWhere((order) => order.ID == id);
       }
     } catch (e) {
-      print("Khong the delete Order: $e");
     }
     _setLoading(false);
   }
@@ -58,7 +66,6 @@ class Order_Provider extends ChangeNotifier {
         _order = result;
       }
     } catch (e) {
-      print("Khong the lay Order: $e");
     }
     _setLoading(false);
   }
@@ -67,26 +74,159 @@ class Order_Provider extends ChangeNotifier {
     _setLoading(true);
     try {
       final result = await orderHttp().getAllOrder();
-      if (result != null) {
-        _orders = result;
-      }
-    } catch (e) {
-      print("Khong the lay Order: $e");
+      _orders = result;
+        } catch (e) {
+    }
+    _setLoading(false);
+  }
+
+  Future fillOrder(int page) async {
+    _setLoading(true);
+    try {
+      final result = await orderHttp().fillOrder(page);
+      _orders +=result;
+        } catch (e) {
     }
     _setLoading(false);
   }
 
   Future searchOrderByNumberPhone(String phoneNumber) async {
-    _setLoading(true);
+    notifyListeners();
     try {
       final result = await orderHttp().searchOrderByNumberPhone(phoneNumber);
-      if (result != null) {
-        _orders = result;
+      _orders = result;
+      print("Provider - searchOrderByNumberPhone thanh cong");
+    } catch (e) {
+      print("Provider - khong the searchOrderByNumberPhone $e");
+    }
+    notifyListeners();
+  }
+
+  Future getOrderHistory(int userId) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final list = await orderHttp().getOrderHistory(userId);
+      _orders = list;
+      notifyListeners();
+        } catch (e) {
+      throw Exception("Provider - Khong the getOrderHistory $e");
+    }finally{
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future getPreviewOrder(int user_id, int cart_id, String promo_code) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final po = await orderHttp().getPreviewOrder(user_id, cart_id, promo_code);
+      if (po != null) {
+        _previewOrder = po;
       }
     } catch (e) {
-      print("Khong the lay Order: $e");
+      throw Exception("Provider - getPreviewOrder thanh cong $e");
+    }finally{
+      _isLoading = false;
+      notifyListeners();
     }
-    _setLoading(false);
+  }
+
+  Future updateStatusOrder(int orderId,int userId, int cartId, String status) async{
+    _isLoading=true;
+    notifyListeners();
+    try{
+      final result= await orderHttp().updateStatusOrder(orderId, userId, cartId, status);
+      if(result!=null){
+        _order=result;
+      }
+    }catch(e){
+      throw Exception("Provider - khong the updateStatusOrder $e");
+    }finally{
+      _isLoading=false;
+      notifyListeners();
+    }
+  }
+
+  Future getOrderPending(int userId) async{
+    _isLoading=true;
+    notifyListeners();
+    try{
+      final result= await orderHttp().getOrderByStatus("pending",userId);
+      if(result!=null){
+        _pending=result;
+      }
+    }catch(e){
+      throw Exception("Provider - khong the getOrderPending $e");
+    }finally{
+      _isLoading=false;
+      notifyListeners();
+    }
+  }
+
+  Future getOrderPaying(int userId) async{
+    _isLoading=true;
+    notifyListeners();
+    try{
+      final result= await orderHttp().getOrderByStatus("paying",userId);
+      if(result!=null){
+        _paying=result;
+      }
+    }catch(e){
+      throw Exception("Provider - khong the getOrderPaying $e");
+    }finally{
+      _isLoading=false;
+      notifyListeners();
+    }
+  }
+
+  Future getOrderDelivering(int userId) async{
+    _isLoading=true;
+    notifyListeners();
+    try{
+      final result= await orderHttp().getOrderByStatus("delivering",userId);
+      if(result!=null){
+        _delivering=result;
+      }
+    }catch(e){
+      throw Exception("Provider - khong the getOrderDelivering $e");
+    }finally{
+      _isLoading=false;
+      notifyListeners();
+    }
+  }
+
+  Future getOrderSuccess(int userId) async{
+    _isLoading=true;
+    notifyListeners();
+    try{
+      final result= await orderHttp().getOrderByStatus("success",userId);
+      if(result!=null){
+        _success=result;
+      }
+    }catch(e){
+      throw Exception("Provider - khong the getOrderSuccess $e");
+    }finally{
+      _isLoading=false;
+      notifyListeners();
+    }
+  }
+
+  Future getOrderReturned(int userId) async{
+    _isLoading=true;
+    notifyListeners();
+    try{
+      final result= await orderHttp().getOrderByStatus("returned",userId);
+      if(result!=null){
+        _returned=result;
+      }
+    }catch(e){
+      throw Exception("Provider - khong the getOrderReturned $e");
+    }finally{
+      _isLoading=false;
+      notifyListeners();
+    }
   }
 
   void clearOrder() {
@@ -103,37 +243,19 @@ class Order_Provider extends ChangeNotifier {
     this._orders = [];
   }
 
-  Future getOrderHistory(int userId) async {
-    _isLoading = true;
-    notifyListeners();
-    try {
-      final list = await orderHttp().getOrderHistory(userId);
-      if (list != null) {
-        _orders = list;
-      }
-    } catch (e) {
-      throw Exception("Provider - Khong the getOrderHistory $e");
-    }
-  }
-
-  Future getPreviewOrder(int user_id, int cart_id, String promo_code) async {
-    _isLoading = true;
-    notifyListeners();
-    try {
-      final po = await orderHttp().getPreviewOrder(user_id, cart_id, promo_code);
-      if (po != null) {
-        _previewOrder = po;
-        print("Provider - getPreviewOrder thanh cong ${_previewOrder}");
-      }
-    } catch (e) {
-      throw Exception("Provider - getPreviewOrder thanh cong $e");
-    }finally{
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
   void clearPreviewOrder(){
     _previewOrder=new PreviewOrder(total_cost: 0, discount: 0, grand_total: 0);
+  }
+
+  void addListIdProduct(int id){
+    if(!_listproductid.contains(id)){
+      _listproductid.add(id);
+    }
+    notifyListeners();
+  }
+
+  void clearListIdProduct(){
+    _listproductid.clear();
+    notifyListeners();
   }
 }

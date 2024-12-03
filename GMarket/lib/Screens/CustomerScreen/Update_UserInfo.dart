@@ -101,7 +101,7 @@ class Update_UserInfo_State extends State<Update_UserInfo>{
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
-                            hintText: "Tên",
+                            hintText: "Địa chỉ",
                             hintStyle: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,
@@ -132,7 +132,7 @@ class Update_UserInfo_State extends State<Update_UserInfo>{
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
-                            hintText: "Tên",
+                            hintText: "Số điện thoại",
                             hintStyle: const TextStyle(
                                 color: Colors.black,
                                 fontSize: 18,
@@ -152,8 +152,15 @@ class Update_UserInfo_State extends State<Update_UserInfo>{
                       SizedBox(height: height * 0.01,),
                       ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                              const Color.fromRGBO(94, 200, 248, 1)),
+                              backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                  side: const BorderSide(
+                                      color: Colors.black,
+                                      width: 0.2
+                                  )
+                              )
+                          ),
                           onPressed: () async {
                             if(isValid(context)==true){
                               await userProvider.updateUserInfo(_lName.text.toString(), _phoneNumber.text.toString(),_address.text.toString());
@@ -177,10 +184,6 @@ class Update_UserInfo_State extends State<Update_UserInfo>{
 
   }
   bool isValid(BuildContext context){
-    if(_lName==null || _phoneNumber==null || _address==null){
-      showMessage(context, "Vui lòng nhập đầy đủ thông tin");
-      return false;
-    }
     if(_phoneNumber.text.length<10 ){
       showMessage(context, "Vui lòng nhập đúng số điện thoại");
       return false;

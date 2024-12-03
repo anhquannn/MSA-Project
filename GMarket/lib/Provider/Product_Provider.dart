@@ -18,11 +18,11 @@ class ProductProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future getAllProduct() async {
+    _products =[];
     _isLoading = true;
     notifyListeners();
     try {
       List<Product> p = await productHttp().getAllProduct();
-      print(p.length);
       _products = p;
         } catch (e) {
       Exception('Lỗi provider $e');
@@ -43,24 +43,22 @@ class ProductProvider extends ChangeNotifier {
   }
 
   Future updateProduct(Product product) async {
-    final result = await productHttp().UpdateProduct(product);
-    if (result == true) {
-      // getAllProduct();
       if(await productHttp().UpdateProduct(product)==true){
         print("Http - Provider update thanh cong");
-      }
+
     } else {
       print("Provider update thất bại");
     }
+    notifyListeners();
   }
 
   Future deleteProduct(int id) async {
     final result = await productHttp().deleteProduct(id);
     if (result == true) {
-      getAllProduct();
     } else {
       print("Provider delete thất bại");
     }
+    notifyListeners();
   }
 
   Future getProductByName(String name) async {
@@ -139,12 +137,15 @@ class ProductProvider extends ChangeNotifier {
   Future filterProducts( int page) async{
     _isLoading=false;
     notifyListeners();
-
     final result=await productHttp().filterProducts(page);
     if(result!=null){
       _productSort=result;
       _products+=_productSort;
-      print("Provider - fillProduct thanh cong ${_products[12]!.name}: length ${_products.length}");
+      print("Provider - fillProduct thanh cong length ${_products.length}");
+      notifyListeners();
+    }
+    else{
+      notifyListeners();
     }
     _isLoading=true;
     notifyListeners();

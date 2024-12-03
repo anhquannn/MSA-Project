@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Http/User.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
-import 'package:gmarket/Screens/CustomerScreen/Home_Screen.dart';
 import 'package:gmarket/Screens/Logins/Login.dart';
 import 'package:provider/provider.dart';
 

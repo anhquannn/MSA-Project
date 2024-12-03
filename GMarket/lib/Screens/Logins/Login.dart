@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:gmarket/Http/Product.dart';
 import 'package:gmarket/Http/User.dart';
 import 'package:gmarket/Provider/Cart_Provider.dart';
-import 'package:gmarket/Provider/Category_Provider.dart';
 import 'package:gmarket/Provider/Product_Provider.dart';
 import 'package:gmarket/Provider/User_Provider.dart';
 import 'package:gmarket/Screens/AdminScreen/Admin_Screen.dart';
-import 'package:gmarket/Screens/AdminScreen/test.dart';
 import 'package:gmarket/Screens/CustomerScreen/Home_Screen.dart';
 import 'package:gmarket/Screens/Logins/Verify_OTP_Login.dart';
 import 'package:gmarket/Screens/Logins/Register.dart';
@@ -49,9 +46,6 @@ class LoginState extends State<Login> {
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
 
-    final userProvider=Provider.of<User_Provider>(context,listen: false);
-    final productProvider=Provider.of<ProductProvider>(context,listen: false);
-    final cartProvider=Provider.of<Cart_Provider>(context,listen: false);
     return Material(
       child: Stack(
         children: [
@@ -175,6 +169,7 @@ class LoginState extends State<Login> {
                             ElevatedButton(
                               onPressed: () {
                                 // productProvider.getAllProduct();
+
                                 onPressedLogin();
                               },
                               style: ElevatedButton.styleFrom(
@@ -208,13 +203,10 @@ class LoginState extends State<Login> {
                             ),
                             ElevatedButton(
                               onPressed: (){
+                                loading();
                                 signInWithGoogle();
+                                Navigator.pop(context);
 
-                                // userProvider.loginWithGoogle(Token!);
-                                // productProvider.getAllProduct();
-                                // if(userProvider.user!=null){
-                                //   cartProvider.getOrCreateCartForUser(userProvider.user!.ID) ;
-                                // }
 
                                 // signOut();
                               },
@@ -336,6 +328,7 @@ class LoginState extends State<Login> {
   );
 
   Future signInWithGoogle() async {
+    loading();
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
@@ -345,21 +338,26 @@ class LoginState extends State<Login> {
           .authentication;
       String? accessToken = googleAuth.accessToken;
       await userHTTP().SaveToken(accessToken!);
-      if (accessToken != null) {
-        setState(() {
-         Token=accessToken;
-        });
-        print('${accessToken}');
-        Provider.of<User_Provider>(context,listen: false).loginWithGoogle(accessToken).then((_){
-          Provider.of<Cart_Provider>(context,listen: false).getOrCreateCartForUser(Provider.of<User_Provider>(context,listen: false).user!.ID) ;
-        });
-        Provider.of<ProductProvider>(context,listen: false).getAllProduct();
+      setState(() {
+       Token=accessToken;
+      });
+      await Provider.of<User_Provider>(context,listen: false).loginWithGoogle(accessToken);
+      await Provider.of<Cart_Provider>(context,listen: false).getOrCreateCartForUser(Provider.of<User_Provider>(context,listen: false).user!.ID) ;
+      await Provider.of<ProductProvider>(context,listen: false).getAllProduct();
+      Navigator.pop(context);
+      if(Provider.of<User_Provider>(context,listen: false).user!.role=="admin"){
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => AdminScreen()));
+      }
+      else{
         Navigator.push(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
       }
-    } catch (error) {
+
+        } catch (error) {
       print("Lỗi đăng nhập Google: $error");
     }
+
   }
 
   Future<void> signOut() async {
@@ -367,4 +365,11 @@ class LoginState extends State<Login> {
       print("Đã đăng xuất khỏi Google.");
     }
 
+  void loading(){
+    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },);
+  }
 }

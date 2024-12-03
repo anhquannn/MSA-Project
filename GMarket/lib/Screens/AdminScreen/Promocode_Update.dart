@@ -1,31 +1,16 @@
 
-import 'dart:convert';
-import 'dart:ffi';
-import 'dart:io';
 import 'package:gmarket/Http/PromoCode.dart';
 import 'package:gmarket/Models/Promocode.dart';
+import 'package:gmarket/Provider/Promocode_Provider.dart';
+import 'package:gmarket/Screens/AdminScreen/Admin_Screen.dart';
+import 'package:gmarket/Screens/AdminScreen/Order_List.dart';
+import 'package:gmarket/Screens/AdminScreen/Promocode_List.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:gmarket/Http/Category.dart';
-import 'package:gmarket/Http/Manufaturer.dart';
-import 'package:gmarket/Http/Product.dart';
-import 'package:gmarket/Models/Category.dart';
-import 'package:gmarket/Models/Manufacturer.dart';
-import 'package:gmarket/Models/Product.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
-
-void main(){
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        body: Promocode_Update(),
-      )));
-}
+import 'package:provider/provider.dart';
 
 class Promocode_Update extends StatefulWidget{
-
   @override
   State createState() {
     return Promocode_Update_State();
@@ -44,75 +29,41 @@ class Promocode_Update_State extends State<Promocode_Update> {
   TextEditingController enddate= TextEditingController();
   int?id;
 
-  Future getData(int id) async {
-    final pc=await promoCodeHttp().getPromoCodeById(id);
-    if(pc!=null){
-      print('discountpercentage ${pc.discountpercentage}');
-      print('discountpercentage ${pc.minimumordervalue}');
-      setState(() {
-        name.text = pc.name.toString();
-        code.text = pc.code!;
-        description.text = pc.description.toString();
-        startdate.text = pc.startdate.toString();
-        enddate.text = pc.enddate.toString();
-        status.text = pc.status.toString();
-        discounttype.text = pc.discounttype.toString();
-        minimumordervalue.text = pc.minimumordervalue.toString();
-      });
-    }
-    else{
-      print("Không thể lấy PromoCode");
-    }
+  @override
+  void initState() {
+    super.initState();
+    final pm=Provider.of<Promocode_Provider>(context,listen: false);
+    setState(() {
+      id=pm.promocodes[pm.index].ID;
+      name.text=pm.promocodes[pm.index].name!;
+      code.text=pm.promocodes[pm.index].code!;
+      description.text=pm.promocodes[pm.index].description!;
+      status.text=pm.promocodes[pm.index].status!;
+      discounttype.text=pm.promocodes[pm.index].discounttype!;
+      discountpercentage.text=pm.promocodes[pm.index].discountpercentage!.toString();
+      minimumordervalue.text=pm.promocodes[pm.index].minimumordervalue!.toString();
+      startdate.text=pm.promocodes[pm.index].startdate!;
+      enddate.text=pm.promocodes[pm.index].enddate!;
+    });
   }
-
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
+    final promocodeProvider=Provider.of<Promocode_Provider>(context);
+
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color.fromRGBO(94, 200, 248, 1),
-          titleTextStyle: const TextStyle(
-          ),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.white),
-            // Mũi tên quay lại màu trắng
-            onPressed: () {
-              Navigator.pop(context); // Quay lại màn hình trước đó
-            },
-          ),
-          title: TextField(
-            keyboardType: TextInputType.number,
-            onSubmitted: (value) {
-              setState(()  async{
-                id=int.parse(value);
-                await getData(int.parse(value));
-              });
-            },
-            decoration: InputDecoration(
-              hintText: "Tìm kiếm Id",
-              hintStyle: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-              ),
-              enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: const BorderSide(
-                    color: Color.fromRGBO(94, 200, 248, 1),
-                    width: 3,
-                  )
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(10),
-                borderSide: const BorderSide(
-                    width: 4,
-                    color: Color.fromRGBO(94, 200, 248, 1)
-                ),
-              ),
-              prefixIcon: Icon(Icons.search, color: Colors.white,),
-            ),
+      appBar: AppBar(
+        backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+        title: const Text("Mã giảm giá",
+          style: TextStyle(
+            color: Colors.white,
+            fontFamily: 'Coiny-Regular-font',
+            fontSize: 20,
           ),
         ),
+        centerTitle: true,
+      ),
         body:Center(
             child: Container(
                 color: Colors.white,
@@ -452,15 +403,75 @@ class Promocode_Update_State extends State<Promocode_Update> {
                             },
                           ),
                           SizedBox(height: height * 0.02,),
+                          //Cap nhat
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                  const Color.fromRGBO(94, 200, 248, 1)),
-                              onPressed: () {
-                                onPressedUpdatePromocode();
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
+                              onPressed: ()async {
+                                loading();
+                                await promocodeProvider.updatePromoCode(
+                                  new PromoCode(
+                                      ID: id,
+                                      name: name.text,
+                                      description: description.text,
+                                      status: status.text, code: code.text,
+                                      discounttype: discounttype.text,
+                                      discountpercentage: int.parse(discountpercentage.text),
+                                      enddate: enddate.text,
+                                      minimumordervalue: int.parse(minimumordervalue.text),
+                                      startdate: startdate.text
+                                  )
+                                );
+                                await promocodeProvider.getAllPromoCode();
+                                showMessage(context, "Cập nhật mã giảm giá thành công");
+                                Navigator.pop(context);
+                                Navigator.pushAndRemoveUntil(context,
+                                  MaterialPageRoute(builder: (context) => Promocode_List(),),
+                                      (Route<dynamic> route) => false,
+                                );
+
                               },
                               child: const Text(
                                 "Cập nhật mã giảm giá",
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontFamily: 'Coiny-Regular-font'),
+                              )),
+                          SizedBox(height: height * 0.02,),
+                          //Xoa ma giam gia
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                      side: const BorderSide(
+                                          color: Colors.black,
+                                          width: 0.2
+                                      )
+                                  )
+                              ),
+                              onPressed: () async {
+                                loading();
+                                await promocodeProvider.deletePromoCode(id!);
+                                await promocodeProvider.getAllPromoCode();
+                                showMessage(context, "Xóa mã giảm giá thành công");
+                                Navigator.pop(context);
+                                Navigator.pushAndRemoveUntil(context,
+                                  MaterialPageRoute(builder: (context) => Promocode_List(),),
+                                      (Route<dynamic> route) => false,
+                                );
+                              },
+                              child: const Text(
+                                "Xóa mã giảm giá",
                                 style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 16,
@@ -527,6 +538,14 @@ class Promocode_Update_State extends State<Promocode_Update> {
     else{
       showMessage(context, "Sửa mã giảm giá không thành công");
     }
+  }
+
+  void loading(){
+    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },);
   }
 }
 
