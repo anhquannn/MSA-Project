@@ -29,7 +29,7 @@ func (u *paymentUsecase) CreatePayment(payment *models.Payment) error {
 		return err
 	}
 
-	payment.Status = "Processing..."
+	payment.Status = "paying"
 	payment.GrandTotal = order.GrandTotal
 
 	return u.paymentRepo.CreatePayment(payment)

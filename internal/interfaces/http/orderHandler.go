@@ -12,12 +12,13 @@ import (
 
 type OrderHandler interface {
 	CreateOrder(c *gin.Context)
+	PreviewOrder(c *gin.Context)
 	UpdateOrder(c *gin.Context)
 	DeleteOrder(c *gin.Context)
 
 	GetOrderByID(c *gin.Context)
 	GetAllOrders(c *gin.Context)
-	GetOrderHistory(c *gin.Context)
+	GetOrdersByStatus(c *gin.Context)
 	SearchOrderByPhoneNumber(c *gin.Context)
 }
 
@@ -55,6 +56,36 @@ func (h *orderHandler) CreateOrder(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, order)
+}
+
+func (h *orderHandler) PreviewOrder(c *gin.Context) {
+	userIDStr := c.Query("user_id")
+	cartIDStr := c.Query("cart_id")
+	promoCode := c.Query("promo_code")
+
+	userID, err := strconv.ParseUint(userIDStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user_id"})
+		return
+	}
+
+	cartID, err := strconv.ParseUint(cartIDStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid cart_id"})
+		return
+	}
+
+	totalCost, discount, grandTotal, err := h.orderUsecase.CalculateOrderSummary(uint(userID), uint(cartID), promoCode)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"total_cost":  totalCost,
+		"discount":    discount,
+		"grand_total": grandTotal,
+	})
 }
 
 func (h *orderHandler) UpdateOrder(c *gin.Context) {
@@ -154,7 +185,7 @@ func (h *orderHandler) SearchOrderByPhoneNumber(c *gin.Context) {
 	c.JSON(http.StatusOK, orders)
 }
 
-func (h *orderHandler) GetOrderHistory(c *gin.Context) {
+func (h *orderHandler) GetOrdersByStatus(c *gin.Context) {
 	idStr := c.Param("user_id")
 	id, err := strconv.ParseUint(idStr, 10, 32)
 	if err != nil {
@@ -174,7 +205,14 @@ func (h *orderHandler) GetOrderHistory(c *gin.Context) {
 		return
 	}
 
-	orders, err := h.orderUsecase.GetOrderHistoryByUserID(uint(id), page, size)
+	status := c.Param("status") // Lấy trạng thái từ URL
+	if status != "delivering" && status != "paying" && status != "success" && status != "returned" && status != "pending" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid status parameter"})
+		return
+	}
+
+	// Lấy danh sách đơn hàng
+	orders, err := h.orderUsecase.GetOrdersByUserIDWithStatus(uint(id), status, page, size)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

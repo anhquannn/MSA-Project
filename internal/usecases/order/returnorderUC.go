@@ -35,9 +35,13 @@ func (u *returnOrderUsecase) CreateReturnOrder(returnOrder *models.ReturnOrder) 
 	}
 
 	// Cập nhật trạng thái và số tiền hoàn lại cho đơn trả hàng
-	returnOrder.Status = "Processing..."        // Trạng thái mặc định của đơn trả hàng
+	returnOrder.Status = "success"              // Trạng thái mặc định của đơn trả hàng
 	returnOrder.RefundAmount = order.GrandTotal // Số tiền hoàn lại bằng tổng tiền của đơn hàng gốc
-	order.Status = "Returning..."               // Cập nhật trạng thái đơn hàng gốc
+	order.Status = "returned"                   // Cập nhật trạng thái đơn hàng gốc
+
+	if err := u.orderUsecase.UpdateOrder(order); err != nil {
+		return err
+	}
 
 	// Lưu đơn trả hàng vào cơ sở dữ liệu
 	if err := u.returnOrderRepo.CreateReturnOrder(returnOrder); err != nil {
@@ -55,11 +59,6 @@ func (u *returnOrderUsecase) CreateReturnOrder(returnOrder *models.ReturnOrder) 
 		if err := u.productUsecase.RestoreStock(orderDetail.ProductID, orderDetail.Quantity); err != nil {
 			return err
 		}
-	}
-
-	// Xóa đơn hàng gốc sau khi xử lý trả hàng
-	if err := u.orderUsecase.DeleteOrder(order); err != nil {
-		return err
 	}
 
 	return nil
