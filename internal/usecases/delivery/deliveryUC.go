@@ -22,6 +22,7 @@ func NewDeliveryUsecase(deliveryRepo delivery.DeliveryRepository) DeliveryUsecas
 }
 
 func (u *deliveryUsecase) CreateDelivery(delivery *models.Delivery) error {
+	delivery.Status = "delivering"
 	return u.deliveryRepo.CreateDelivery(delivery)
 }
 

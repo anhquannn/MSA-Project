@@ -14,6 +14,7 @@ type CartItemRepository interface {
 	BatchUpdateStatus(cartItemIDs []uint, status string) error
 	GetCartItem(cartID, productID uint) (*models.CartItem, error)
 	GetCartItemsByCartID(cartID uint, cartItems *[]models.CartItem, status string) error
+	GetAllCartItemsByCartID(cartID uint, cartItems *[]models.CartItem) error
 
 	GetCartItemByID(id uint) (*models.CartItem, error)
 
@@ -29,7 +30,7 @@ func NewCartItemRepository(db *gorm.DB) CartItemRepository {
 }
 
 func (r *cartItemRepository) CreateCartItem(cartitem *models.CartItem) error {
-	return r.db.Create(cartitem).Preload("Cart").Preload("Product").First(cartitem, cartitem.ID).Error
+	return r.db.Create(cartitem).Preload("Cart").Preload("Cart.User").Preload("Product").Preload("Product.Category").Preload("Product.Manufacturer").First(cartitem, cartitem.ID).Error
 }
 
 func (r *cartItemRepository) GetCartItem(cartID, productID uint) (*models.CartItem, error) {
@@ -60,7 +61,7 @@ func (r *cartItemRepository) UpdateCartItem(cartitem *models.CartItem) error {
 		return err
 	}
 
-	return r.db.Preload("Cart").Preload("Product").First(cartitem, cartitem.ID).Error
+	return r.db.Preload("Cart").Preload("Cart.User").Preload("Product").Preload("Product.Category").Preload("Product.Manufacturer").First(cartitem, cartitem.ID).Error
 }
 
 func (r *cartItemRepository) BatchUpdateStatus(cartItemIDs []uint, status string) error {
@@ -77,6 +78,10 @@ func (r *cartItemRepository) GetCartItemByID(id uint) (*models.CartItem, error) 
 
 func (r *cartItemRepository) GetCartItemsByCartID(cartID uint, cartItems *[]models.CartItem, status string) error {
 	return r.db.Preload("Cart").Preload("Product").Where("cart_id = ? AND status = ?", cartID, status).Find(cartItems).Error
+}
+
+func (r *cartItemRepository) GetAllCartItemsByCartID(cartID uint, cartItems *[]models.CartItem) error {
+	return r.db.Preload("Cart").Preload("Product").Where("cart_id = ?", cartID).Find(cartItems).Error
 }
 
 func (r *cartItemRepository) CalculateCartTotal(cartID uint) (float64, error) {

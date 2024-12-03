@@ -17,6 +17,7 @@ type CartItemHandler interface {
 	ClearCart(c *gin.Context)
 	GetCartItemByID(c *gin.Context)
 	GetCartItemsByCartID(c *gin.Context)
+	GetAllCartItemsByCartID(c *gin.Context)
 }
 
 type cartItemHandler struct {
@@ -37,13 +38,13 @@ func (h *cartItemHandler) AddProductToCart(c *gin.Context) {
 	}
 
 	cartID, _ := strconv.ParseUint(c.Param("cartID"), 10, 32)
-	err := h.cartItemUsecase.AddProductToCart(uint(cartID), req.ProductID, req.Quantity)
+	cartItem, err := h.cartItemUsecase.AddProductToCart(uint(cartID), req.ProductID, req.Quantity)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "Product added to cart"})
+	c.JSON(http.StatusOK, cartItem)
 }
 
 func (h *cartItemHandler) UpdateCartItem(c *gin.Context) {
@@ -133,6 +134,17 @@ func (h *cartItemHandler) GetCartItemByID(c *gin.Context) {
 func (h *cartItemHandler) GetCartItemsByCartID(c *gin.Context) {
 	cartID, _ := strconv.ParseUint(c.Param("cartID"), 10, 32)
 	cartItems, err := h.cartItemUsecase.GetCartItemsByCartID(uint(cartID))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, cartItems)
+}
+
+func (h *cartItemHandler) GetAllCartItemsByCartID(c *gin.Context) {
+	cartID, _ := strconv.ParseUint(c.Param("cartID"), 10, 32)
+	cartItems, err := h.cartItemUsecase.GetAllCartItemsByCartID(uint(cartID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

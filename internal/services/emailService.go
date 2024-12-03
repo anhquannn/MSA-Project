@@ -52,17 +52,21 @@ func (s *emailService) SendEmail(to string, subject string, body string) error {
 	return nil
 }
 
+// Sinh ra một OTP ngẫu nhiên và gửi đến email của người dùng
 func (s *emailService) GenerateAndSendOTP(email string) (string, error) {
 	otp, err := utils.GenerateOTP()
 	if err != nil {
 		return "", err
 	}
 
-	err = s.SendEmail(email, "Your OTP Code", "Your OTP code is: "+otp)
+	// Gửi email cho người dùng với OTP vừa sinh ra
+	err = s.SendEmail(email, "Mã OTP của bạn", "Mã OTP của bạn là: "+otp)
 	if err != nil {
 		return "", err
 	}
 
+	// Lưu trữ OTP vừa sinh ra vào map: key là OTP, value là email của người dùng
+	// Ví dụ: otpStore["123456"] = "anhquan20102003@gmail.com"
 	s.mu.Lock()
 	s.otpStore[otp] = email
 	s.mu.Unlock()

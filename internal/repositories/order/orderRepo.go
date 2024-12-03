@@ -16,7 +16,8 @@ type OrderRepository interface {
 	SearchOrderByPhoneNumber(phoneNumber string, page, pageSize int) ([]models.Order, error)
 	GetOrderByID(id uint) (*models.Order, error)
 	GetOrderWithDetails(orderID uint) (*models.Order, error)
-	GetOrdersByUserIDWithPagination(userID uint, offset int, limit int, orders *[]*models.Order) error
+
+	GetOrdersByUserIDWithStatus(userID uint, status string, offset int, limit int, orders *[]*models.Order) error
 }
 
 type orderRepository struct {
@@ -67,7 +68,8 @@ func (r *orderRepository) GetAllOrders(page, pageSize int) ([]models.Order, erro
 	var orders []models.Order
 	err := r.db.Preload("User").
 		Preload("Cart").
-		Preload("Cart.User").Limit(pageSize).
+		Preload("Cart.User").
+		Preload("OrderDetails").Preload("OrderDetails.Product").Preload("OrderDetails.Order").Limit(pageSize).
 		Offset((page - 1) * pageSize).
 		Find(&orders).Error
 	return orders, err
@@ -105,10 +107,11 @@ func (r *orderRepository) GetOrderWithDetails(orderID uint) (*models.Order, erro
 	return &order, nil
 }
 
-func (r *orderRepository) GetOrdersByUserIDWithPagination(userID uint, offset int, limit int, orders *[]*models.Order) error {
-	return r.db.Preload("OrderDetails.Product").Preload("OrderDetails.Product.Category").Preload("OrderDetails.Product.Manufacturer").
+func (r *orderRepository) GetOrdersByUserIDWithStatus(userID uint, status string, offset int, limit int, orders *[]*models.Order) error {
+	return r.db.Preload("User").
+		Preload("Cart").Preload("OrderDetails.Product").Preload("OrderDetails.Product.Category").Preload("OrderDetails.Product.Manufacturer").
 		Preload("OrderDetails.Order").Preload("OrderDetails.Order.User").Preload("OrderDetails.Order.Cart").Preload("OrderDetails.Order.Cart.User").
-		Where("user_id = ?", userID).
+		Where("user_id = ? AND status = ?", userID, status).
 		Order("created_at DESC").
 		Offset(offset).
 		Limit(limit).

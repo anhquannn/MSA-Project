@@ -16,7 +16,8 @@ type CartItemUsecase interface {
 
 	GetCartItemByID(id uint) (*models.CartItem, error)
 	GetCartItemsByCartID(cartID uint) ([]models.CartItem, error)
-	AddProductToCart(cartID, productID uint, quantity int) error
+	GetAllCartItemsByCartID(cartID uint) ([]models.CartItem, error)
+	AddProductToCart(cartID, productID uint, quantity int) (*models.CartItem, error)
 	CalculateCartTotal(cartID uint) (float64, error)
 }
 
@@ -66,30 +67,48 @@ func (u *cartItemUsecase) GetCartItemsByCartID(cartID uint) ([]models.CartItem, 
 	return cartItems, nil
 }
 
-func (u *cartItemUsecase) AddProductToCart(cartID, productID uint, quantity int) error {
+func (u *cartItemUsecase) GetAllCartItemsByCartID(cartID uint) ([]models.CartItem, error) {
+	var cartItems []models.CartItem
+	err := u.cartItemRepo.GetAllCartItemsByCartID(cartID, &cartItems)
+	if err != nil {
+		return nil, err
+	}
+	return cartItems, nil
+}
+
+func (u *cartItemUsecase) AddProductToCart(cartID, productID uint, quantity int) (*models.CartItem, error) {
+	// Lấy thông tin sản phẩm trong giỏ hàng theo cartID và productID
 	cartItem, err := u.cartItemRepo.GetCartItem(cartID, productID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	// Lấy thông tin sản phẩm theo productID
 	products, err := u.productUsecase.GetProductByID(productID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	// Nếu sản phẩm chưa có trong giỏ hàng, tạo mới CartItem
 	if cartItem == nil {
 		newCartItem := &models.CartItem{
 			CartID:    cartID,
 			ProductID: productID,
 			Quantity:  quantity,
-			Status:    "unavailable",
-			Price:     products.Price,
+			Status:    "unavailable",  // Đặt trạng thái mặc định là "chưa khả dụng"
+			Price:     products.Price, // Lấy giá sản phẩm từ thông tin sản phẩm
 		}
-		return u.cartItemRepo.CreateCartItem(newCartItem)
+		err := u.cartItemRepo.CreateCartItem(newCartItem)
+		return newCartItem, err
 	}
 
+	// Nếu sản phẩm đã tồn tại trong giỏ hàng, cập nhật số lượng
 	cartItem.Quantity += quantity
-	return u.cartItemRepo.UpdateCartItem(cartItem)
+	if err := u.cartItemRepo.UpdateCartItem(cartItem); err != nil {
+		return nil, err
+	}
+
+	return cartItem, err
 }
 
 func (u *cartItemUsecase) CalculateCartTotal(cartID uint) (float64, error) {
