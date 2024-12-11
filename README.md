@@ -1,149 +1,122 @@
-# CRM E-Commerce Backend Project
+# MSA Project
 
 ## Project Overview
-The CRM e-commerce backend supports the management of customer relationships, orders, products, inventory, and analytics for an online store. This system integrates with the front-end e-commerce platform, ensuring seamless operations and a unified view of customer interactions.
+The MSA system will manage all aspects of customer interactions, employee actions, inventory, discounts, orders, and customer support. The system will be divided into two primary user groups: Employees and Customers, with separate functionalities to ensure seamless operations.
 
 ## Requirements
 
-### 1. User Management
-- **User Roles and Permissions**
-  - Description: Create and manage user roles (admin, sales, support, marketing) with specific permissions.
-  - Priority: High
-  - Acceptance Criteria:
-    - Admins can create, modify, and delete user roles.
-    - Each role has defined permissions.
-    - Users can be assigned one or more roles.
+### For Staff
+1. Login
+Description: Staff can log in using the provided credentials.
+Priority: High
+Acceptance Criteria:
+Staff can securely log in using their unique username and password.
+Failed login attempts are tracked and logged.
+2. Inventory Management
+Description: Manage products in the inventory (add, update, and delete products).
+Priority: High
+Acceptance Criteria:
+Staff can add new products to the inventory with details like name, description, price, quantity, etc.
+Staff can update the product details such as pricing, description, and stock levels.
+Staff can delete products that are no longer being sold or are out of stock.
+Stock levels are updated automatically when products are added or removed.
+3. Discount Code Management
+Description: Create, update, and delete discount codes.
+Priority: High
+Acceptance Criteria:
+Staff can create new discount codes with specified conditions (e.g., minimum order amount, percentage discount, expiry date).
+Staff can modify the conditions for existing discount codes, such as the applicable dates and requirements.
+Staff can delete discount codes that are no longer required.
+4. Update Discount Conditions
+Description: Modify conditions under which discount codes apply.
+Priority: Medium
+Acceptance Criteria:
+Staff can update conditions like minimum order amounts, required quantity of items, and other restrictions associated with discount codes.
+Changes are reflected immediately in the system for customer use.
+5. Customer Management
+Description: View, search, and delete customer information.
+Priority: Medium
+Acceptance Criteria:
+Staff can search for customers based on various criteria such as name, email, or phone number.
+Staff can view detailed customer profiles, including their order history, contact details, and preferences.
+Staff can delete customers from the system when necessary.
+6. Order Management
+Description: Search, view, modify, and delete orders.
+Priority: High
+Acceptance Criteria:
+Staff can search for orders using order IDs, customer names, or product names.
+Staff can view the status of each order, including payment status, shipping status, and delivery updates.
+Staff can modify order details (e.g., change shipping address or product quantities).
+Staff can delete orders if necessary, especially for canceled or erroneous orders.
 
-- **User Authentication and Authorization**
-  - Description: Secure login, password recovery, and multi-factor authentication.
-  - Priority: High
-  - Acceptance Criteria:
-    - Users can log in using a secure method.
-    - Users can recover passwords via email.
-    - Optional multi-factor authentication for enhanced security.
-
-### 2. Customer Management
-- **Customer Profiles**
-  - Description: Store detailed customer information, including contact details, purchase history, and preferences.
-  - Priority: High
-
-- **Customer Segmentation**
-  - Description: Allow segmentation based on demographics, behavior, and purchase history.
-  - Priority: Medium
-
-- **Interaction Tracking**
-  - Description: Record interactions via email, chat, phone, and in-person meetings.
-  - Priority: Medium
-
-### 3. Product Management
-- **Product Catalog**
-  - Description: Manage product details, categories, pricing, and stock levels.
-  - Priority: High
-
-- **Inventory Management**
-  - Description: Track inventory levels, automate stock alerts, and handle backorders.
-  - Priority: High
-
-- **Product Variants**
-  - Description: Support different sizes, colors, and specifications of products.
-  - Priority: Medium
-
-### 4. Order Management
-- **Order Processing**
-  - Description: Handle the entire order lifecycle from placement to delivery.
-  - Priority: High
-
-- **Order Tracking**
-  - Description: Provide real-time order tracking for customers.
-  - Priority: High
-
-- **Returns and Refunds**
-  - Description: Manage return requests and process refunds.
-  - Priority: Medium
-
-### 5. Sales and Marketing
-- **Sales Funnel Management**
-  - Description: Track leads, opportunities, and sales stages.
-  - Priority: Medium
-
-- **Campaign Management**
-  - Description: Create and manage marketing campaigns, track performance, and segment audiences.
-  - Priority: Medium
-
-- **Promotions and Discounts**
-  - Description: Apply discounts, promo codes, and special offers.
-  - Priority: Medium
-
-### 6. Customer Support
-- **Ticketing System**
-  - Description: Manage customer support tickets and track resolution times.
-  - Priority: Medium
-
-- **Knowledge Base**
-  - Description: Provide a self-service knowledge base for common customer queries.
-  - Priority: Medium
-
-- **Live Chat Integration**
-  - Description: Integrate with live chat tools for real-time customer support.
-  - Priority: Low
-
-### 7. Analytics and Reporting
-- **Sales Reports**
-  - Description: Generate reports on sales performance, revenue, and customer behavior.
-  - Priority: High
-
-- **Customer Insights**
-  - Description: Provide insights into customer demographics, preferences, and lifetime value.
-  - Priority: Medium
-
-- **Marketing Analytics**
-  - Description: Track the performance of marketing campaigns and ROI.
-  - Priority: Medium
-
-### 8. Integration and APIs
-- **Third-Party Integrations**
-  - Description: Integrate with payment gateways, shipping providers, and marketing tools.
-  - Priority: High
-
-- **APIs**
-  - Description: Provide APIs for front-end integration, mobile apps, and third-party services.
-  - Priority: High
-
-### 9. Security and Compliance
-- **Data Security**
-  - Description: Implement encryption, secure data storage, and regular security audits.
-  - Priority: High
-
-- **Compliance**
-  - Description: Ensure compliance with relevant regulations (e.g., GDPR, CCPA).
-  - Priority: High
-
-### 10. Performance and Scalability
-- **Scalability**
-  - Description: Design the system to handle increasing traffic and data volume.
-  - Priority: High
-
-- **Performance Optimization**
-  - Description: Optimize for fast load times and efficient database queries.
-  - Priority: High
-
-### 11. Deployment and Maintenance
-- **Deployment**
-  - Description: Plan for deployment strategies, including continuous integration and deployment (CI/CD) pipelines.
-  - Priority: High
-
-- **Maintenance**
-  - Description: Establish a maintenance plan for updates, backups, and system monitoring.
-  - Priority: High
-
-### 12. Documentation and Training
-- **User Documentation**
-  - Description: Provide detailed documentation for end-users and administrators.
-  - Priority: Medium
-
-- **Training Programs**
-  - Description: Offer training sessions and materials for staff.
-  - Priority: Medium
-
+### For Customers
+1. Registration and Login
+Description: Allow users to register a new account or log in to an existing account.
+Priority: High
+Acceptance Criteria:
+Customers can register by providing necessary details such as name, email, and password.
+Customers can log in to their accounts using email and password.
+Forgot password functionality to allow customers to reset their password via email.
+Customers can manage their login credentials securely.
+2. Personal Information Management
+Description: Update personal details like name, shipping address, phone number, and payment methods.
+Priority: Medium
+Acceptance Criteria:
+Customers can update their contact information, including name, email, and phone number.
+Customers can add or edit shipping addresses and select the default address.
+Customers can add, update, or remove payment methods linked to their account.
+3. Product Search
+Description: Search products by name, category, or price.
+Priority: High
+Acceptance Criteria:
+Customers can search for products based on various filters, such as product name, category, and price range.
+The search results are displayed with product names, images, and basic details.
+4. Cart Management
+Description: Add products to the cart, update quantities, and proceed to checkout.
+Priority: High
+Acceptance Criteria:
+Customers can add products to their cart with specific quantities.
+Customers can edit product quantities or remove items from their cart.
+The cart is saved and accessible at any time for future purchases.
+5. Discount Code Usage
+Description: Apply discount codes during checkout and verify their eligibility.
+Priority: Medium
+Acceptance Criteria:
+Customers can enter discount codes during checkout.
+The system verifies whether the discount code is valid based on conditions like order amount, expiration date, and product restrictions.
+The discount is applied, and the new total price is displayed before payment.
+6. Placing Orders
+Description: Finalize purchases by selecting products from the cart and providing payment and shipping information.
+Priority: High
+Acceptance Criteria:
+Customers can review their order details before placing an order.
+Customers select a payment method (e.g., credit card, PayPal, cash on delivery).
+Customers provide shipping information, including the delivery address and preferred shipping method.
+The system processes the order and confirms the purchase.
+7. Support Requests
+Description: Customers can send support requests to the customer service team.
+Priority: Medium
+Acceptance Criteria:
+Customers can create support tickets for issues related to orders, products, or accounts.
+The system tracks the status of support tickets (open, resolved, closed).
+8. Payment
+Description: Complete transactions using third-party payment methods or cash on delivery.
+Priority: High
+Acceptance Criteria:
+Customers can complete payments using integrated payment methods (e.g., credit/debit cards, e-wallets).
+The system confirms payment and updates the order status accordingly.
+Cash on delivery is supported as a payment option.
+9. Product Ratings and Reviews
+Description: Customers can rate and review products after completing an order.
+Priority: Medium
+Acceptance Criteria:
+Customers can provide ratings (e.g., stars) and write reviews for products they have purchased.
+The system displays ratings and reviews for products to help future customers make informed decisions.
+10. Shipping Method Selection
+Description: Choose a preferred shipping method based on cost and delivery time.
+Priority: Medium
+Acceptance Criteria:
+Customers can select a shipping method from available options (e.g., standard, express, or pickup).
+Shipping cost and estimated delivery time are displayed before checkout.
 ---
-This README provides a detailed overview of the requirements and priorities for the CRM e-commerce backend project.
+This README provides a detailed overview of the requirements and priorities for the MSA project.
