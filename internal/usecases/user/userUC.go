@@ -253,6 +253,9 @@ func (u *userUsecase) UpdateUserInf(users *models.User) error {
 		currentUser.Password = hashedPassword
 	}
 
+	currentUser.Role = users.Role
+	currentUser.Address = users.Address
+
 	return u.userRepo.UpdateUser(currentUser)
 }
 

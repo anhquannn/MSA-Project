@@ -62,7 +62,7 @@ func (h *cartHandler) UpdateCart(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-
+ 
 	var req requests.Cart
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
