@@ -169,7 +169,7 @@ func OrderRoutes(router *gin.Engine, orderHandler http.OrderHandler) {
 		secured.Use(utils.AuthRequired())
 		{
 			secured.POST("/", orderHandler.CreateOrder) //http://localhost:8080/orders?user_id=1&cart_id=1&promo_code=BLACKFRIDAY
-			// secured.PUT("/:id", orderHandler.UpdateOrder)
+			secured.PUT("/:id", orderHandler.UpdateOrder)
 			secured.DELETE("/:id", orderHandler.DeleteOrder)
 			secured.GET("/:id", orderHandler.GetOrderByID)
 			secured.GET("/", orderHandler.GetAllOrders)
