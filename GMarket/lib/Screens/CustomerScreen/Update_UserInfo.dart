@@ -11,9 +11,9 @@ class Update_UserInfo extends StatefulWidget{
 }
 class Update_UserInfo_State extends State<Update_UserInfo>{
   late var isChecked=false;
-  TextEditingController _lName=new TextEditingController();
-  TextEditingController _address=new TextEditingController();
-  TextEditingController _phoneNumber=new TextEditingController();
+  final TextEditingController _lName=new TextEditingController();
+  final TextEditingController _address=new TextEditingController();
+  final TextEditingController _phoneNumber=new TextEditingController();
 
   @override
   void initState() {
@@ -38,6 +38,8 @@ class Update_UserInfo_State extends State<Update_UserInfo>{
             await userProvider.getInfoUserById(userProvider.user!.ID);
 
             Navigator.pop(context);
+            Navigator.pop(context);
+
           },
         ),
         //Cập nhật thông tin
@@ -63,7 +65,10 @@ class Update_UserInfo_State extends State<Update_UserInfo>{
                       TextField(
                         controller: _lName,
                         onChanged: (value) {
-                          _lName.text = value;
+                          setState(() {
+                            _lName.text = value;
+                          });
+
                         },
                         style: const TextStyle(
                           color: Colors.black,

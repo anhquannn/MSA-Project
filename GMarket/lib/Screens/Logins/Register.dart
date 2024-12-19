@@ -50,291 +50,294 @@ class RegisterState extends State<Register>{
             height: double.infinity,
             color: const Color.fromRGBO(255, 255, 255, 1.0),
           ),
-          Center(
-            child:
-            SizedBox(
-                width: width*0.9,
-                height: height*0.9,
-                child: SingleChildScrollView(
-                  child: Center(
-                      child: Column(
-                        children: [
-                          Column(
-                            children: [
-                              SizedBox(height: height*0.05,),
-                              Container(
-                                child: Image.asset('assets/image/QMarket-White.jpg',
-                                  height: height*0.3,
-                                  width: width*0.3,),
-                              ),
-                              const Text("Đăng Ký",
-                                style: TextStyle(
-                                    fontFamily: 'Coiny-Regular-font',
-                                    fontSize: 30,
-                                    color: Colors.black
+          SingleChildScrollView(
+            child: Center(
+              child:
+              SizedBox(
+                  width: width*0.9,
+                  height: height*0.9,
+                  child: SingleChildScrollView(
+                    child: Center(
+                        child: Column(
+                          children: [
+                            Column(
+                              children: [
+                                SizedBox(height: height*0.05,),
+                                Container(
+                                  child: Image.asset('assets/image/QMarket-White.jpg',
+                                    height: height*0.3,
+                                    width: width*0.3,),
                                 ),
-                                // textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: height*0.05,),
-                              TextField(
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Coiny-Regular-font',
-                                  fontSize: 16,
+                                const Text("Đăng Ký",
+                                  style: TextStyle(
+                                      fontFamily: 'Coiny-Regular-font',
+                                      fontSize: 30,
+                                      color: Colors.black
+                                  ),
+                                  // textAlign: TextAlign.center,
                                 ),
-                                decoration: InputDecoration(
-                                    hintText: "Email",
-                                    hintStyle: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                        fontFamily: 'Coiny-Regular-font'
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                          color: Color.fromRGBO(94, 200, 248, 1),
-                                          width: 2.0),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(
-                                            width: 3.0,
-                                            color: Color.fromRGBO(94, 200, 248, 1)))
-                                ),
-                                onChanged: (value) {
-                                  _email=value;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              TextField(
-                                obscureText: _isObscure1,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Coiny-Regular-font',
-                                  fontSize: 16,
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: "Password",
-                                  hintStyle: const TextStyle(
+                                SizedBox(height: height*0.05,),
+                                TextField(
+                                  style: const TextStyle(
                                     color: Colors.black,
                                     fontFamily: 'Coiny-Regular-font',
-                                    fontSize: 18,
+                                    fontSize: 16,
                                   ),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                        _isObscure1 ? Icons.visibility_off : Icons.visibility
-                                    ),
-                                    onPressed: () {
-                                      showPassWord1();
-                                    },
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: Color.fromRGBO(94, 200, 248, 1),
-                                        width: 2.0,)
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                          width: 3.0,
-                                          color: Color.fromRGBO(94, 200, 248, 1)
-                                      )
-                                  ),
-                                ),
-                                onChanged: (value) {
-                                  _password=value;
-                                },
-                              ),
-                              const SizedBox(height: 10,),
-                              TextField(
-                                obscureText: _isObscure2,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Coiny-Regular-font',
-                                  fontSize: 16,
-                                ),
-                                decoration: InputDecoration(
-                                  hintText: "Xác nhận Password",
-                                  hintStyle: const TextStyle(
-                                    color: Colors.black,
-                                    fontFamily: 'Coiny-Regular-font',
-                                    fontSize: 18,
-                                  ),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                        _isObscure2 ? Icons.visibility_off : Icons.visibility
-                                    ),
-                                    onPressed: () {
-                                      showPassWord2();
-                                    },
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                        color: Color.fromRGBO(94, 200, 248, 1),
-                                        width: 2.0,
-                                      )
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                          width: 2.0,
-                                          color: Color.fromRGBO(94, 200, 248, 1)
-                                      )
-                                  ),
-                                ),
-                                onChanged: (value) {
-                                  _verifyPassword=value;
-                                },
-                              ),
-                              SizedBox(
-                                height: height * 0.01,
-                              ),
-                              TextField(
-                                onChanged: (value) {
-                                  _fName = value;
-                                },
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Coiny-Regular-font',
-                                  fontSize: 16,
-                                ),
-                                decoration: InputDecoration(
-                                    hintText: "Họ",
-                                    hintStyle: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                        fontFamily: 'Coiny-Regular-font'),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                          color: Color.fromRGBO(94, 200, 248, 1),
-                                          width: 2.0),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
+                                  decoration: InputDecoration(
+                                      hintText: "Email",
+                                      hintStyle: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: 'Coiny-Regular-font'
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(10),
                                         borderSide: const BorderSide(
-                                            width: 3.0,
-                                            color: Color.fromRGBO(94, 200, 248, 1)))),
-                              ),
-                              SizedBox(
-                                height: height * 0.01,
-                              ),
-                              TextField(
-                                onChanged: (value) {
-                                  _lName = value;
-                                },
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Coiny-Regular-font',
-                                  fontSize: 16,
-                                ),
-                                decoration: InputDecoration(
-                                    hintText: "Tên",
-                                    hintStyle: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                        fontFamily: 'Coiny-Regular-font'),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                          color: Color.fromRGBO(94, 200, 248, 1),
-                                          width: 2.0),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(
-                                            width: 3.0,
-                                            color: Color.fromRGBO(94, 200, 248, 1)))),
-                              ),
-                              SizedBox(
-                                height: height * 0.01,
-                              ),
-                              TextField(
-                                onChanged: (value) {
-                                  _address = value;
-                                },
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Coiny-Regular-font',
-                                  fontSize: 16,
-                                ),
-                                decoration: InputDecoration(
-                                    hintText: "Địa chỉ",
-                                    hintStyle: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                        fontFamily: 'Coiny-Regular-font'),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                          color: Color.fromRGBO(94, 200, 248, 1),
-                                          width: 2.0),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(
-                                            width: 3.0,
-                                            color: Color.fromRGBO(94, 200, 248, 1)))),
-                              ),
-                              SizedBox(
-                                height: height * 0.01,
-                              ),
-                              TextField(
-                                keyboardType: TextInputType.number,
-                                onChanged: (value) {
-                                  _phoneNumber = value;
-                                },
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'Coiny-Regular-font',
-                                  fontSize: 16,
-                                ),
-                                decoration: InputDecoration(
-                                    hintText: "Số điện thoại",
-                                    hintStyle: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                        fontFamily: 'Coiny-Regular-font'),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: const BorderSide(
-                                          color: Color.fromRGBO(94, 200, 248, 1),
-                                          width: 2.0),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: const BorderSide(
-                                            width: 3.0,
-                                            color: Color.fromRGBO(94, 200, 248, 1)))),
-                              ),
-                              SizedBox(
-                                height: height * 0.01,
-                              ),
-                              ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor:
-                                      const Color.fromRGBO(94, 200, 248, 1)),
-                                  onPressed: () {
-                                    PressOnRegister();
+                                            color: Color.fromRGBO(94, 200, 248, 1),
+                                            width: 2.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: const BorderSide(
+                                              width: 3.0,
+                                              color: Color.fromRGBO(94, 200, 248, 1)))
+                                  ),
+                                  onChanged: (value) {
+                                    _email=value;
                                   },
-                                  child: const Text(
-                                    "Next",
-                                    style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 18,
-                                        fontFamily: 'Coiny-Regular-font'),
-                                  ))
-                            ],
-                          ),
-
-                        ],
-                      )
-                  ),
-                )
-            ),
+                                ),
+                                const SizedBox(height: 10),
+                                TextField(
+                                  obscureText: _isObscure1,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Coiny-Regular-font',
+                                    fontSize: 16,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: "Password",
+                                    hintStyle: const TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Coiny-Regular-font',
+                                      fontSize: 18,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                          _isObscure1 ? Icons.visibility_off : Icons.visibility
+                                      ),
+                                      onPressed: () {
+                                        showPassWord1();
+                                      },
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                          color: Color.fromRGBO(94, 200, 248, 1),
+                                          width: 2.0,)
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                            width: 3.0,
+                                            color: Color.fromRGBO(94, 200, 248, 1)
+                                        )
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    _password=value;
+                                  },
+                                ),
+                                const SizedBox(height: 10,),
+                                TextField(
+                                  obscureText: _isObscure2,
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Coiny-Regular-font',
+                                    fontSize: 16,
+                                  ),
+                                  decoration: InputDecoration(
+                                    hintText: "Xác nhận Password",
+                                    hintStyle: const TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'Coiny-Regular-font',
+                                      fontSize: 18,
+                                    ),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                          _isObscure2 ? Icons.visibility_off : Icons.visibility
+                                      ),
+                                      onPressed: () {
+                                        showPassWord2();
+                                      },
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                          color: Color.fromRGBO(94, 200, 248, 1),
+                                          width: 2.0,
+                                        )
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                            width: 2.0,
+                                            color: Color.fromRGBO(94, 200, 248, 1)
+                                        )
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    _verifyPassword=value;
+                                  },
+                                ),
+                                SizedBox(
+                                  height: height * 0.01,
+                                ),
+                                TextField(
+                                  onChanged: (value) {
+                                    _fName = value;
+                                  },
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Coiny-Regular-font',
+                                    fontSize: 16,
+                                  ),
+                                  decoration: InputDecoration(
+                                      hintText: "Họ",
+                                      hintStyle: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: 'Coiny-Regular-font'),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                            color: Color.fromRGBO(94, 200, 248, 1),
+                                            width: 2.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: const BorderSide(
+                                              width: 3.0,
+                                              color: Color.fromRGBO(94, 200, 248, 1)))),
+                                ),
+                                SizedBox(
+                                  height: height * 0.01,
+                                ),
+                                TextField(
+                                  onChanged: (value) {
+                                    _lName = value;
+                                  },
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Coiny-Regular-font',
+                                    fontSize: 16,
+                                  ),
+                                  decoration: InputDecoration(
+                                      hintText: "Tên",
+                                      hintStyle: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: 'Coiny-Regular-font'),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                            color: Color.fromRGBO(94, 200, 248, 1),
+                                            width: 2.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: const BorderSide(
+                                              width: 3.0,
+                                              color: Color.fromRGBO(94, 200, 248, 1)))),
+                                ),
+                                SizedBox(
+                                  height: height * 0.01,
+                                ),
+                                TextField(
+                                  onChanged: (value) {
+                                    _address = value;
+                                  },
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Coiny-Regular-font',
+                                    fontSize: 16,
+                                  ),
+                                  decoration: InputDecoration(
+                                      hintText: "Địa chỉ",
+                                      hintStyle: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: 'Coiny-Regular-font'),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                            color: Color.fromRGBO(94, 200, 248, 1),
+                                            width: 2.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: const BorderSide(
+                                              width: 3.0,
+                                              color: Color.fromRGBO(94, 200, 248, 1)))),
+                                ),
+                                SizedBox(
+                                  height: height * 0.01,
+                                ),
+                                TextField(
+                                  keyboardType: TextInputType.number,
+                                  onChanged: (value) {
+                                    _phoneNumber = value;
+                                  },
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                    fontFamily: 'Coiny-Regular-font',
+                                    fontSize: 16,
+                                  ),
+                                  decoration: InputDecoration(
+                                      hintText: "Số điện thoại",
+                                      hintStyle: const TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: 'Coiny-Regular-font'),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        borderSide: const BorderSide(
+                                            color: Color.fromRGBO(94, 200, 248, 1),
+                                            width: 2.0),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(10),
+                                          borderSide: const BorderSide(
+                                              width: 3.0,
+                                              color: Color.fromRGBO(94, 200, 248, 1)))),
+                                ),
+                                SizedBox(
+                                  height: height * 0.01,
+                                ),
+                                ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                        backgroundColor:
+                                        const Color.fromRGBO(94, 200, 248, 1)),
+                                    onPressed: () {
+                                      PressOnRegister();
+                                    },
+                                    child: const Text(
+                                      "Next",
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontSize: 18,
+                                          fontFamily: 'Coiny-Regular-font'),
+                                    ))
+                              ],
+                            ),
+                            SizedBox(height: height*0.2,)
+                          ],
+                        )
+                    ),
+                  )
+              ),
+            )
           )
+
         ],
       ) ,
     );

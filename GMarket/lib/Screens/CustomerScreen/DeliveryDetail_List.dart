@@ -16,15 +16,15 @@ class DeliveryDetail_List extends StatefulWidget{
 }
 class DeliveryDetail_List_State extends State<DeliveryDetail_List>{
   bool isDefault=true;
-  List<bool> notDefault=[];
+  List<bool> notDefault=[false];
 
   @override
   void initState() {
     super.initState();
     final deliveryDetailProvider= Provider.of<DeliveryDetail_Provider>(context,listen: false);
-    if(deliveryDetailProvider.deliveryDetail==null){
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Update_UserInfo(),));
-    }
+    // if(deliveryDetailProvider.deliveryDetail==null){
+    //   Navigator.push(context, MaterialPageRoute(builder: (context) => Update_UserInfo(),));
+    // }
     try{
       for(int i=0;i<deliveryDetailProvider.deliveryDetails.length;i++){
         if(deliveryDetailProvider.deliveryDetails[i].ID==deliveryDetailProvider.deliveryDetail!.ID){
@@ -166,7 +166,8 @@ class DeliveryDetail_List_State extends State<DeliveryDetail_List>{
                 ),
                 //chon cac dia chi khac
                 Container(
-                  child: ListView.builder(
+                  child:
+                  ListView.builder(
                     itemCount: deliveryDetailProvider.deliveryDetails.length,
                       shrinkWrap: true,
                       physics: NeverScrollableScrollPhysics(),

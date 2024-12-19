@@ -120,17 +120,48 @@ class ProductProvider extends ChangeNotifier {
     }
   }
 
-  Future SortProducts(int size, int minPrice, int maxPrice, int categoryId, int page, int pageSize) async{
-    _isLoading=false;
+  // Future SortProducts(int size, int minPrice, int maxPrice, int categoryId, int page, int pageSize) async{
+  //   _isLoading=false;
+  //   notifyListeners();
+  //
+  //   final result=await productHttp().SortProducts(size, minPrice, maxPrice, categoryId, page, pageSize);
+  //   if(result!=null){
+  //     _productSort=result;
+  //     _products+=_productSort;
+  //     print("Provider - fillProduct thanh cong ${_products[0]!.name}");
+  //   }
+  //   _isLoading=true;
+  //   notifyListeners();
+  // }
+
+  Future<void> SortProducts({
+    int? size,
+    int? minPrice,
+    int? maxPrice,
+    int? categoryId,
+    int? page,
+    int? pageSize,
+  }) async {
+    _isLoading = false;
     notifyListeners();
 
-    final result=await productHttp().SortProducts(size, minPrice, maxPrice, categoryId, page, pageSize);
-    if(result!=null){
-      _productSort=result;
-      _products+=_productSort;
-      print("Provider - fillProduct thanh cong ${_products[0]!.name}");
+    // Gọi hàm SortProducts với các tham số nullable
+    final result = await productHttp().SortProducts(
+      size: size,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      categoryId: categoryId,
+      page: page,
+      pageSize: pageSize,
+    );
+
+    if (result != null) {
+      _productSort = result;
+      _products += _productSort;
+      print("Provider - fillProduct thành công ${_products[0]!.name}");
     }
-    _isLoading=true;
+
+    _isLoading = true;
     notifyListeners();
   }
 

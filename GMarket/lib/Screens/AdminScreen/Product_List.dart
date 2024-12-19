@@ -50,7 +50,7 @@ class Product_List_State extends State<Product_List>{
                     (Route<dynamic> route) => false,
               );
             },
-            icon: Icon(Icons.arrow_back, color: Colors.black,)
+            icon: Icon(Icons.arrow_back, color: Colors.white,)
         ),
         backgroundColor: Color.fromRGBO(94, 200, 248, 1),
       ),

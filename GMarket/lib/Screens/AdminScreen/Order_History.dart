@@ -35,7 +35,7 @@ class Order_History_State extends State<Order_History> {
             orderProvider.clearListIdProduct();
             Navigator.pop(context);
           },
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
         title: const Text(
           "Đặt hàng",

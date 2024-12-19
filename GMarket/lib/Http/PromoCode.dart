@@ -57,7 +57,7 @@ class promoCodeHttp{
             'enddate': pc.enddate,
             'status':pc.status,
             'discounttype': pc.discounttype,
-            'discountvalue': pc.discountpercentage,
+            'discountpercentage': pc.discountpercentage,
             'minimumordervalue': pc.minimumordervalue
           })
       );

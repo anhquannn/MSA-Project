@@ -42,20 +42,7 @@ class Search_Product_State extends State<Search_Product> {
                 Navigator.pop(context);
               },
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(7),
-              borderSide: const BorderSide(
-                color: Colors.white,
-                width: 1,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(7),
-              borderSide: const BorderSide(
-                color: Colors.white,
-                width: 1.5,
-              ),
-            ),
+
           ),
         ),
       ),

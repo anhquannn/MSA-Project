@@ -37,18 +37,17 @@ class Box_Chat_State extends State<Box_Chat> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bộ phận CSKH'),
+
+        title: const Text('Bộ phận CSKH', style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold
+        ),),
         backgroundColor: Colors.lightBlueAccent,
-        actions: [
-          // IconButton(
-          //   icon: const Icon(Icons.phone, color: Colors.black,),
-          //   onPressed: () => _makePhoneCall(''),
-          // ),
-          // IconButton(
-          //   icon: const Icon(Icons.videocam, color: Colors.black,),
-          //   onPressed: () => _makePhoneCall(''),
-          // ),
-        ],
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(Icons.arrow_back), color: Colors.white,),
       ),
       body: WebViewWidget(
         controller: WebViewController()

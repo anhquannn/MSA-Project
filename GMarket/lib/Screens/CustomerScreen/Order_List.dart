@@ -29,7 +29,7 @@ class Order_Info_State extends State<Order_Info> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.pushAndRemoveUntil(context, 
+            Navigator.pushAndRemoveUntil(context,
                 MaterialPageRoute(builder: (context) => User_Info(),),
                   (Route<dynamic> route) => false,
             );

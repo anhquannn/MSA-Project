@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:gmarket/Http/User.dart';
 
 class productHttp{
-  // String baseUrl='http://172.22.14.98:8080';
+  // String baseUrl='http://172.20.10.2:8080';
   String baseUrl='http://192.168.1.6:8080';
   final FlutterSecureStorage secureStorage=FlutterSecureStorage();
 
@@ -190,23 +190,90 @@ class productHttp{
     return [];
   }
 
-  Future<List<Product>?> SortProducts(int size, int minPrice, int maxPrice, int categoryId, int page, int pageSize)async{
-    final url=
-    Uri.parse('$baseUrl/products/filter?size=$size&min_price=$minPrice&max_price=$maxPrice&category_id=$categoryId&page=$page&pageSize=10');
+  // Future<List<Product>?> SortProducts(int size, int minPrice, int maxPrice, int categoryId, int page, int pageSize)async{
+  //   if(size==0){
+  //     final url= Uri.parse('$baseUrl/products/filter?&min_price=$minPrice&max_price=$maxPrice&category_id=$categoryId&page=$page&pageSize=10');
+  //     try{
+  //       final response= await http.get(url);
+  //       if(response.statusCode==200){
+  //         final List<dynamic> data=jsonDecode(response.body);
+  //         final List<Product> list=data.map((json)=>Product.fromJson(json)).toList();
+  //         print("Http - filterAndSortProducts thanh cong");
+  //         return list;
+  //       }
+  //     }catch(e){
+  //       throw Exception("Http - Khong the filterAndSortProducts $e");
+  //     }
+  //   }
+  //   else if(categoryId==0){
+  //     final url= Uri.parse('$baseUrl/products/filter?size=$size&min_price=$minPrice&max_price=$maxPrice&page=$page&pageSize=10');
+  //     try{
+  //       final response= await http.get(url);
+  //       if(response.statusCode==200){
+  //         final List<dynamic> data=jsonDecode(response.body);
+  //         final List<Product> list=data.map((json)=>Product.fromJson(json)).toList();
+  //         print("Http - filterAndSortProducts thanh cong");
+  //         return list;
+  //       }
+  //
+  //     }catch(e){
+  //       throw Exception("Http - Khong the filterAndSortProducts $e");
+  //     }
+  //   }else{
+  //     final url= Uri.parse('$baseUrl/products/filter?size=$size&min_price=$minPrice&max_price=$maxPrice&category_id=$categoryId&page=$page&pageSize=10');
+  //     try{
+  //       final response= await http.get(url);
+  //       if(response.statusCode==200){
+  //         final List<dynamic> data=jsonDecode(response.body);
+  //         final List<Product> list=data.map((json)=>Product.fromJson(json)).toList();
+  //         print("Http - filterAndSortProducts thanh cong");
+  //         return list;
+  //       }
+  //     }catch(e){
+  //       throw Exception("Http - Khong the filterAndSortProducts $e");
+  //     }
+  //   }
+  //   return [];
+  // }
 
-    try{
-      final response= await http.get(url);
-      if(response.statusCode==200){
-        final List<dynamic> data=jsonDecode(response.body);
-        final List<Product> list=data.map((json)=>Product.fromJson(json)).toList();
-        print("Http - filterAndSortProducts thanh cong");
+  Future<List<Product>?> SortProducts({
+    int? size,
+    int? minPrice,
+    int? maxPrice,
+    int? categoryId,
+    int? page,
+    int? pageSize,
+  }) async {
+    // Khởi tạo query parameters
+    final queryParameters = {
+      if (size != null && size > 0) 'size': size.toString(),
+      if (minPrice != null) 'min_price': minPrice.toString(),
+      if (maxPrice != null) 'max_price': maxPrice.toString(),
+      if (categoryId != null && categoryId > 0) 'category_id': categoryId.toString(),
+      if (page != null && page > 0) 'page': page.toString(),
+      if (pageSize != null && pageSize > 0) 'pageSize': pageSize.toString(),
+    };
+
+    final uri = Uri.parse('$baseUrl/products/filter').replace(queryParameters: queryParameters);
+
+    try {
+      final response = await http.get(uri);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        final List<Product> list = data.map((json) => Product.fromJson(json)).toList();
+        print("Http - filterAndSortProducts thành công");
         return list;
+      } else {
+        print("Http - Lỗi khi gọi API: ${response.statusCode}");
+        return null;
       }
-    }catch(e){
-      throw Exception("Http - Khong the filterAndSortProducts $e");
+    } catch (e) {
+      throw Exception("Http - Không thể filterAndSortProducts $e");
     }
-    return [];
   }
+
+
+
 
 }
 

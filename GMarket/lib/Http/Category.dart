@@ -6,7 +6,7 @@ import 'package:gmarket/Models/Category.dart';
 
 class categoryHttp{
   String baseUrl='http://192.168.1.6:8080';
-  // String baseUrl='http://172.22.14.98:8080';
+  // String baseUrl='http://172.20.10.2:8080';
 
   Future<bool?> createCategory(Category cate) async{
     final url=Uri.parse('$baseUrl/categories/');

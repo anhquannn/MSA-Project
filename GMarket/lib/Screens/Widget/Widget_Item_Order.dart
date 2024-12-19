@@ -83,7 +83,7 @@ class Widget_Item_Order_State extends State<Widget_Item_Order>{
                               SizedBox(height: height * 0.06),
                               //price
                               Text(
-                                '${widget.price! * widget.quantity} VND',
+                                '${widget.price} VND',
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.bold,

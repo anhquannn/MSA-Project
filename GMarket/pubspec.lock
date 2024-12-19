@@ -557,6 +557,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
+  transition_plus:
+    dependency: "direct main"
+    description:
+      name: transition_plus
+      sha256: "3b892e2c5b0884848686b40d5b3880cbbe20478cf6980a3d56af9e4fcb4e1c0e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.12"
   typed_data:
     dependency: transitive
     description:

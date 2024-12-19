@@ -34,40 +34,55 @@ class Widget_Order_History extends StatelessWidget {
                 style: BorderStyle.solid),
           ),
           child: Container(
-            padding: EdgeInsets.all(4),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
+            child: Row(
               children: [
-                // ID đơn hàng
-                Text(
-                  "ID đơn hàng: $ID",
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
+                Container(
+                  width: width*0.25,
+                  height: height*0.12,
+                  decoration: BoxDecoration(
+                      color: Color.fromRGBO(94, 200, 248, 1),
+                    borderRadius: BorderRadius.circular(15),
                   ),
+                  child: Icon(Icons.card_giftcard),
                 ),
-                SizedBox(height: height * 0.01),
-                // Tổng số tiền
-                Text(
-                  "Tổng số tiền: $grandtotal",
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                  ),
+                SizedBox(width: width*0.03,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // ID đơn hàng
+                    Text(
+                      "ID đơn hàng: $ID",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                    SizedBox(height: height * 0.01),
+                    // Tổng số tiền
+                    Text(
+                      "Tổng số tiền: $grandtotal",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                    SizedBox(height: height * 0.01),
+                    // Trạng thái đơn hàng
+                    Text(
+                      "Trạng thái đơn hàng: $status",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
+                    ),
+                    SizedBox(height: height * 0.01),
+                  ],
                 ),
-                SizedBox(height: height * 0.01),
-                // Trạng thái đơn hàng
-                Text(
-                  "Trạng thái đơn hàng: $status",
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                  ),
-                ),
-                SizedBox(height: height * 0.01),
               ],
             ),
+
+
           ),
         )
     );

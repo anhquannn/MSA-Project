@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Models/Category.dart';
 import 'package:gmarket/Provider/CartItem_Provider.dart';
@@ -12,6 +11,7 @@ import 'package:gmarket/Screens/CustomerScreen/Product_Detail.dart';
 import 'package:gmarket/Screens/CustomerScreen/Search_Product.dart';
 import 'package:gmarket/Screens/CustomerScreen/User_Info.dart';
 import 'package:gmarket/Screens/Widget/Widget_Product_Item.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,12 +22,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class HomeScreen_State extends State<HomeScreen> {
-  int page = 1;
-  int pageSort = 1;
+  int page=1;
+  int? size;
+  int? minprice;
+  int? maxprice;
   int? category_id;
-  int? minprice=1;
-  int? maxprice=0;
-  int? size=1;
+  int pageSort = 1;
   List<int> numbers = List<int>.generate(50, (index) => index + 1);
 
   @override
@@ -37,8 +37,8 @@ class HomeScreen_State extends State<HomeScreen> {
     page=1;
     pageSort=1;
     category_id=null;
-    minprice=0;
-    maxprice=1000000;
+    minprice= 0;
+    maxprice=10000;
     size=null;
   }
   
@@ -52,10 +52,10 @@ class HomeScreen_State extends State<HomeScreen> {
     setState(() {
       page=1;
       pageSort=1;
-      category_id=null;
+      category_id=0;
       minprice=0;
-      maxprice=1000000;
-      size=null;
+      maxprice=100000;
+      size=0;
     });
   }
 
@@ -75,7 +75,7 @@ class HomeScreen_State extends State<HomeScreen> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+        backgroundColor: const Color.fromRGBO(94, 200, 248, 1),
         leading: Container(
           child: Image.asset(
             'assets/image/QMarket-Blue.jpg',
@@ -97,7 +97,7 @@ class HomeScreen_State extends State<HomeScreen> {
               );
 
             },
-            icon: Icon(Icons.search, color: Colors.white),
+            icon: const Icon(Icons.search, color: Colors.white),
           ),
           // user info
           IconButton(
@@ -111,7 +111,7 @@ class HomeScreen_State extends State<HomeScreen> {
 
               );
             },
-            icon: Icon(Icons.account_circle_outlined, color: Colors.white),
+            icon: const Icon(Icons.account_circle_outlined, color: Colors.white),
           ),
           // cart
           IconButton(
@@ -143,7 +143,7 @@ class HomeScreen_State extends State<HomeScreen> {
 
               }
             },
-            icon: Icon(Icons.add_shopping_cart_sharp, color: Colors.white),
+            icon: const Icon(Icons.add_shopping_cart_sharp, color: Colors.white),
           ),
           // sort
           IconButton(
@@ -196,7 +196,7 @@ class HomeScreen_State extends State<HomeScreen> {
                                   ),
                                 ),
                                 hintText: "Loại sản phẩm",
-                                hintStyle: TextStyle(color: Colors.black),
+                                hintStyle: const TextStyle(color: Colors.black),
                               ),
                               iconEnabledColor: Colors.white,
                               items: itemCategory.listCategory.map((Category cate) {
@@ -215,77 +215,77 @@ class HomeScreen_State extends State<HomeScreen> {
                           ),
                           SizedBox(height: height*0.01,),
                           // size
-                          Container(
-                            width: width*0.5,
-                            padding: EdgeInsets.all(10),
-                            child: DropdownButtonFormField<int>(
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: const BorderSide(
-                                      color:  Color.fromRGBO(94, 200, 248, 1),
-                                      width: 1.5
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder( borderSide: const BorderSide(
-                                  color: Color.fromRGBO(94, 200, 248, 1),
-                                  width: 1.5,  ),
-                                  borderRadius: BorderRadius.circular(10), ),
-                                focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color:  Color.fromRGBO(94, 200, 248, 1),
-                                      width: 1.5
-                                  ),
-                                ),
-                                hintText: "Size sản phẩm",
-                                hintStyle: TextStyle(color: Colors.black),
-                              ),
-                              iconEnabledColor: Colors.white,
-                              items: numbers.map((int number) {
-                                return DropdownMenuItem<int>(
-                                  value: number,
-                                  child: Text(number.toString()),
-                                );
-                              }).toList(),
-                              onChanged: (int? value) {
-                                setState(() {
-                                  size = value;
-                                });
-                                print(size);
-                              },
-                            ),
-                          ),
-                          SizedBox(height: height*0.01,),
+                          // Container(
+                          //   width: width*0.5,
+                          //   padding: const EdgeInsets.all(10),
+                          //   child: DropdownButtonFormField<int>(
+                          //     decoration: InputDecoration(
+                          //       border: OutlineInputBorder(
+                          //         borderRadius: BorderRadius.circular(10),
+                          //         borderSide: const BorderSide(
+                          //             color:  Color.fromRGBO(94, 200, 248, 1),
+                          //             width: 1.5
+                          //         ),
+                          //       ),
+                          //       enabledBorder: OutlineInputBorder( borderSide: const BorderSide(
+                          //         color: Color.fromRGBO(94, 200, 248, 1),
+                          //         width: 1.5,  ),
+                          //         borderRadius: BorderRadius.circular(10), ),
+                          //       focusedBorder: const OutlineInputBorder(
+                          //         borderSide: BorderSide(
+                          //             color:  Color.fromRGBO(94, 200, 248, 1),
+                          //             width: 1.5
+                          //         ),
+                          //       ),
+                          //       hintText: "Size sản phẩm",
+                          //       hintStyle: const TextStyle(color: Colors.black),
+                          //     ),
+                          //     iconEnabledColor: Colors.white,
+                          //     items: numbers.map((int number) {
+                          //       return DropdownMenuItem<int>(
+                          //         value: number,
+                          //         child: Text(number.toString()),
+                          //       );
+                          //     }).toList(),
+                          //     onChanged: (int? value) {
+                          //       setState(() {
+                          //         // size = value;
+                          //       });
+                          //       // print(size);
+                          //     },
+                          //   ),
+                          // ),
+                          // SizedBox(height: height*0.01,),
                           //Mức tiền tối thiểu
                           Text( 'Mức tiền tối thiểu: $minprice',
-                            style: TextStyle(fontSize: 14, color: Colors.black),
+                            style: const TextStyle(fontSize: 14, color: Colors.black),
                           ),
                           Slider(
                             value: minprice!.toDouble(),
-                            min: 0, max: 1000000, divisions: 100,
+                            min: 0, max: 100000000, divisions: 100,
                             label: minprice.toString(),
                             onChanged: (double value) {
                               setState(() {
                                 minprice = value.toInt();
                               });
                             },
-                            activeColor: Color.fromRGBO(94, 200, 248, 1),
+                            activeColor: const Color.fromRGBO(94, 200, 248, 1),
                           ),
                           SizedBox(height: height*0.01,),
                           //Mức tiền tối đa
                           Text( 'Mức tiền tối đa: $maxprice',
-                            style: TextStyle(fontSize: 14, color: Colors.black),
+                            style: const TextStyle(fontSize: 14, color: Colors.black),
                           ),
                           Slider(
                             value: maxprice!.toDouble(),
-                            min: 0, max: 1000000, divisions: 100,
+                            min: 0, max: 100000000, divisions: 100,
                             label: maxprice.toString(),
                             onChanged: (double value) {
                               setState(() {
                                 maxprice = value.toInt();
                               });
                             },
-                            activeColor: Color.fromRGBO(94, 200, 248, 1),
+                            activeColor: const Color.fromRGBO(94, 200, 248, 1),
                           ),
                           SizedBox(height: height*0.01,),
                           Row(
@@ -295,7 +295,7 @@ class HomeScreen_State extends State<HomeScreen> {
                               //sap xep
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                      backgroundColor: const Color.fromRGBO(94, 200, 248, 1),
                                       shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(15),
                                           side: const BorderSide(
@@ -309,29 +309,44 @@ class HomeScreen_State extends State<HomeScreen> {
                                       showMessage(context, "min > max");
                                     }
                                     loading();
-                                    try{
+                                    try {
+                                      print("Bắt đầu gọi SortProducts");
                                       itemProduct.clearProducts();
-                                      await itemProduct.SortProducts(size!, minprice!, maxprice!, category_id!, 1, 10);
-                                      if(itemProduct.products.isEmpty){
+
+                                      // await itemProduct.SortProducts(size!, minprice!, maxprice!, category_id!, pageSort, 10,);
+
+                                      await itemProduct.SortProducts(
+                                        size: size,
+                                        minPrice: minprice,
+                                        maxPrice: maxprice,
+                                        categoryId: category_id,
+                                        page: pageSort,
+                                        pageSize: 10,
+                                      );
+
+
+                                      if (itemProduct.products.isEmpty) {
                                         showMessage(context, "Không có dữ liệu");
                                         Navigator.pop(context);
                                         Navigator.pop(context);
                                       }
                                       clearPageSort();
-                                    }catch(e){
-                                      throw Exception("Khong co du lieu sort");
-                                    }finally{
+                                    } catch (e) {
+                                      print("Lỗi trong HomeScreen: $e");
+                                      throw Exception("Không có dữ liệu sort");
+                                    }
+                                    finally{
                                       Navigator.pop(context);
                                       Navigator.pop(context);
                                     }
                                   },
-                                  child: Text("Sắp xếp", style: TextStyle(color: Colors.black),)
+                                  child: const Text("Sắp xếp", style: TextStyle(color: Colors.black),)
                               ),
                               SizedBox(height: height*0.01,),
                               //Reset
                               ElevatedButton(
                                   style: ElevatedButton.styleFrom(
-                                      backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                                      backgroundColor: const Color.fromRGBO(94, 200, 248, 1),
                                       shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(15),
                                           side: const BorderSide(
@@ -349,7 +364,7 @@ class HomeScreen_State extends State<HomeScreen> {
                                     Navigator.pop(context);
 
                                   },
-                                  child: Text("Reset", style: TextStyle(color: Colors.black),)
+                                  child: const Text("Reset", style: TextStyle(color: Colors.black),)
                               ),
                             ],
                           ),
@@ -362,7 +377,7 @@ class HomeScreen_State extends State<HomeScreen> {
               },
               );
             },
-            icon: Icon(Icons.sort,color: Colors.white),
+            icon: const Icon(Icons.sort,color: Colors.white),
 
           ),
         ],
@@ -372,7 +387,7 @@ class HomeScreen_State extends State<HomeScreen> {
         child: Consumer<ProductProvider>(
           builder: (context, value, child) {
             if (itemProduct.products.isEmpty) {
-              return Center(child: Text("Không có dữ liệu"));
+              return const Center(child: Text("Không có dữ liệu"));
             } else {
               return Container(
                 
@@ -385,7 +400,7 @@ class HomeScreen_State extends State<HomeScreen> {
                         width: width * 0.99,
                         child: GridView.builder(
                           shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(),
                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                             crossAxisCount: 2,
                             childAspectRatio: 1,
@@ -435,7 +450,7 @@ class HomeScreen_State extends State<HomeScreen> {
                       // xem thêm
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+                            backgroundColor: const Color.fromRGBO(94, 200, 248, 1),
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(15),
                                 side: const BorderSide(
@@ -479,13 +494,12 @@ class HomeScreen_State extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
         backgroundColor: Colors.blue,
         behavior: SnackBarBehavior.floating,
       ),
     );
   }
-
   void loading(){
     showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
       return const Center(
@@ -493,4 +507,15 @@ class HomeScreen_State extends State<HomeScreen> {
       );
     },);
   }
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+    ],
+  );
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
+    print("Đã đăng xuất khỏi Google.");
+  }
+
 }

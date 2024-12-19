@@ -1,10 +1,12 @@
 
 import 'package:gmarket/Provider/Manufacturer_Provider.dart';
+import 'package:gmarket/Screens/AdminScreen/Category_Update.dart';
 import 'package:gmarket/Screens/AdminScreen/Manufacturer_Update.dart';
 import 'package:gmarket/Screens/Widget/Widget_Manufacturer_Item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:transition_plus/transition_plus.dart';
 
 class Manufacturer_List extends StatefulWidget{
   const Manufacturer_List({super.key});
@@ -43,6 +45,11 @@ class Manufacturer_List_State extends State<Manufacturer_List> {
               fontSize: 20,
             ),
           ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back, color: Colors.white,)),
           centerTitle: true,
         ),
          body: Container(
@@ -59,11 +66,7 @@ class Manufacturer_List_State extends State<Manufacturer_List> {
                        ID: man.ID,
                        onTap: () {
                          itemManufacturer.getManufacturerById(man.ID);
-                         Navigator.push(
-                           context,
-                           MaterialPageRoute(builder: (context) =>
-                               Manufacturer_Update(id: man.ID)),
-                         );
+                         Navigator.push(context, ScaleTransition1(page: Manufacturer_Update(id: man.ID), type: ScaleTrasitionTypes.bottom));
                        });
                  },
                );

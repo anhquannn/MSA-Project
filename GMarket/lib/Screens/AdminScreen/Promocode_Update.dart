@@ -292,7 +292,7 @@ class Promocode_Update_State extends State<Promocode_Update> {
                             onChanged: (value) {
                               setState(() {
                                 discountpercentage.text = value;
-                                print('Ma giam gia $value');
+                                print('phan tram giam gia $value');
                               });
                             },
                           ),

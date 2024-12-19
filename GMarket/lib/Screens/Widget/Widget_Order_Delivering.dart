@@ -5,6 +5,7 @@ import 'package:gmarket/Provider/RetrunOrder.dart';
 import 'package:gmarket/Screens/CustomerScreen/Order_Delivering.dart';
 import 'package:gmarket/Screens/Widget/Widget_Order_History.dart';
 import 'package:provider/provider.dart';
+import 'package:transition_plus/transition_plus.dart';
 
 class Widget_Delivering extends StatefulWidget{
   @override
@@ -37,11 +38,7 @@ class Widget_Delivering_State extends State<Widget_Delivering>{
                   status: od.status,
                   onTap: () {
                     returnOrderProvider.setorderid(od.ID);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Order_Delivering(
-                          idOrders: index,
-                        ),)
-                    );
+                    Navigator.push(context, ScaleTransition1(page: Order_Delivering(idOrders: index), type: ScaleTrasitionTypes.bottom));
                   },
                 ),
               );

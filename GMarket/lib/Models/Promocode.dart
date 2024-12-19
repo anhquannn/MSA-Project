@@ -31,8 +31,6 @@ class PromoCode{
       code: json['code'],
       discounttype: json['discounttype'],
       enddate: json['enddate'],
-      // minimumordervalue: double.parse( json['minimumordervalue'].toString()),
-      // discountpercentage: double.parse( json['discountpercentage'].toString()),
       minimumordervalue: json['minimumordervalue'],
       discountpercentage: json['discountpercentage'],
       name: json['name'],

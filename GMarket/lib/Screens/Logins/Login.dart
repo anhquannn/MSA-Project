@@ -203,10 +203,9 @@ class LoginState extends State<Login> {
                             ),
                             ElevatedButton(
                               onPressed: (){
-                                loading();
+                                // loading();
                                 signInWithGoogle();
-                                Navigator.pop(context);
-
+                                // Navigator.pop(context);
 
                                 // signOut();
                               },
@@ -328,7 +327,7 @@ class LoginState extends State<Login> {
   );
 
   Future signInWithGoogle() async {
-    loading();
+
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
@@ -341,6 +340,7 @@ class LoginState extends State<Login> {
       setState(() {
        Token=accessToken;
       });
+      // loading();
       await Provider.of<User_Provider>(context,listen: false).loginWithGoogle(accessToken);
       await Provider.of<Cart_Provider>(context,listen: false).getOrCreateCartForUser(Provider.of<User_Provider>(context,listen: false).user!.ID) ;
       await Provider.of<ProductProvider>(context,listen: false).getAllProduct();

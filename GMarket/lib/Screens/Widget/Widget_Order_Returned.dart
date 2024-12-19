@@ -4,8 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:gmarket/Provider/Order_Provider.dart';
 import 'package:gmarket/Provider/RetrunOrder.dart';
 import 'package:gmarket/Screens/CustomerScreen/Oder_Returned.dart';
+import 'package:gmarket/Screens/CustomerScreen/Order_Success.dart';
 import 'package:gmarket/Screens/Widget/Widget_Order_History.dart';
 import 'package:provider/provider.dart';
+import 'package:transition_plus/transition_plus.dart';
 
 class Widget_Order_Returned extends StatefulWidget{
   @override
@@ -38,11 +40,7 @@ class Widget_Order_Returned_State extends State<Widget_Order_Returned>{
                   status: od.status,
                   onTap: () {
                     returnOrderProvider.setorderid(od.ID);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Order_Returned(
-                          idOrders: index,
-                        ),)
-                    );
+                    Navigator.push(context, ScaleTransition1(page: Order_Returned(idOrders: index), type: ScaleTrasitionTypes.bottom));
                   },
                 ),
               );

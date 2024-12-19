@@ -1,6 +1,8 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gmarket/Http/User.dart';
+import 'package:gmarket/Screens/Logins/Login.dart';
 import 'package:gmarket/Screens/Widget/Widget_Category.dart';
 import 'package:gmarket/Screens/Widget/Widget_Manufacturer.dart';
 import 'package:gmarket/Screens/Widget/Widget_Product.dart';
@@ -32,6 +34,7 @@ class AdminScreenState extends State<AdminScreen>{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         backgroundColor: Color.fromRGBO(94, 200, 248, 1),
@@ -43,6 +46,14 @@ class AdminScreenState extends State<AdminScreen>{
           ),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+              onPressed: () {
+                _logout(context);
+              },
+              icon: Icon(Icons.logout, color: Colors.white,)
+          )
+        ],
       ),
       body:
       PageView(
@@ -115,5 +126,19 @@ class AdminScreenState extends State<AdminScreen>{
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+  Future<void> _logout(BuildContext context) async {
+    final user = userHTTP();
+    try {
+      await user.ClearUserData();
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Login()),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Lỗi đăng xuất: $e')),
+      );
+    }
   }
 }

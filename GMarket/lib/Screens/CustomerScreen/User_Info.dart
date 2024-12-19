@@ -9,6 +9,7 @@ import 'package:gmarket/Screens/CustomerScreen/Home_Screen.dart';
 import 'package:gmarket/Screens/CustomerScreen/Order_List.dart';
 import 'package:gmarket/Screens/CustomerScreen/Update_UserInfo.dart';
 import 'package:gmarket/Screens/Logins/Login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class User_Info extends StatefulWidget{
@@ -234,12 +235,13 @@ class User_Info_State extends State<User_Info>{
             //dang xuat2
             ElevatedButton(
               onPressed: () async {
-                userProvider.clearUser();
                 Navigator.pushAndRemoveUntil(
                     context, 
-                    MaterialPageRoute(builder: (context) => Login(),),
+                    MaterialPageRoute(builder: (context) => const Login(),),
                         (Route<dynamic> route) => false,
                 );
+                signOut();
+                // userProvider.clearUser();
               },
               style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromRGBO(94, 200, 248, 1),
@@ -272,5 +274,16 @@ class User_Info_State extends State<User_Info>{
         child: CircularProgressIndicator(),
       );
     },);
+  }
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: [
+      'email',
+      'https://www.googleapis.com/auth/userinfo.profile',
+    ],
+  );
+  Future<void> signOut() async {
+    await _googleSignIn.signOut();
+    Provider.of<User_Provider>(context,listen: false).clearUser();
+    print("Đã đăng xuất khỏi Google.");
   }
 }

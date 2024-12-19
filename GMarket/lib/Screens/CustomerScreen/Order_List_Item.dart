@@ -137,7 +137,9 @@ class Order_List_Item_State extends State<Order_List_Item>{
                                   )
                               ),
                               onPressed: () async {
+                                loading();
                                 await deliveryDetailProvider.getAllDeliveryDetail();
+                                Navigator.pop(context);
                                 Navigator.push(context, MaterialPageRoute(builder: (context) => DeliveryDetail_List(),));
                               },
 
@@ -469,58 +471,60 @@ class Order_List_Item_State extends State<Order_List_Item>{
                         setState(() {
                           method="zalopay";
                         });
-                        //Tao order
-                        await orderProvider.createOrder(
-                            Order( ID: 0,
-                                user_id: userProvider.user!.ID,
-                                cart_id: cartProvider.cart!.ID,
-                                grandtotal: orderProvider.previewOrder.grand_total,
-                                status: "paying",order_details: [], User: userProvider.user!
-                            ), promoCode);
-                        //UpdateOrder
-                        await orderProvider.updateStatusOrder(
-                            orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "paying");
-                        //Tao payment
-                        await paymentProvider.createPayment(
-                            new Payment(
-                                ID: 0, paymentmethod: method,
-                                status: "paying", grandtotal: orderProvider.previewOrder.grand_total,
-                                order_id: orderProvider.order!.ID, user_id: userProvider.user!.ID));
-                        //________________Thanh toan zalopay_______________________________________________
-                        final result=await getOrderZalo(orderProvider.previewOrder.grand_total);
-                        await launchUrl(Uri.parse(result!.orderurl), mode: LaunchMode.externalApplication);
-                        //________________________________________________________________________________
-                        // Update Payment
-                        await paymentProvider.updatePayment(
-                          new Payment(ID: paymentProvider.payment!.ID,
-                              paymentmethod: "zalopay", status: "success",
-                              grandtotal:orderProvider.previewOrder.grand_total, order_id: orderProvider.order!.ID,
-                              user_id: userProvider.user!.ID)
-                        );
-                        //UpdateOrder paid
-                        await orderProvider.updateStatusOrder(
-                            orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "paid");
-                        //tạo delivery
-                        await deliveryProvider.createDelivery(
-                            new Delivery(ID: 0, status: "delivering",
-                                orderId: orderProvider.order!.ID, userId: userProvider.user!.ID,
-                                details: null),
-                            userProvider.user!.ID,
-                            orderProvider.order!.ID);
-                        print("giao dien ${deliveryProvider.delivery!.ID}");
-                        await orderProvider.updateStatusOrder(
-                            orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "delivering");
-                        await deliveryDetailProvider.createDeliveryDetail(
-                            new DeliveryDetail(ID: 0,
-                                deliveryName: deliveryDetailProvider.deliveryDetail!.deliveryName,
-                                shipCode: "",
-                                description: "",
-                                weight: 0,
-                                deliveryAddress: deliveryDetailProvider.deliveryDetail!.deliveryAddress,
-                                deliveryContact: deliveryDetailProvider.deliveryDetail!.deliveryContact,
-                                deliveryFee: 0,
-                                deliveryId: deliveryProvider.delivery!.ID)
-                        );
+                        try{
+                          //Tao order
+                          await orderProvider.createOrder(
+                              Order( ID: 0,
+                                  user_id: userProvider.user!.ID,
+                                  cart_id: cartProvider.cart!.ID,
+                                  grandtotal: orderProvider.previewOrder.grand_total,
+                                  status: "paying",order_details: [], User: userProvider.user!
+                              ), promoCode);
+                          //UpdateOrder
+                          await orderProvider.updateStatusOrder(
+                              orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "paying");
+                          //Tao payment
+                          await paymentProvider.createPayment(
+                              new Payment(
+                                  ID: 0, paymentmethod: method,
+                                  status: "paying", grandtotal: orderProvider.previewOrder.grand_total,
+                                  order_id: orderProvider.order!.ID, user_id: userProvider.user!.ID));
+                          //________________Thanh toan zalopay_______________________________________________
+                          final result=await getOrderZalo(orderProvider.previewOrder.grand_total);
+                          await launchUrl(Uri.parse(result!.orderurl), mode: LaunchMode.externalApplication);
+                          //________________________________________________________________________________
+                          // Update Payment
+                          await paymentProvider.updatePayment(
+                              new Payment(ID: paymentProvider.payment!.ID,
+                                  paymentmethod: "zalopay", status: "success",
+                                  grandtotal:orderProvider.previewOrder.grand_total, order_id: orderProvider.order!.ID,
+                                  user_id: userProvider.user!.ID));
+                          //UpdateOrder paid
+                          await orderProvider.updateStatusOrder(
+                              orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "paid");
+                          //tạo delivery
+                          await deliveryProvider.createDelivery(
+                              new Delivery(ID: 0, status: "delivering",
+                                  orderId: orderProvider.order!.ID, userId: userProvider.user!.ID,
+                                  details: null),
+                              userProvider.user!.ID,
+                              orderProvider.order!.ID);
+                          await orderProvider.updateStatusOrder(
+                              orderProvider.order!.ID, userProvider.user!.ID, cartProvider.cart!.ID, "delivering");
+                          await deliveryDetailProvider.createDeliveryDetail(
+                              new DeliveryDetail(ID: 0,
+                                  deliveryName: deliveryDetailProvider.deliveryDetail!.deliveryName,
+                                  shipCode: "",
+                                  description: "",
+                                  weight: 0,
+                                  deliveryAddress: deliveryDetailProvider.deliveryDetail!.deliveryAddress,
+                                  deliveryContact: deliveryDetailProvider.deliveryDetail!.deliveryContact,
+                                  deliveryFee: 0,
+                                  deliveryId: deliveryProvider.delivery!.ID));
+                        }catch(e){
+                          Navigator.pop(context);
+                          showMessage(context, "Đặt hàng thất bại");
+                        }
                       }
                       else{
                         loading();

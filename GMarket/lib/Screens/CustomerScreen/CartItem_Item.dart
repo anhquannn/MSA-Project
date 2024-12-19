@@ -113,7 +113,7 @@ class CartItem_Item_State extends State<CartItem_Item>{
                             SizedBox(height: height * 0.06),
                             //price
                             Text(
-                              '${widget.price! * widget.quantity} VND',
+                              '${widget.price!} VND',
                               style: const TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.bold,

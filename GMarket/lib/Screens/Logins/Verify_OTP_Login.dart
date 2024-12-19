@@ -110,18 +110,15 @@ class VerifyotploginState extends State<Verifyotplogin> {
                                   )),
                             ),
                           ),
-                          SizedBox(
-                            height: height * 0.05,
-                          ),
-
+                          SizedBox(height: height * 0.05,),
                           ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                   backgroundColor:
                                   const Color.fromRGBO(94, 200, 248, 1)),
                               onPressed: () async {
                                 loading();
-                                await productProvider.getAllProduct();
                                 await userProvider.verifyOTP(_otp);
+                                await productProvider.getAllProduct();
                                 await cartProvider.getOrCreateCartForUser(Provider.of<User_Provider>(context,listen: false).user!.ID) ;
                                 Navigator.pop(context);
                                 if(userProvider.user!=null){

@@ -2,10 +2,12 @@
 import 'package:gmarket/Provider/Order_Provider.dart';
 import 'package:gmarket/Provider/RetrunOrder.dart';
 import 'package:gmarket/Screens/AdminScreen/Order_History.dart';
+import 'package:gmarket/Screens/CustomerScreen/Order_Paying.dart';
 import 'package:gmarket/Screens/Widget/Widget_Order_Item.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:transition_plus/transition_plus.dart';
 
 class Order_List extends StatefulWidget{
   @override
@@ -27,6 +29,12 @@ int page=1;
         backgroundColor: Color.fromRGBO(244, 244, 244, 1),
         appBar: AppBar(
           backgroundColor: Color.fromRGBO(94, 200, 248, 1),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back, color: Colors.white,)
+          ),
           title: const Text("Quản lý đơn hàng",
             style: TextStyle(
               color: Colors.white,
@@ -60,9 +68,7 @@ int page=1;
                         onTap: () async{
                           final product= orderProvider.orders[index];
                           returnOrderProvider.setorderid(cat.ID);
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) => Order_History(id: index),)
-                          );
+                          Navigator.push(context, ScaleTransition1(page: Order_History(id: index), type: ScaleTrasitionTypes.bottom));
                         },
 
                       );

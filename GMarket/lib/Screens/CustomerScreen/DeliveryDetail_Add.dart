@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Models/DeliveryDetail.dart';
 import 'package:gmarket/Provider/DeliveryDetail_Provider.dart';
+import 'package:gmarket/Screens/CustomerScreen/DeliveryDetail_List.dart';
 import 'package:provider/provider.dart';
 
 class DeliveryDetail_Add extends StatefulWidget{
@@ -180,8 +181,13 @@ class DeliveryDetail_Add_State extends State<DeliveryDetail_Add>{
                             deliveryFee: 0,
                             deliveryId: null)
                       );
+                      loading();
                       await deliveryDetailProvider.getAllDeliveryDetail();
                       Navigator.pop(context);
+                      Navigator.pushAndRemoveUntil(
+                          context, 
+                          MaterialPageRoute(builder: (context) => DeliveryDetail_List(),),
+                              (Route<dynamic> route) => false);
                     },
                     child: const Text("Thêm",
                       style: TextStyle(
@@ -198,5 +204,11 @@ class DeliveryDetail_Add_State extends State<DeliveryDetail_Add>{
       ),
     );
   }
-
+  void loading(){
+    showDialog(context: context, barrierDismissible: false, builder: (BuildContext context) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    },);
+  }
 }

@@ -1,11 +1,13 @@
 
 import 'package:gmarket/Provider/Promocode_Provider.dart';
 import 'package:gmarket/Screens/AdminScreen/Admin_Screen.dart';
+import 'package:gmarket/Screens/AdminScreen/Category_Update.dart';
 import 'package:gmarket/Screens/AdminScreen/Promocode_Update.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gmarket/Screens/Widget/Widget_Promocode_Item.dart';
 import 'package:provider/provider.dart';
+import 'package:transition_plus/transition_plus.dart';
 
 class Promocode_List extends StatefulWidget{
   @override
@@ -22,7 +24,6 @@ class Promocode_List_State extends State<Promocode_List> {
     final width = MediaQuery.of(context).size.width;
 
     final promocodeProvider=Provider.of<Promocode_Provider>(context);
-
     return Scaffold(
         backgroundColor: Color.fromRGBO(244, 244, 244, 1),
         appBar: AppBar(
@@ -71,7 +72,7 @@ class Promocode_List_State extends State<Promocode_List> {
                         startdate:pm.startdate!,
                         onTap: () async{
                           promocodeProvider.setIndex(index);
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => Promocode_Update(),));
+                          Navigator.push(context, ScaleTransition1(page: Promocode_Update(), type: ScaleTrasitionTypes.bottom));
                         },
                       );
                     },

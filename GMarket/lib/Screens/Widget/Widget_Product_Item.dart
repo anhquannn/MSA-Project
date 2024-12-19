@@ -47,27 +47,41 @@ class WidgetProductItem extends StatelessWidget {
                   ],
                 ),
               ),
-            //Ten
-            Container(
-              child:  Text(
-                name,
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 16,),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
-            ),
-            Container(
-              child: Text('${floatToMoney(int.parse(price.toString()) as int)} VNĐ',
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                    fontSize: 16, 
-                    color: Colors.black,
-                  fontWeight: FontWeight.bold,
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(width: 5,),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    //Ten
+                    Container(
+                      child:  Text(
+                        name,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontSize: 16,),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                      ),
+                    ),
+                    //so tien
+                    Container(
+                      child: Text('${floatToMoney(int.parse(price.toString()) as int)}',
+                        textAlign: TextAlign.left,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,),
+                    ),
+                  ],
                 ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,),
+
+              ],
             ),
+
           ],
         ),
       ),
